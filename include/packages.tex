@@ -1,0 +1,190 @@
+
+
+\usepackage[a4paper, margin=3.5cm]{geometry}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage{tgtermes}            % Times-like font from TeX Gyre
+%\usepackage{tgpagella}           % Palatino-like font
+%\usepackage{tgbonum}             % Bookman-like font
+%\usepackage{bookman}
+%\usepackage{libertine}           % Linux Libertine + math
+%\usepackage{erewhon}             % Utopia alternative
+\usepackage{fourier}             % Utopia text + Fourier math
+
+\usepackage{yfonts}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{syntax}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{forest}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{minted}
+\usemintedstyle{bw}
+\usepackage{stmaryrd}
+\usepackage{bussproofs}
+\usepackage{amsmath,amssymb}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{positioning, arrows.meta}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{etoolbox}
+
+\definecolor{refcolor}{RGB}{0, 0, 0}
+\usepackage[
+  colorlinks=true,
+  linkcolor=refcolor,
+  citecolor=refcolor,
+  urlcolor=refcolor,
+  pdfborder={0 0 0}
+]{hyperref}
+
+\newcommand{\la}{\lambda}
+\newcommand{\La}{\mathbf{\Lambda}}
+\newcommand{\Ty}{\mathbf{T}}
+\newcommand{\Tb}{\mathbf{B}}
+\newcommand{\Bset}{\mathcal{B}}
+\newcommand{\Vset}{\mathbf{V}}
+\newcommand{\Tset}{\mathcal{T}}
+\newcommand{\NAT}{\mathbb{N}}
+\newcommand{\IF}{\texttt{IF}}
+\newcommand{\SUCC}{\texttt{SUCC}}
+\newcommand{\TRUE}{\texttt{TRUE}}
+\newcommand{\FALSE}{\texttt{FALSE}}
+\newcommand{\FST}{\texttt{FST}}
+\newcommand{\SND}{\texttt{SND}}
+\newcommand{\PAIR}{\texttt{PAIR}}
+\newcommand{\NIL}{\texttt{NIL}}
+\newcommand{\NOT}{\texttt{NOT}}
+\newcommand{\AND}{\texttt{AND}}
+\newcommand{\OR}{\texttt{OR}}
+\newcommand{\cat}[1]{\mathbf{#1}}
+\newcommand{\Hom}{\mathrm{Hom}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Ob}{\mathrm{Ob}}
+\newcommand{\Mor}{\mathrm{Mor}}
+\newcommand{\Set}{\cat{Set}}
+\newcommand{\Top}{\cat{Top}}
+\newcommand{\Grp}{\cat{Grp}}
+\newcommand{\Fun}{\mathrm{Fun}}
+\newcommand{\op}{^{\mathrm{op}}}
+\newcommand{\lCalc}{$\la$-Calculus}
+\newcommand{\lcalc}{$\la$-calculus}
+\newcommand{\bred}{$\beta$-reduction}
+\newcommand{\lterm}{$\la$-term}
+\newcommand{\lterms}{$\la$-terms}
+\newcommand{\lexpr}{$\la$-expression}
+\newcommand{\aequiv}{$\alpha$-equivalence}
+\newcommand{\aequivlt}{$\alpha$-equivalent}
+\newcommand{\bequiv}{$\beta$-equivalence}
+\newcommand{\functionfont}[1]{\mathbf{#1}}
+\newcommand{\curly}{\mathrel{\leadsto}_\beta}
+\newcommand{\Sub}[1]{\functionfont{Sub}(#1)}
+\newcommand{\Subb}{\functionfont{Sub}}
+\newcommand{\FV}[1]{\functionfont{FV}(#1)}
+\newcommand{\FVV}{\functionfont{FV}}
+\newcommand{\orange}[1]{\textcolor{orange}{#1}}
+\newcommand{\magenta}[1]{\textcolor{magenta}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\myref}[1]{\textcolor{refcolor}{\hyperref[#1]{\ref*{#1}}}}
+\newcommand{\subst}[2]{[#1 := #2]}
+\newcommand{\step}{\curly}
+\newcommand{\etaequiv}{$\eta$-equivalence}
+\newcommand{\lam}[2]{\lambda #1.\,#2}
+\newcommand{\app}[2]{#1.\,#2}
+\newcommand{\abs}[2]{\la #1.\,#2}
+\newcommand{\curlysym}{\mathrel{\leftrightarrow}_\beta}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{12pt}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{note}{Note}
+\newtheorem{notation}{Notation}
+
+\bibliographystyle{alpha}
+
+\title{Type Theory and Categorical Models: A Unified Approach}
+\author{Miguel Laredo}
+
+\usepackage{afterpage}
+\usepackage{colortbl,longtable}
+
+%\usepackage{pdfpages}
+%\usepackage{url}
+%\usepackage[stable]{footmisc}
+%\usepackage{parskip}
+%\usepackage{lscape}
+%\usepackage{pgfgantt}
+
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none
+]{biblatex}
+\bibliography{bibliography}
+\usepackage{csquotes}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\rightmark}
+\setlength{\headheight}{1.5\headheight}
+\cfoot{\thepage}
+
+\addto\captionsspanish{ \renewcommand{\contentsname}
+  {Índice general} }
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\renewcommand{\chaptermark}[1]{\markboth{\textbf{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{\textbf{\thesection. #1}}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\bigrule}{\titlerule[0.5mm]}
+
+\usepackage{appendix}
+
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{\esperiod}{-1}}
+\makeatletter
+\addto\shorthandsspanish{\let\esperiod\es@period@code}
+
+\def\clearpage{
+  \ifvmode
+  \ifnum \@dbltopnum =\m@ne
+  \ifdim \pagetotal <\topskip
+  \hbox{}
+  \fi
+  \fi
+  \fi
+  \newpage
+  \thispagestyle{empty}
+  \write\m@ne{}
+  \vbox{}
+  \penalty -\@Mi
+}
+\makeatother

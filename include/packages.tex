@@ -1,7 +1,5 @@
 
-
 \usepackage[a4paper, margin=3.5cm]{geometry}
-
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 %\usepackage{tgtermes}            % Times-like font from TeX Gyre
@@ -11,10 +9,11 @@
 %\usepackage{libertine}           % Linux Libertine + math
 %\usepackage{erewhon}             % Utopia alternative
 \usepackage{fourier}             % Utopia text + Fourier math
-
 \usepackage{yfonts}
 \usepackage[T1]{fontenc}
-
+\usepackage[backend=biber,style=authoryear,sorting=none]{biblatex}
+\addbibresource{bibliography.bib}
+\nocite{*}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
@@ -44,7 +43,6 @@
 \usepackage{algpseudocode}
 \usepackage{xcolor}
 \usepackage{etoolbox}
-
 \definecolor{refcolor}{RGB}{0, 0, 0}
 \usepackage[
   colorlinks=true,
@@ -53,13 +51,57 @@
   urlcolor=refcolor,
   pdfborder={0 0 0}
 ]{hyperref}
+\usepackage{afterpage}
+\usepackage{colortbl,longtable}
+\usepackage{csquotes}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\rightmark}
+\setlength{\headheight}{1.5\headheight}
+\cfoot{\thepage}
+\addto\captionsspanish{ \renewcommand{\contentsname}
+  {Índice general} }
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+\renewcommand{\chaptermark}[1]{\markboth{\textbf{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{\textbf{\thesection. #1}}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\bigrule}{\titlerule[0.5mm]}
+\usepackage{appendix}
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{\esperiod}{-1}}
+\makeatletter
+\addto\shorthandsspanish{\let\esperiod\es@period@code}
+
+\def\clearpage{
+  \ifvmode
+  \ifnum \@dbltopnum =\m@ne
+  \ifdim \pagetotal <\topskip
+  \hbox{}
+  \fi
+  \fi
+  \fi
+  \newpage
+  \thispagestyle{empty}
+  \write\m@ne{}
+  \vbox{}
+  \penalty -\@Mi
+}
+\makeatother
+
+
+
 
 \newcommand{\la}{\lambda}
 \newcommand{\La}{\mathbf{\Lambda}}
 \newcommand{\Ty}{\mathbf{T}}
 \newcommand{\Tb}{\mathbf{B}}
 \newcommand{\Bset}{\mathcal{B}}
-\newcommand{\Vset}{\mathbf{V}}
+\newcommand{\Vset}{\mathcal{V}}
 \newcommand{\Tset}{\mathcal{T}}
 \newcommand{\NAT}{\mathbb{N}}
 \newcommand{\IF}{\texttt{IF}}
@@ -124,67 +166,7 @@
 \newtheorem{note}{Note}
 \newtheorem{notation}{Notation}
 
-\bibliographystyle{alpha}
 
 \title{Type Theory and Categorical Models: A Unified Approach}
 \author{Miguel Laredo}
 
-\usepackage{afterpage}
-\usepackage{colortbl,longtable}
-
-%\usepackage{pdfpages}
-%\usepackage{url}
-%\usepackage[stable]{footmisc}
-%\usepackage{parskip}
-%\usepackage{lscape}
-%\usepackage{pgfgantt}
-
-\usepackage[
-  backend=biber,
-  style=numeric,
-  sorting=none
-]{biblatex}
-\bibliography{bibliography}
-\usepackage{csquotes}
-\usepackage{float}
-\usepackage{subfigure}
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[LO]{\leftmark}
-\fancyhead[RE]{\rightmark}
-\setlength{\headheight}{1.5\headheight}
-\cfoot{\thepage}
-
-\addto\captionsspanish{ \renewcommand{\contentsname}
-  {Índice general} }
-\setcounter{tocdepth}{4}
-\setcounter{secnumdepth}{4}
-
-\renewcommand{\chaptermark}[1]{\markboth{\textbf{#1}}{}}
-\renewcommand{\sectionmark}[1]{\markright{\textbf{\thesection. #1}}}
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-\newcommand{\bigrule}{\titlerule[0.5mm]}
-
-\usepackage{appendix}
-
-\usepackage{dcolumn}
-\newcolumntype{.}{D{.}{\esperiod}{-1}}
-\makeatletter
-\addto\shorthandsspanish{\let\esperiod\es@period@code}
-
-\def\clearpage{
-  \ifvmode
-  \ifnum \@dbltopnum =\m@ne
-  \ifdim \pagetotal <\topskip
-  \hbox{}
-  \fi
-  \fi
-  \fi
-  \newpage
-  \thispagestyle{empty}
-  \write\m@ne{}
-  \vbox{}
-  \penalty -\@Mi
-}
-\makeatother

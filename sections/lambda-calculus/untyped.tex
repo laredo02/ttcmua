@@ -1,6 +1,19 @@
+\chapter{\lCalc}
+
+In the early 20th century, mathematicians such as Bertrand Russell, David Hilbert, and Kurt Gödel were trying to set complete, consistent, and decidable foundations for mathematics. Within this context, Alonzo Church, in his effort to formalize the notion of computability, introduced a minimal symbolic language based upon function abstraction and function application, this system is now called \lcalc.
+
+In 1936, Church used lambda calculus to address Hilbert’s Entscheidungsproblem --whether a mechanical method could determine the truth of any first-order logic statement. He proved no such algorithm exists, establishing the undecidability of first-order logic.
+
+One of the nuances formalized by the \lcalc \ is the distinction between extensional and intensional equality. The extensional approach to equivalence states that two functions are equivalent if they share input output pairs for every possible input. Its intensional counterpart extends this notion of equality by requiring that the procedures that compute these pairs share complexity i.e. they take the same steps toward yielding a result.\footnote{
+  Let \( p \) be a sufficiently large prime, and let \( f, g : \mathbb{Z}_p \to \mathbb{Z}_p \) be defined by \( f(x) = x^2 \) and \( g(x) = \log_a(a^{x+2}) \), where \( a \in \mathbb{Z}_p^\times \) is a fixed primitive root. Although \( f \) and \( g \) are extensionally equal, i.e., they yield the same output for all inputs in \( \mathbb{Z}_p \), they are intensionally distinct. The function \( f \) performs a simple squaring operation, while \( g \) requires evaluating a discrete logarithm, intractable in general. \parencite{bonilla2021}}
+
+The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like LISP, Haskell and Erlang to name a few. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
+
+\newpage
+
 \section{\centering Untyped \lCalc}
-In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation\footnote{this is an example, $(\la x . x + 1 )$ is not a valid lambda term, see Definition \ref{def:lambda-terms-2}.}. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \curly (2 + 1) \curly 3$. This process of reducing a $\la$-expression is referred to as \bred, it will be covered formally later in the chapter.
-\subsubsection{\centering The Language of \lCalc}
+In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \mathrel{\leadsto} (2 + 1) \mathrel{\leadsto} 3$. This process of reducing a $\la$-expression is referred to as \bred, it will be covered formally later in the chapter.
+\subsection{\centering The Language of \lCalc}
 \begin{definition} The set of all lambda terms \( \La \) is defined inductively as follows:
   \label{def:lambda-terms-1}
   \begin{itemize}
@@ -8,59 +21,38 @@ In order to get acquainted with the \lcalc, let us develop a simple example to f
   \item (Abstraction) If \( x \in \Vset \) and \( M \in \La \), then \( (\la x. M) \in \La \).
   \item (Application) If \( M, N \in \La \), then \((M N) \in \La \).
   \end{itemize}
-  Where $\Vset = \{x, y, z, ... \}$ represents a countably infinite set of variable names.
+  Where $\Vset = \{x, y, z, ... \}$ represents a countably infinite set of variable names. These notions are conveniently synthesized into the following abstract syntax:
+  \[
+    \La \, := \, \Vset \, \mid \, \la x . \, x \, \mid \, \La \, \La
+  \]
+  \noindent
+  that directly translates into the following Haskell snippet:
+  \begin{minted}[fontsize=\small]{haskell}
+    data Term = Var String
+          | Abs String Term
+          | App Term Term
+  \end{minted}
 \end{definition}
 
-The key takeaway of this definition is that abstraction and application together, when combined with \bred, enable computation—thus encapsulating the meaning of function in a way that is abstract yet useful.
+The key takeaway of this definition is that abstraction and application when paired with a reduction procedure, capture the meaning of function in a way that is abstract yet useful, and enables computation.
 
 \begin{notation}
   We use uppercase letters, e.g. M, N, L, P, Q to denote elements of $\La$ and lowercase e.g. x, y, z to denote elements of $\Vset$.
 \end{notation}
 
-Since we are dealing with a formal language, it is in our benefit to introduce a few other objects with the aim of defining a grammar to generate it:
-\begin{itemize}
-\item An alphabet \( \Sigma = \{ \la, ., (, ), \ldots \} \), is a finite set of symbols
-\item A string is a finite sequence of elements from \( \Sigma \), the empty string is denoted by \( \varepsilon \)
-\item \( \Sigma^* \) denotes the set of all finite strings over \( \Sigma \), \( \varepsilon \in \Sigma^* \)
-\item A language \( L \) over an alphabet \( \Sigma \) is a subset of \( \Sigma^* \)
-\end{itemize}
-Our aim now, to generate the set $\La$,  to do this, we will make use of a grammar. When dealing with languages, notation and similar concepts, Backus-Naur Form, often shortened to BNF, is one of the more complete alternatives:
-\begin{itemize}
-\item Nonterminals are enclosed in angle brackets (e.g. \texttt{<expr>})
-\item Terminals are written literally (e.g. \texttt{"$\lambda$"}, \texttt{"."}, $x$)
-\item Productions define how nonterminals expand, written as \texttt{::=}
-\item The vertical bar \texttt{|} denotes available expansions
-\end{itemize}
-Thus, the language for natural numbers in decimal notation is represented using:
-\begin{align*}
-  \texttt{<digit>} &\;\texttt{::=}\; \texttt{"0"} \;\texttt{|}\; \texttt{"1"} \;\texttt{|}\; \texttt{"2"} \;\texttt{|}\; \texttt{"3"} \;\texttt{|}\; \texttt{"4"} \;\texttt{|}\; \texttt{"5"} \;\texttt{|}\; \texttt{"6"} \;\texttt{|}\; \texttt{"7"} \;\texttt{|}\; \texttt{"8"} \;\texttt{|}\; \texttt{"9"} \\
-  \texttt{<number>} &\;\texttt{::=}\; \texttt{<digit>} \;|\; \texttt{<digit>} \ \texttt{<number>}
-\end{align*}
-\begin{notation}
-  Throughout the document BNF will be used to define language specifics. In other words, it will be used when details matter. The times when notational rigor is beyond the point, abstract syntax will be used to convey more general concepts that do not require a standard notation.
-\end{notation}
-\begin{definition} Taking advantage of BNF notation, an alternative definition for $\La$ would be:
-  \label{def:lambda-terms-2}
-  \begin{align*}
-    \texttt{<term>} &\;\texttt{::=}\; \texttt{<variable>} \\
-                    &\;\texttt{|}\; \texttt{"$\la$"}\ \texttt{<variable>}\ \texttt{"."}\ \texttt{<term>} \\
-                    &\;\texttt{|}\; \texttt{<term>}\ \texttt{<term>} \\
-                    &\;\texttt{|}\; \texttt{"("}\ \texttt{<term>}\ \texttt{")"}\\
-    \texttt{<variable>} &\;\texttt{::}\in \Vset
-  \end{align*}
-  where \( \Sigma = \{ \la, ., (, )\} \cup \Vset \) and \( \La \subset \Sigma^* \).
-  Through use of inductive types types\footnote{Inductive Data Types are built from sums (either this or that) of products (this and that). The main point is that they allow self-reference and support pattern matching.}, this grammar can be implemented in Lean4:
-\end{definition}
 \begin{remark}
   From the definition above we extract that \( \lambda x . x + 1 \notin \La \), given this circumstance, the need to find an accurate representation for numbers within this definition arises. See Definition \ref{def:church-naturals}
 \end{remark}
 
-\begin{example} \label{ex:lambda-terms} Some examples of valid $\la$ terms generated using the grammar in \ref{def:lambda-terms-2}:
+\begin{example} \label{ex:lambda-terms} Some examples of valid $\la$ terms generated using the grammar in \ref{def:lambda-terms-1}:
   \( y \),
   \( (\la x. (x x)) \),
   \( (\la x. (\la y. x)) \),
   \( (((\la x. (x y)) (\la y. y)) z) \).
-  The Lean4 counterpart for the second term is:
+  The Haskell counterpart for the second term is:
+  \begin{minted}[fontsize=\small]{haskell}
+    Abs "x" (Abs "y" (Var "x"))
+  \end{minted}
 \end{example}
 As a convention to avoid notational cluttering, the outermost parenthesis can be omitted e.g. $\la x.x $ is read as $ ( \la x.x ) $. Also, application is left-associative  and binds tighter than abstraction, so $M N P$ is parsed as $(M N) P$ and $\la x . M N$ means $\la x . (M N)$, not $(\la x . M) N$. Likewise, abstraction is right-associative e.g. $\la x . \la y . M$ is $\la x . (\la y . M)$ and binds more weakly than application. Haskell Curry introduced what we now referr to as currying, its main purpose is to avoid unnecessary lambdas. Below is a summary of common notational conventions used throughout the text:
 \begin{itemize}
@@ -80,7 +72,15 @@ From the ground up, we begin define the concept of subterm, since the definition
     &\Sub {MN} = \Sub M  \cup \Sub N \cup \{MN\} \\
     &\Sub {\la x . M} = \Sub M  \cup \{\la x. M\}
   \end{align*}
-  Where $x \in \Vset$ and $M, N \in \La $. In Lean4:
+  Where $x \in \Vset$ and $M, N \in \La $. In Haskell:
+  \begin{minted}[fontsize=\small]{haskell}
+    subTerms :: Term -> Set.Set Term
+    subTerms (Var x) = Set.singleton (Var x)
+    subTerms (App m n) =
+        Set.insert (App m n) (Set.union (subTerms m) (subTerms n))
+    subTerms (Abs x m) =
+        Set.insert (Abs x m) (subTerms m)
+  \end{minted}  
 \end{definition}
 \begin{remark}
   Let \( \preceq \) be the subterm relation on \lterms, defined by
@@ -112,8 +112,13 @@ The set of Free Variables $\functionfont{FV}$, those that will not get replaced 
     & \FV {MN} = \FV M \cup \FV N \\
     & \FV {\lambda x . M} = \FV M \setminus \{x\}
   \end{align*}
-  Where $ x \in \Vset $ and $ M, N \in \La $, and $\mathcal{P}$ denotes the power set.
-
+  Where $ x \in \Vset $ and $ M, N \in \La $, and $\mathcal{P}$ denotes the power set. In Haskell:
+  \begin{minted}[fontsize=\small]{haskell}
+    freeVars :: Term -> Set.Set String
+    freeVars (Var x) = Set.singleton x
+    freeVars (App m n) = Set.union (freeVars m) (freeVars m)
+    freeVars (Abs x m) = Set.delete x (freeVars m)
+  \end{minted}  
 \end{definition}
 \begin{example} Computing the free variables of $\lambda x . \lambda y . y x z$. The term well-formed, so we proceed:
   \begin{align*}
@@ -143,8 +148,37 @@ We approach the definition for \aequiv \, to this end we have to introduce what 
       (\lambda y. M)[x := N]          & = \lambda z. (M[y := z][x := N]) && y \neq x, y \in \FV { N }
     \end{aligned}
   \]
-  where \( z \notin \FV { M } \cup \FV { N } \).
-\end{definition}
+  where \( z \notin \FV { M } \cup \FV { N } \). Implementing the latter in Haskell requires a bit more code than previous definitions, along with making some practical tradeoffs:
+  \begin{minted}[fontsize=\small]{haskell}
+capAvoidSubs :: Term -> String -> Term -> Term
+capAvoidSubs same@(Var y) x n
+  | y == x = n
+  | otherwise = same
+capAvoidSubs (App t1 t2) s t3 =
+  App (capAvoidSubs t1 s t3) (capAvoidSubs t2 s t3)
+capAvoidSubs (Abs y m) x n
+  | y == x = (Abs y m)
+  | otherwise =
+      if Set.member y (freeVars n)
+      then
+        let z = freshVar y (Set.union (freeVars m) (freeVars n))
+        in (Abs z (capAvoidSubs (capAvoidSubs m y (Var z)) x n))
+      else
+        (Abs y (capAvoidSubs m x n))
+  where
+    freshVar :: String -> Set.Set String -> String
+    freshVar s terms =
+      if Set.member (s ++ "'") terms
+      then
+        freshVar (s ++ "'") terms
+      else
+        s ++ "'"
+      \end{minted}
+      
+      \begin{note}
+        \texttt{freshVar} generates a new name for binding variables such that \( z \notin \FV { M } \cup \FV { N } \). In this instance we have chosen to add single quotes as long as the variable name is contained in \( \FV { M } \cup \FV { N } \).
+      \end{note}
+  \end{definition}
 Hopefully the meaning of the first three rules is clear, they ancapsulate renaming in the context of variables and applications. The subsequent rules are about abstractions, rule four states that renaming a binding variable has no effect, renaming only modifies a term whenever the renamed variable is different from the binding variable. Rule five is the general case, that is, when the substitution just moves in together with the abstracted term. Then there is the last case, when the binding variable is a bound occurrence in the term we are substituting, which poses a problem, to see why, let us work through an example:
 \begin{example} If we mistakenly substitute $x$ by \( (\la w . \, w \, y) \) in \( (\la y . \, y \, x ) \) using rule five, we get:
   \[
@@ -259,7 +293,14 @@ M[y := P][x := N[y := P]], & \text{if } x \neq y \text{ and } y \notin \mathrm{F
         { M_1\,M_2 \step M_1\,M_2' }
     \end{array}
   \]
-  where \( M, N \in \La \).
+  where \( M, N \in \La \). In Haskell:
+  \begin{minted}[fontsize=\small]{haskell}
+    betaRed :: Term -> Term
+    betaRed same@(Var x) = same
+    betaRed (Abs x y) = Abs x (betaRed y)
+    betaRed (App (Abs x y) z) = capAvoidSubs y x z
+    betaRed (App x y) = App (betaRed x) (betaRed y)
+  \end{minted}
 \end{definition} 
 Single \bred s can be applied succesively, which induces the following definition
 \begin{definition} Multi-step \bred. We write $M \step^* N$ if and only if there exists a sequence of one-step $\beta$-reductions starting from $M$ and ending at $N$.\footnote{The convention in the literature is to use $\rightarrow_\beta$ for \bred s $\twoheadrightarrow_\beta$ for multi-step \bred s. I prefer to use $\curly$ and $\curly^n$ since this allows me to use the superscript to note the number of steps in the process \bred \ e.g. $ (\la f. \la x . \, x) \, M \, N \curly^2 $ N. Instead of $\curly^n$ I use $\curly^*$ whenever the number of steps is undefined.}

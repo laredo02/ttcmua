@@ -1,0 +1,107 @@
+
+\chapter{Intuitionistic Logic}
+
+
+
+To motivate the introduction of Intuitionistic Logic, we present a theorem and two different styles of proof from \cite{openlogicprojectintuitionisticlogic2025}:
+\begin{theorem}
+There are irrational numbers $a$ and $b$ such that $a^b$ is rational.
+\end{theorem}
+\begin{proof}
+  Let $ a, b = \sqrt{2} $
+  \begin{itemize}
+  \item If $\sqrt{2}^{\sqrt{2}}$ is rational, we are done.
+  \item Otherwise, $\sqrt{2}^{\sqrt{2}}$ is irrational and we can consider \( a = \sqrt{2}^{\sqrt{2}} \text{ and } b = \sqrt{2} \). In which case:
+    \[
+      a^b = \left( \sqrt{2}^{\sqrt{2}} \right)^{\sqrt{2}} = \sqrt{2}^{\sqrt{2}\cdot \sqrt{2}}
+      = \sqrt{2}^2 = 2,
+    \]
+    which is rational so $a$ and $b$ must exist.
+  \end{itemize}
+  \end{proof}
+
+  \medskip
+  This is a perfectly valid proof. However, it is somewhat unsatisfying, since it proves existence without exhibiting a specific pair. A more constructive proof is as follows
+\begin{proof}
+  \medskip
+  Take $a = \sqrt{3}$ and $b = \log_3 4$. Then
+  \[
+    a^b = \left(\sqrt{3}\right)^{\log_3 4}
+    = 3^{\tfrac{1}{2}\log_3 4}
+    = \left(3^{\log_3 4}\right)^{1/2}
+    = 4^{1/2} = 2,
+  \]
+  which is rational.
+\end{proof}
+
+\section{\centering Syntax}
+
+The syntax for intuitionistic logic is the same as that of propositional logic. Where $\lor, \land, \to$ are used as binary connectives to compose logical statements and $\lnot$ is used to negate such statements.
+
+
+\begin{definition}
+The set $\mathrm{Frm}(L_0)$ of formulas of propositional intuitionistic logic is defined inductively as follows:
+\begin{itemize}
+    \item $\bot$ is an atomic formula.
+    \item Every propositional variable $p_i$ is an atomic formula.
+    \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \wedge \psi)$ is a formula.
+    \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \vee \psi)$ is a formula.
+    \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \to \psi)$ is a formula.
+    \item Nothing else is a formula.
+\end{itemize}
+
+\medskip
+In addition to the primitive connectives introduced above, we also use the following defined symbols:
+\begin{itemize}
+    \item $\lnot \varphi$ abbreviates $(\varphi \to \bot)$.
+    \item $\varphi \leftrightarrow \psi$ abbreviates $(\varphi \to \psi) \wedge (\psi \to \varphi)$.
+\end{itemize}
+\end{definition}
+
+\subsection{\centering Natural Deduction}
+The rules of natural deduction for intuitionistic propositional logic (without~$\bot C$) can be presented as follows:
+\[
+\begin{array}{@{}l@{\quad}l@{}}
+\multicolumn{2}{l}{\textbf{Introduction Rules}} \\[1ex]
+\inferrule*[right=\wedge\text{I}]
+  { \varphi \\ \psi }
+  { \varphi \wedge \psi }
+&
+\inferrule*[right=\to\text{I}]
+  { [\varphi]^u \\ \psi }
+  { \varphi \to \psi } \\[2ex]
+\inferrule*[right=\vee\text{I}_1]
+  { \varphi }
+  { \varphi \vee \psi }
+&
+\inferrule*[right=\vee\text{I}_2]
+  { \psi }
+  { \varphi \vee \psi } \\[2ex]
+\inferrule*[right=\neg\text{I}]
+  { [\varphi]^n \\ \bot }
+  { \neg \varphi }
+& \\[3ex]
+\multicolumn{2}{l}{\textbf{Elimination / Simplification Rules}} \\[1ex]
+\inferrule*[right=\wedge\text{E}_1]
+  { \varphi \wedge \psi }
+  { \varphi }
+&
+\inferrule*[right=\wedge\text{E}_2]
+  { \varphi \wedge \psi }
+  { \psi } \\[2ex]
+\inferrule*[right=\to\text{E}]
+  { \varphi \to \psi \\ \varphi }
+  { \psi }
+& \\[2ex]
+\inferrule*[right=\vee\text{E}]
+  { \varphi \vee \psi \\ [\varphi]^n \\ \chi \\ [\psi]^n \\ \chi }
+  { \chi } \\[2ex]
+\inferrule*[right=\bot\text{E}]
+  { \bot }
+  { \varphi }
+&
+\inferrule*[right=\neg\text{E}]
+  { \varphi \\ \neg \varphi }
+  { \bot }
+\end{array}
+\]

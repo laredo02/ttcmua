@@ -23,7 +23,7 @@ In order to get acquainted with the \lcalc, let us develop a simple example to f
   \end{itemize}
   Where $\Vset = \{x, y, z, ... \}$ represents a countably infinite set of variable names. These notions are conveniently synthesized into the following abstract syntax:
   \[
-    \La \, := \, \Vset \, \mid \, \la x . \, x \, \mid \, \La \, \La
+    \La \, := \, \Vset \, \mid \, \la x . \, \La \, \mid \, \La \, \La
   \]
   \noindent
   that directly translates into the following Haskell snippet:
@@ -44,7 +44,7 @@ The key takeaway of this definition is that abstraction and application when pai
   From the definition above we extract that \( \lambda x . x + 1 \notin \La \), given this circumstance, the need to find an accurate representation for numbers within this definition arises. See Definition \ref{def:church-naturals}
 \end{remark}
 
-\begin{example} \label{ex:lambda-terms} Some examples of valid $\la$ terms generated using the grammar in \ref{def:lambda-terms-1}:
+\begin{example} \label{ex:lambda-terms} Some examples of valid $\la$ terms generated using the syntax from \ref{def:lambda-terms-1}:
   \( y \),
   \( (\la x. (x x)) \),
   \( (\la x. (\la y. x)) \),
@@ -54,18 +54,18 @@ The key takeaway of this definition is that abstraction and application when pai
     Abs "x" (Abs "y" (Var "x"))
   \end{minted}
 \end{example}
-As a convention to avoid notational cluttering, the outermost parenthesis can be omitted e.g. $\la x.x $ is read as $ ( \la x.x ) $. Also, application is left-associative  and binds tighter than abstraction, so $M N P$ is parsed as $(M N) P$ and $\la x . M N$ means $\la x . (M N)$, not $(\la x . M) N$. Likewise, abstraction is right-associative e.g. $\la x . \la y . M$ is $\la x . (\la y . M)$ and binds more weakly than application. Haskell Curry introduced what we now referr to as currying, its main purpose is to avoid unnecessary lambdas. Below is a summary of common notational conventions used throughout the text:
+As a convention to avoid notational cluttering, the outermost parenthesis can be omitted e.g. $\la x.x $ is read as $ ( \la x.x ) $. Also, application is left-associative  and binds tighter than abstraction, so $M N P$ is parsed as $(M N) P$ and $\la x . M N$ means $\la x . (M N)$, not $(\la x . M) N$. Likewise, abstraction is right-associative e.g. $\la x . \la y . M$ is $\la x . (\la y . M)$ and binds more weakly than application. Haskell Curry introduced what we now refer to as currying, its main purpose is to avoid unnecessary lambdas. Below is a summary of common notational conventions used throughout the text:
 \begin{itemize}
 \item \( \la x . \, x \iff ( \la x . \, x ) \)
 \item \( M \, N \, P \iff (M \, N) \, P \)
 \item \( \la x. M \, N \iff \la x. (M \, N) \)
 \item \( \la x. \la y. f(x,y) \iff \la xy. f(x,y) \)
 \end{itemize}
-All these are just to keep notation straight-forward, the formal definition does not leave precedence under-specified thanks to parenthesis. Those interested in the implementation need not worry, as Lean4 enforces an explicit order on constructors.
-\subsection{\centering Equivalence of terms}
+All these are just to keep notation straight-forward, since the formal definition does not leave precedence under-specified thanks to parenthesis. Those interested in the implementation need not worry, as Haskell enforces an explicit order on constructors.
+\subsection{\centering Reduction of terms}
 Now that the \lcalc \ language has been introduced, it is time we move on to the mechanics of computation, manifested through $\beta$-equivalence. $\alpha$ and $\eta$ equivalence will also be introduced. These two are more difficult to grasp. Informally, it could be said that $\alpha$-equivalence is equivalence programs up to renaming of local variables. In this same scenario, $\eta$-equivalence would singnify equivalence of programs up to wrapping or unwrapping them with an identity function.
 \subsubsection{\centering Subterms}
-From the ground up, we begin define the concept of subterm, since the definition of the language is self-referential and terms might contain other terms.
+From the ground up, we define what a subterm is, since the definition of the language is self-referential and terms might contain other terms.
 \begin{definition} Given $T \in \La$, $\functionfont{Sub} : \La \to \mathcal{P}(\Vset)$ maps a term to the set of it's subterms.
   \begin{align*}
     &\Sub x = \{x\} \\
@@ -99,7 +99,7 @@ From the ground up, we begin define the concept of subterm, since the definition
   \end{itemize}
 \end{definition}
 \begin{example}
-  Take $ M \equiv \la x . \, x \, y $, in this example, the $x$ in $\la x. $ is binding, $y$ is free, and $x$ is bound. This means that $y$ is used literally, and that $x$, as denoted by $\la x.$ is abstracted and thus subject to being replaced within the context of said abtraction. A subexample might make this explicit: $ (\la x . \, x \, y) \, M \curly M \, y $. The $y$ remained while the $x$ was used as a placeholder for $M$.
+  Take $ M \equiv \la x . \, x \, y $, in this example, the $x$ in $\la x. $ is binding, $y$ is free, and $x$ is bound. This means that $y$ is used literally, and that $x$, as denoted by $\la x.$ is abstracted and thus subject to being replaced within the context of said abstraction. A subexample might make this explicit: $ (\la x . \, x \, y) \, M \curly M \, y $. The $y$ remained while the $x$ was used as a placeholder for $M$.
 \end{example}
 \begin{note}
   This taxonomy is key to understanding concepts such as \aequiv \ intuitively.
@@ -184,17 +184,17 @@ Hopefully the meaning of the first three rules is clear, they ancapsulate renami
   \[
     (\la y . \, y x) [x := (\la w . \, w \, y)] = (\la y . \, y \, (\la w. \, w \, y))
   \]
-  This is problematic since the free variable $y$ became bound after the rename. Free and bound variables should mantain their freedom or their boundedness after the rename.
-\begin{note}
-  This is essentially why it is called Capture Avoiding Substitution and not simply Substitution.
-\end{note}
-After introducing rule six, we rename the binding variable to avoid the name clash:
+  This is problematic since the free variable $y$ became bound after the rename. Free and bound variables should maintain their freedom or boundedness after a rename. The correct way to substitute avoiding the name clash:
   \[
     (\la y . \, y x) [x := (\la w . \, w \, y)] = (\la z . \, z \, (\la w. \, w \, y))
   \]
-  The purpuse of the binding variable is to serve as a placeholder, therefore renaming does not affect the integrity of the expression, the variable gets replaced anyway when we perform a reduction.
+  Binding variable serve as placeholders, therefore, renaming should not affect the integrity of an expression.
 \end{example}
-In the previous example a bound variable is renamed to avoid a naming collision and avoid binding a previously free variable, \aequiv \ is the generalization of this technique, it defines equivalence up to renaming of binding variables.
+
+\begin{note}
+  Hence the use of Capture Avoiding alongside Substitution.
+\end{note}
+
 
 One notable result regarding substitution is the substitution lemma:
 
@@ -209,8 +209,29 @@ M[y := P][x := N[y := P]], & \text{if } x \neq y \text{ and } y \notin \mathrm{F
 \end{lemma}
 
 \begin{proof}
-\orange{structural induction on $M$.}
+  By structural induction on $M$, using $\alpha$-conversion to avoid capture and
+assuming bound variables $x,y,N,P$ are fresh.
+
+\begin{itemize}
+\item \textbf{Variable case:} Direct from the definition of substitution; check $z = x$,
+$z = y$, and $z$ distinct from both.
+\item \textbf{Application case:} Substitution distributes:
+\[
+(M_1M_2)[x:=N] = M_1[x:=N]\,M_2[x:=N],
+\]
+so both statements follow immediately from the induction hypothesis on $M_1$ and $M_2$.
+\item \textbf{Abstraction case:} With $z$ fresh,
+\[
+(\lambda z.M_0)[x:=N] = \lambda z.(M_0[x:=N]),
+\]
+and the induction hypothesis applies to $M_0$.
+\end{itemize}
+
+The side condition in (2) ensures the $[y:=P]$ substitution does not enter $N$
+when changing the order.
 \end{proof}
+
+In the previous example a bound variable is renamed to avoid a naming collision and avoid binding a previously free variable, \aequiv \ is the generalization of this technique, it defines equivalence up to renaming of binding variables.
 
 \begin{notation}
   In many of the upcoming definitions inference rules are used, here is a simple introduction for those unfamiliar with the concept:
@@ -274,6 +295,7 @@ M[y := P][x := N[y := P]], & \text{if } x \neq y \text{ and } y \notin \mathrm{F
   We are better at names than we are at numbers, which is why we will prefer using symbols over De Brujn indexing. Programs like automated theorem provers and compilers do use similar naming strategies to simplify their work.
 \end{note}
 \subsubsection{\centering $\beta$-equivalence}
+Defines the means to perform computation in the \lcalc, applying substitution as a means of reduction for expressions. This is similar to how one simplifies an arithmetic expression, only it is more powerful, since arithmetic expressions lack expressiveness \ref{}. 
 \begin{definition} Single-step $\beta$-reduction $\step$ is defined using the following inference rules:
   \[
     \begin{array}{@{}l@{\quad}l@{}}
@@ -354,7 +376,7 @@ The last and indeed the least important notion of equivalence. It refers to a pr
     \begin{array}{@{}l@{\quad}l@{}}
       \inferrule*[right=\textsc{Eta}]
       { x \notin \FV M }
-      { (\lam{x}{M}) =_\eta M   }
+      { (\lam{x}{M \, x}) =_\eta M   }
       &
         \inferrule*[right=\textsc{Abs}]
         { M =_\eta M' }
@@ -375,10 +397,5 @@ The last and indeed the least important notion of equivalence. It refers to a pr
   Two terms are observationally equivalent if they cannot
   be distinguished by any context that can be papplied to them. $\eta$-equivalence can be understood as a form of weak extensionality, since it does not fully encode observational equivalence.
 \end{note}
-
-\orange{
-  Add something about normalization properties and how they dont ensure termination. this is important for programming blah blah blah...
-  This is why we introduce Types and Type Systems... This notion is similar to that of restricting the domain and codomain of a function.
-}
 
 

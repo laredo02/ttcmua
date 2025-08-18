@@ -1,0 +1,83 @@
+\documentclass[aspectratio=169]{beamer}
+\PassOptionsToPackage{hidelinks}{hyperref}
+\usetheme[numbering=none]{metropolis}
+\metroset{titleformat=regular}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{microtype}
+\usepackage{fourier}
+\usepackage{xcolor}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{structure}{fg=black}
+\setbeamercolor{title}{fg=black}
+\setbeamercolor{subtitle}{fg=black}
+\setbeamercolor{frametitle}{fg=white}
+\setbeamercolor{section title}{fg=black}
+%\setbeamercolor{progress bar}{fg=black,bg=black!15}
+\setbeamercolor{progress bar}{fg=gray,bg=black!15}
+\setbeamercolor{title separator}{fg=black,bg=black}
+\metroset{block=transparent}
+\setbeamercolor{block title}{fg=black,bg=white}
+\setbeamercolor{block body}{fg=black,bg=w
+  hite}
+\setbeamercolor{block title alerted}{fg=black,bg=white}
+\setbeamercolor{block body alerted}{fg=black,bg=white}
+\setbeamercolor{block title example}{fg=black,bg=white}
+\setbeamercolor{block body example}{fg=black,bg=white}
+\setbeamertemplate{navigation symbols}{}
+\metroset{
+  progressbar=frametitle,
+  numbering=fraction,
+  titleformat frame=regular
+}
+\usepackage[cache=false]{minted}
+\setminted{
+  style=bw,
+  fontsize=\footnotesize,
+  breaklines=true,
+  autogobble=true
+}
+
+
+\titlegraphic{%
+  \begin{picture}(0,0)
+    \put(345,-120){\makebox(0,0)[rt]{\includegraphics[width=3.8cm]{upmucm}}}
+  \end{picture}}
+\AtBeginSection[]{
+\begin{frame}{Talk Overview}
+\tableofcontents[currentsection]
+\end{frame}
+\frame{\sectionpage}
+}
+
+\title{Type Theory \& Categorical Models}
+\subtitle{A Unified Approach}
+\date{\today}
+\author{Miguel Laredo Barbadillo}
+\institute{Master's in Formal Methods in Computer Science}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\begin{frame}[fragile]{Haskell Example}
+\begin{minted}{haskell}
+fib :: Integer -> Integer
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n - 1) + fib (n - 2)
+
+main :: IO ()
+main = print (fib 10)
+\end{minted}
+\end{frame}
+
+\begin{frame}[standout]
+  END
+\end{frame}
+
+\end{document}

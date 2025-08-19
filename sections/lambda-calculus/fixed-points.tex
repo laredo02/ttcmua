@@ -111,11 +111,11 @@ To work around this issue, several other combinators exist, the $Z$ and the Turi
 Classically, factorial is defined as $n! = \prod_{k=1}^{n} k$, that has the following recursive interpretation $n! = n \cdot (n-1)!$ with $0! = 1$. This section develops a worked out example of how to implement this in the \lcalc.
 \begin{example} Implementing factorial using the acquired toolkit:
   \[
-    \texttt{fact}\; n
-    = \texttt{if\ then\ else}\;(\texttt{iszero}\; n)\;(1)\;(\texttt{mult}\; n\;(\texttt{fact}\;(\texttt{pred}\; n))).
+    \underline{\texttt{fact}}\; n
+    = \texttt{if\ then\ else}\;(\texttt{iszero}\; n)\;(1)\;(\texttt{mult}\; n\;(\underline{\texttt{fact}}\;(\texttt{pred}\; n))).
   \]
 \end{example}
-The evident problem with a recursive definition such as this one is that the term to be defined, $\texttt{fact}$, appears both on the left- and the right-hand side. In other words, to find $\texttt{fact}$ requires solving an equation!
+The evident problem with a recursive definition such as this one is that the term to be defined, $\texttt{fact}$, appears both on the left- and the right-hand side. This means finding $\texttt{fact}$ requires solving an equation!
 
 We now apply our newfound knowledge of how to solve fixed point equations in the lambda calculus. We start by rewriting the problem slightly:
 \[
@@ -138,6 +138,25 @@ We can solve it up to $\beta$-equivalence by letting
   \texttt{fact} = \Theta F
   = \Theta\bigl(\lambda f.\,\lambda n.\; \texttt{if\ then\ else}\;(\texttt{iszero}\; n)\;(1)\;(\texttt{mult}\; n\;(f\;(\texttt{pred}\; n)))\bigr).
 \]
+
+\begin{minted}{haskell}
+  fact = a turing
+      (l "f" (l "n"
+          (a (a (a if_ (a iszero (v "n"))) (nat 1))
+          (a (a mul (v "n"))
+              (a (v "f")
+              (a pred_ (v "n")))))
+      ))
+\end{minted}
+
+\begin{minted}{lisp}
+
+\end{minted}
+
+\begin{minted}{shell-session}
+ghci> normalize (a fact (nat 3))
+(λf. (λx. (f (f (f (f (f (f x))))))))
+\end{minted}
 
 \subsection{\centering Conclusions}
 We have covered some of the most important notions that surround the untyped \lcalc. It has been shown to satisfy the Church-Rosser property of confluence, it has also been shown that this property is not the strongest of its kind. It could be argued it is in fact the weakest. For this reason, it is in our best interest to add some spice to the \lcalc \ by means typing. This is to try and make it comply with some stronger requirements than the Church-Rosser property. There exist several typing flavors, the list shows the three basic categories:

@@ -1,10 +1,25 @@
 \subsection{\centering Relevant Constructions}
 
-This section presents a number of conventional constructions that represent key ideas common to computer science and other fields. We are specifically referring to natural numbers, branching statements, booleans and lists among others, as well as the operations over them. These constructions can be used to prove relevant statements concerning the expressiveness of the $\la$-calculus. Since natural numbers are of general importance they are the first to be introduced using peano axiomatics.
+This section presents a number of conventional constructions that represent key ideas common to computer science and other fields. We are specifically referring to natural numbers, branching statements, booleans and lists among others, as well as the operations over them. These constructions can be used to prove relevant statements concerning the expressiveness of the $\la$-calculus.
+
+\begin{note}
+  We use our Haskell program to bring some computer science constructions to life, which means that some of the details in this section are implementation dependent. In addition, we use the following type aliases to simplify notation:
+  \begin{minted}{Haskell}
+    v :: String -> Term
+    v = Var
+    l :: String -> Term -> Term
+    l = Abs
+    a :: Term -> Term -> Term
+    a = App
+  \end{minted}
+\end{note}
+
+\subsubsection{\centering Natural Numbers}
+
 \begin{definition} Peano Axioms, the set of natural numbers $\mathbb{N}$
 \begin{itemize}
-\item (Zero) \( 0 \in \NAT \)
-\item (Successor) \( \forall n \in \NAT, S(n) \in \NAT \)
+\item \textbf{(Zero)} \( 0 \in \NAT \)
+\item \textbf{(Successor)} \( \forall n \in \NAT, S(n) \in \NAT \)
 \item (Initial) \( \forall n \in \NAT, S(n) \neq 0 \) \label{def:peano-nat-initial}
 \item (Injectivity) \( \forall n, m \in \NAT, S(n) = S(m) \Rightarrow n = m \)
 \item (Induction) \( P(0) \land \forall ( P(n) \Rightarrow P(S(n))) \Rightarrow \forall n,  P (n) \)
@@ -29,12 +44,11 @@ The first four axioms can be summarized using a graph:
     \draw[->] (dots.east) -- node[midway, above] {s} (nth.west);
   \end{tikzpicture}
 \end{center}
-The last axiom is concerned with proving properties for all naturals given a precedent that satisfies the property and proof that if the property is satisfied for $n$ then it is satisfied for $n+1$, then the property is true of all naturals.
 \end{definition}
 \begin{example}
   Say for instance we mean to represent $ 3 $ using Peano notation, using the graph, we would come up with $ s(s(s(0))) $, since it is $3$ steps away from $0$.
 \end{example}
-\begin{definition} To add and multiply natural numbers one can just use following the sets of rules:
+\begin{definition} To add and multiply natural numbers we use following the rules:
   \[
     n + m = 
     \begin{cases}
@@ -50,38 +64,54 @@ The last axiom is concerned with proving properties for all naturals given a pre
   \]
 \end{definition}
 \begin{itemize}
-\item \underline{$a + b$}: A recursive rule that performs the addition, and a base case to stop the recursion for n + 0, since there is no such number that has $ 0 $ as succesor.
-\item \underline{$a \cdot b$}: Using addition we define multiplication in a similar way, adding $a$ as many times as the function $s$ is applied to $0$ in $b$.
+\item $\mathbf{a + b}$: A recursive rule that performs the addition, and a base case to stop the recursion for n + 0, since there is no such number that has $ 0 $ as succesor.
+\item $\mathbf{a \cdot b}$: Using addition we define multiplication in a similar way, adding $a$ as many times as the function $s$ is applied to $0$ in $b$.
 \end{itemize}
-\subsubsection{\centering Natural Numbers}
+
 \begin{definition} Representation of the set of all naturals in the \lcalc, usually referred to as Church numerals:
   \label{def:church-naturals}
   \begin{align*}
-    \texttt{0} &\equiv \la f.\la x. x \\
+    \overline{\texttt{0}} &\equiv \la f.\la x. x \\
     \texttt{SUCC} &\equiv \la n. \la f. \la x . f ( n f x )
   \end{align*}
+  Using our Haskell program, $\overline{\texttt{0}}$ is represented like follows:
+  \begin{minted}{Haskell}
+    zero  = l "f" (l "x" (v "x"))
+  \end{minted}
 \end{definition}
 \begin{example}
   The church numerals have been defined similarly to the peano axioms, that is, by bringing into existance an initial element and using the succesor function to define the rest of them. Let us apply \texttt{SUCC} a few times to illustrate:
   \begin{align*}
-    \texttt{0} &\equiv \la f.\la x. x \\
-    \texttt{1} &\equiv \la f.\la x. f x \\
-    \texttt{2} &\equiv \la f.\la x. f f x \\
-    \texttt{3} &\equiv \la f.\la x. f f f x \\
-    \texttt{n} &\equiv \la f.\la x. f ^ n x
+    \overline{\texttt{0}} &\equiv \la f.\la x. x \\
+    \overline{\texttt{1}} &\equiv \la f.\la x. f x \\
+    \overline{\texttt{2}} &\equiv \la f.\la x. f f x \\
+    \overline{\texttt{3}} &\equiv \la f.\la x. f f f x \\
+    \overline{\texttt{n}} &\equiv \la f.\la x. f ^ n x
   \end{align*}
   where $ n $ denotes the number of times we append $ f $.
 \end{example}
+\begin{notation}
+  We use $\overline{\text{number}}$ to denote a number is church encoded.
+\end{notation}
+In our Haskell program we use \texttt{nat} to convert from Haskell's prelude type \texttt{Natural} to type our custom type \texttt{Term}.
+\begin{minted}{haskell}
+  nat :: Natural :: Term
+  nat n = normalize (nat_ n)
+      where
+          nat_ 0 = zero
+          nat_ n = a succ_ (nat_ (n - 1))
+\end{minted}
 \begin{remark}
-  Since \lterms \ are first-class citizens, and $f$ and $x$ are abstracted away, the reality is that numbers are a quite general construct that has many distinct applications. Recall Example \ref{ex:high-order-by-example} for instance.
+  Since \lterms \ are first-class citizens, and $f$ and $x$ are abstracted away, the reality is that numbers are a quite general construct that has many distinct applications. Recall Example \ref{ex:high-order-by-example} where $A \equiv_\alpha \overline{\texttt{2}}$.
 \end{remark}
-\begin{definition}
-Now that we have a construction for the naturals, we can define some arithmetic operations:
+\subsubsection{\centering Basic Arithmetic}
+\begin{definition} Now that we have a construction for the naturals, we can define some arithmetic operations:
 \begin{align*}
   \texttt{ADD} &\equiv \la m.\la n. \la f. \la x. m f ( n f x) \\
   \texttt{MUL} &\equiv \la f.\la x. \la f. \la x. m (n f) x \\
   \texttt{ISZERO} &\equiv \lambda n. n\,(\lambda x.\texttt{FALSE})\,\texttt{TRUE}
 \end{align*}
+We omit Haskell implementation of terms from now on. What's the point...?
 \end{definition}
 \begin{example} Now we illustrate how addition works by performing $2 + 3$ with the system we defined.
     \[
@@ -141,15 +171,30 @@ The \IF \ statement is just a combinator that happens to behave similarly to a b
   \end{align*}
   This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic. Something on turing completeness.
 \end{remark}
-\subsubsection{\centering Lists from Pairs}
-On the same track, another must-have for programmers is lists. Sice they are a bit more involved, we require tuples to define them. Note that the \IF \ is a tuple that contains two elements, we query the first element using a \TRUE \ i.e. the \textit{``then''} branch, and the sencond using a \FALSE \ i.e. the \textit{``else''} branch. We will be using this alternative definition for convenience:
+\subsubsection{\centering Pairs}
+
+A fundamental construct for building data structures is the notion of pairs. 
+They allow us to bind two values together and query them independently.
+
 \begin{definition}
   \( \PAIR \equiv \la x.\la y.\la f. f\,x\,y \)
 \end{definition}
+
 \begin{remark}
-  This is more convenient since $ \PAIR \, M \, N \curly^* \la f . f \, M \, N  $, which allows us to query the first element using $ (\la f . f \, M \, N) \, \TRUE $ and the second by $ (\la f . f \, M \, N) \, \FALSE $, this motivates the definition below:
+  This definition is convenient since 
+  \[
+    \PAIR \, M \, N \curly^* \la f . f \, M \, N
+  \] 
+  which means we can retrieve the first component via 
+  \( (\la f . f \, M \, N) \, \TRUE \) 
+  and the second via 
+  \( (\la f . f \, M \, N) \, \FALSE \). 
+  This motivates the following projection operators:
 \end{remark}
-\begin{definition} A \PAIR \ is nothing but a relation $\langle A, B \rangle \in A \times B$. We now define the corresponding projections $\pi_1 \langle A, B \rangle = A$ as \FST \ and $\pi_1 \langle A, B \rangle = B$ as \SND: 
+
+\begin{definition}
+  A \PAIR \ is nothing but an ordered relation $\langle A, B \rangle \in A \times B$.  
+  The projections are defined as:
   \[
     \begin{aligned}
       \FST &\equiv \la p. p\,(\la x.\la y. x) \\
@@ -157,10 +202,19 @@ On the same track, another must-have for programmers is lists. Sice they are a b
     \end{aligned}
   \]
 \end{definition}
-\begin{proposition} A key property of $ \PAIR $'s is:
-  \[\PAIR \, A \, B \equiv_\beta \PAIR \, (\FST \, (\PAIR \, A \, B)) \, (\SND \, (\PAIR \, A \, B)) \]
+
+\begin{proposition}
+  A key property of $ \PAIR $ is:
+  \[
+    \PAIR \, A \, B \equiv_\beta 
+    \PAIR \, (\FST \, (\PAIR \, A \, B)) \, (\SND \, (\PAIR \, A \, B))
+  \]
 \end{proposition}
-Using pairs, we now can define linear lists, we can achieve this using either left linear trees or right linear trees:
+
+
+
+\subsubsection{\centering Lists}
+We move on to how we can now define linear lists.
 \begin{center}
   \[
     \begin{aligned}
@@ -194,24 +248,33 @@ Using pairs, we now can define linear lists, we can achieve this using either le
     \end{aligned}
   \]
 \end{center}
-\begin{definition} We define \NIL \ in the same way we defined \texttt{0} and \FALSE \ before: $ \NIL \equiv \la f.\la z. z $; \NIL \ represents the terminating element of the inductive definition for lists. To build lists, we cons lists together using:
-  \[ \texttt{CONS} \equiv \la h.\la t.\la f.\la z. f\,h\,(t\,f\,z) \]
-that binds a new element $h$ to to an pre-existing list or to \NIL.
+
+\begin{definition}
+  We define the empty list in the same spirit as \texttt{0} and \FALSE:
+  \[
+    \NIL \equiv \la f.\la z. z
+  \]
+  It represents the terminating element of the inductive definition of lists.  
+
+  To build non-empty lists we use the constructor:
+  \[
+    \texttt{CONS} \equiv \la h.\la t.\la f.\la z. f\,h\,(t\,f\,z)
+  \]
+  which binds a new element $h$ to a pre-existing list $t$ or to \NIL.
 \end{definition}
+
 \begin{note}
-  This notion of inductively defined lists is lays the foundations of the \textbf{LISP} family of programming languages, hence the name (LISt Processing).
+  This notion of inductively defined lists underlies the \textbf{LISP} family of programming languages, hence the name (LISt Processing).
 \end{note}
-\begin{definition} Some other relevant list operators:
-\begin{align*}
-  \texttt{ISNIL} &\equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE \\
-  \texttt{HEAD} &\equiv \la l. l\,(\la h.\la t. h)\\
-  \orange{check and add TAIL}
-\end{align*}  
+
+\begin{definition}
+  Some other relevant list operators are:
+  \begin{align*}
+    \texttt{ISNIL} &\equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE \\
+    \texttt{HEAD} &\equiv \la l. l\,(\la h.\la t. h) \\
+    \texttt{TAIL} &\equiv \la l. \FST (l\,(\la h.\la t. \PAIR \, t \, t)\,(\PAIR \, \NIL \, \NIL))
+  \end{align*}
 \end{definition}
-
-
-
-
 
 
 

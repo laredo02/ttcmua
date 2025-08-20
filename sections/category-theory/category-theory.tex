@@ -126,6 +126,10 @@ $\mathbf{Endo(Set)}$  & Endofunctors on the category of sets. \\
 \label{tab:cs-categories}
 \end{table*}
 
+%\begin{note}
+%  It is ironic that the names of the better known categories are given by their objects and not their arrows.
+%\end{note}
+
 \orange{to build some intuition on why categories relate to programs}
 \magenta{que alguien que controle corrija el siquiente ejemplo q es mas inventado que que los gamusinos }
 
@@ -165,9 +169,6 @@ Aside from defining categories from mathematical objects, categores can be built
 
 
 
-
-
-
 \begin{definition}
   \label{def:monos-epis} Let \( g_1, g_2 : X \to A \) (resp. \( h_1, h_2 : B \to Y \)). An arrow \( f : A \to B \) in \( \mathcal{C} \) is a monomorphism (resp. epimorphism) if:
 \[
@@ -181,28 +182,122 @@ Aside from defining categories from mathematical objects, categores can be built
 \end{note}
 
 
-
-
 \subsubsection{\centering Functors}
-\begin{definition}[Functor]
-Let $\mathcal{C}$ and $\mathcal{D}$ be categories.  
-A \emph{functor} 
+Categories provide a way of representing mathematical structures using only objects and arrows. Category theory takes itself very seriously, and since its focus is not on the objects themselves but on the relations between them, it is natural to consider functors, which are themselves morphisms in the category of categories. In this way, category theory can study itself.
+
+With this perspective, the definition of a functor arises naturally as a pair of functions that map both objects and arrows from one category to another while preserving identities and composition. Formally:
+\begin{definition} Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A functor $F : \mathcal{C} \to \mathcal{D}$ consists of:
+\begin{itemize}
+\item A function that maps objects from $\mathcal{C}$ to $\mathcal{D}$:
+  \[
+    \begin{aligned}
+      F : \mathrm{Ob}(\mathcal{C}) &\longrightarrow \mathrm{Ob}(\mathcal{D}) \\
+      X &\longmapsto F(X)
+    \end{aligned}
+  \]
+\item A function that maps arroes in $\mathcal{C}$ to $\mathcal{D}$:
+  \[
+    \begin{aligned}
+      F : \mathrm{Hom}_{\mathcal{C}}(X,Y) &\longrightarrow \mathrm{Hom}_{\mathcal{D}}(F(X),F(Y)) \\
+      f &\longmapsto F(f)
+    \end{aligned}
+  \]
+\end{itemize}
+such that the properties of a category are kept across the transformation:
+\begin{itemize}
+\item For every object $X \in \mathcal{C}$, $F(\mathrm{id}_X) = \mathrm{id}_{F(X)}$.
+\item For all composable morphisms $f : X \to Y$ and $g : Y \to Z$ in $\mathcal{C}$,
+  \[
+    F(g \circ f) = F(g) \circ F(f).
+  \]
+\end{itemize}
+
+The following diagram elegantly summarizes the latter definition:
 \[
-F : \mathcal{C} \to \mathcal{D}
+\begin{tikzcd}[row sep=2em, column sep=3em]
+X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
+F(X) \arrow[r, "F(f)"'] & F(Y)
+\end{tikzcd}
 \]
-consists of
-\begin{enumerate}
-    \item an assignment of an object $F(X) \in \mathrm{Ob}(\mathcal{D})$ to every object $X \in \mathrm{Ob}(\mathcal{C})$,
-    \item an assignment of a morphism $F(f) : F(X) \to F(Y)$ in $\mathcal{D}$ to every morphism $f : X \to Y$ in $\mathcal{C}$,
-\end{enumerate}
-such that the following hold:
-\begin{align*}
-    F(\mathrm{id}_X) &= \mathrm{id}_{F(X)} 
-    && \text{for all } X \in \mathrm{Ob}(\mathcal{C}), \\
-    F(g \circ f) &= F(g) \circ F(f) 
-    && \text{for all } f : X \to Y, \; g : Y \to Z \text{ in } \mathcal{C}.
-\end{align*}
 \end{definition}
+
+\begin{example} Consider the categories of groups $\mathbf{Grp}$ and sets $\mathbf{Set}$. 
+We define the functor \( U : \mathbf{Grp} \longrightarrow \mathbf{Set} \):
+\begin{itemize}
+    \item On objects: for each group $G \in \mathbf{Grp}$, set $U(G)$ to be the set of elements of $G$. 
+    \item On morphisms: for each group homomorphism $f: G \to H$, we define $U(f) = f$, now considered as a function $U(G) \to U(H)$ between sets.
+\end{itemize}
+This mapping preserves identities and composition. Diagrammatically, we can represent the action of $U$ on a morphism $f : G \to H$ as:
+\[
+\begin{tikzcd}[row sep=2em, column sep=3em]
+G \arrow[r, "f"] \arrow[d, mapsto, "U"'] & H \arrow[d, mapsto, "U"] \\
+U(G) \arrow[r, "U(f)"'] & U(H)
+\end{tikzcd}
+\]
+Since this functor ``forgets'' the structure its domain category we refer to it as forgetful functor.
+\end{example}
+
+\subsubsection{\centering Natural Transformations}
+A functor can be viewed as a structured “translation” between categories. 
+It assigns to each object in a category $\mathcal{C}$ an object in a category $\mathcal{D}$, 
+and to each morphism in $\mathcal{C}$ a morphism in $\mathcal{D}$, 
+in such a way that identities and composition are preserved.
+
+Suppose we have two functors $F, G : \mathcal{C} \to \mathcal{D}$. 
+These represent two distinct ways of translating $\mathcal{C}$ into $\mathcal{D}$. 
+A natural transformation between $F$ and $G$ then provides a systematic way 
+to relate their outputs while respecting the internal structure of $\mathcal{C}$. Formally:
+
+
+
+
+
+\subsection{\centering Universal Constructions}
+\begin{definition}
+Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
+A product of $A$ and $B$ is an object $A \times B$ together with morphisms
+\( \pi_1 : A \times B \to A, \pi_2 : A \times B \to B \) such that for every
+object $X$ with morphisms $f : X \to A$ and $g : X \to B$, there exists a
+unique morphism $\langle f,g \rangle : X \to A \times B$ making the diagram commute:
+\[
+\begin{tikzcd}
+  & X \arrow[dl, "f"'] \arrow[dr, "g"] \arrow[d, dashrightarrow, "{\langle f,g \rangle}"] & \\
+A & A \times B \arrow[l, "\pi_1"] \arrow[r, "\pi_2"'] & B
+\end{tikzcd}
+\]
+\[
+  \pi_1 \circ \langle f,g \rangle = f
+  \quad
+  \pi_2 \circ \langle f,g \rangle = g
+\]
+\end{definition}
+
+
+
+\begin{note}
+  In these diagrams, the dashed arrow indicates a unique morphism guaranteed by the universal property of the product or coproduct. That is, for any mediating maps as in the diagram, there exists exactly one morphism making the diagram commute.
+\end{note}
+
+\begin{definition}
+Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
+A coproduct of $A$ and $B$ is an object $A + B$ together with morphisms
+\( \iota_1 : A \to A + B, \iota_2 : B \to A + B \) such that for every object
+$X$ with morphisms $f : A \to X$ and $g : B \to X$, there exists a unique
+morphism $[f,g] : A + B \to X$ making the diagram commute:
+\[
+\begin{tikzcd}
+A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g]}"] & B \arrow[l, "\iota_2"'] \arrow[dl, "g"] \\
+& X &
+\end{tikzcd}
+\]
+\[
+[f,g] \circ \iota_1 = f
+\quad
+[f,g] \circ \iota_2 = g
+\]
+\end{definition}
+
+
 
 
 

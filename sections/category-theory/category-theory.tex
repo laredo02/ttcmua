@@ -15,16 +15,16 @@ Let us begin our dive into categories by defining what they are:
 
 \begin{definition} A category $\mathcal{C}$ consists of:
   \begin{itemize}
-  \item A collection of objects $\functionfont{Ob}(\mathcal{C})$
-  \item A collection of arrows or morphisims where each arrow $f$ has a domain object $\functionfont{dom}(f)$ and a codomain object $\functionfont{cod}(f)$. These can be defined using $f : A \to B $ to signify $\functionfont{dom}(f) = A$ and $\functionfont{cod}(f) = B$
-  \item A composition operator assigning to each pair of arrows $f$ and $g$, with $cod(f) = dom(g)$, a composite arrow $g \circ f : \functionfont{dom}(f) \to \functionfont{cod} (g)$ satisfying the following associative law:
+  \item A collection of objects $\mathrm{Ob}(\mathcal{C})$
+  \item A collection of arrows or morphisims where each arrow $f$ has a domain object $\mathrm{dom}(f)$ and a codomain object $\mathrm{cod}(f)$. These can be defined using $f : A \to B $ to signify $\mathrm{dom}(f) = A$ and $\mathrm{cod}(f) = B$
+  \item A composition operator assigning to each pair of arrows $f$ and $g$, with $cod(f) = dom(g)$, a composite arrow $g \circ f : \mathrm{dom}(f) \to \mathrm{cod} (g)$ satisfying the following associative law:
     \[
       h \circ (g \circ f) = (h \circ g) \circ f
     \]
     where $f : A \to B, g : B \to C, h : C \to D$ are arrows of a category
   \item For each object $A$, an identity arrow $id_A : A \to A$ satisfying the following identity law:
     \[
-      id_B \circ f = f \quad f \circ id_A = f 
+      \mathrm{id_B} \circ f = f \quad f \circ \mathrm{id_A} = f 
     \]
     for any $f : A \to B$
   \end{itemize}
@@ -33,14 +33,8 @@ Let us begin our dive into categories by defining what they are:
 Literature on the topic usually differentiates between small and large categories. Small categories are those whose collection of objects and whose collection of arrows are both sets. Large categories allow for collections of objects or arrows that are proper classes rather than sets. We will only be concerned with small categories.
 \end{remark}
 
-Various mathematical constructs fit the description of a category. For example, the category $\mathbf{Set}$ consists of sets as objects and functions as morphisms, where composition is ordinary function composition and identities are identity functions. Another example is the category $\mathbf{Grp}$, whose objects are groups and whose morphisms are group homomorphisms. More on this later.
+Various mathematical constructs fit the description of a category. For example, the category $\mathbf{Set}$ consists of sets as objects and functions as morphisms, where composition is ordinary function composition and identities are identity functions. Another example is the category $\mathbf{Grp}$, whose objects are groups and whose morphisms are group homomorphisms. Other examples are:
 
-\begin{definition}
-In a category $\mathcal{C}$, for any two objects $A, B \in \functionfont{Ob}(\mathcal{C})$, the hom-set from $A$ to $B$ is the set of all morphisms from $A$ to $B$. This set is denoted by $\functionfont{Hom}(A, B)$.
-\[
-    \functionfont{Hom}(A, B) = \{ f \mid f \colon A \to B \text{ is a morphism in } \mathcal{C} \}
-\]
-\end{definition}
 
 \begin{example} Let $\mathcal{C}$ denote a category, consisting of a set of objects, $\functionfont{Ob}(\mathcal{C})$, and a set of arrows, $\functionfont{Hom}(\mathcal{C})$, satisfying the category axioms.
 
@@ -151,7 +145,7 @@ Composition is associative due to \(\beta\)-equivalence in lambda calculus:
 \[
 h \circ (g \circ f) = \lambda x{:}A . h (g (f(x))) = (h \circ g) \circ f
 \]
-Therefore, \(\mathbf{FL}\) satisfies all axioms of a category.
+Therefore, the language satisfies all axioms of a category.
 \end{example}
 
 Aside from defining categories from mathematical objects, categores can be built from other categories. One way to do this is via opposite categories.
@@ -167,7 +161,16 @@ Aside from defining categories from mathematical objects, categores can be built
 \end{itemize}
 \end{definition}
 
+\subsubsection{\centering Hom-set}
 
+\begin{definition}
+In a category $\mathcal{C}$, for any two objects $A, B \in \functionfont{Ob}(\mathcal{C})$, the hom-set from $A$ to $B$ is the set of all morphisms from $A$ to $B$. This set is denoted by $\functionfont{Hom}(A, B)$.
+\[
+    \functionfont{Hom}(A, B) = \{ f \mid f \colon A \to B \text{ is a morphism in } \mathcal{C} \}
+\]
+\end{definition}
+
+\subsubsection{\centering Monos Epis \& Zeros}
 
 \begin{definition}
   \label{def:monos-epis} Let \( g_1, g_2 : X \to A \) (resp. \( h_1, h_2 : B \to Y \)). An arrow \( f : A \to B \) in \( \mathcal{C} \) is a monomorphism (resp. epimorphism) if:
@@ -238,21 +241,65 @@ Since this functor ``forgets'' the structure its domain category we refer to it 
 \end{example}
 
 \subsubsection{\centering Natural Transformations}
-A functor can be viewed as a structured “translation” between categories. 
-It assigns to each object in a category $\mathcal{C}$ an object in a category $\mathcal{D}$, 
-and to each morphism in $\mathcal{C}$ a morphism in $\mathcal{D}$, 
-in such a way that identities and composition are preserved.
-
+To define natural transformations we will apply the same reasoning scheme as we did
+with functors. We had categories and we defined functors as morphisms between
+categories, we do the same with natural transformations, that are nothing
+but functor morphisms.
 Suppose we have two functors $F, G : \mathcal{C} \to \mathcal{D}$. 
 These represent two distinct ways of translating $\mathcal{C}$ into $\mathcal{D}$. 
 A natural transformation between $F$ and $G$ then provides a systematic way 
-to relate their outputs while respecting the internal structure of $\mathcal{C}$. Formally:
+to relate their outputs. Formally:
+
+\begin{definition}
+
+  Let $\mathcal{C}$ and $\mathcal{D}$ be categories, and let $F, G : \mathcal{C} \to \mathcal{D}$ be functors. A natural transformation \( \alpha : F \Rightarrow G \) between them, denoted:
+\[
+\begin{tikzcd}
+\mathcal{C}
+\arrow[r, bend left=50, "F"{name=U}]
+\arrow[r, bend right=50, "G"'{name=D}]
+& \mathcal{D}
+\arrow[Rightarrow, from=U, to=D, "\alpha" description]
+\end{tikzcd}
+\]
+is an assignment to every object $X \in \mathrm{Ob}(\mathcal{C})$ of a morphism \( \alpha_X : F(X) \to G(X) \text{ in } \mathcal{D} \) called the component of $\alpha$ at $X$, such that for every morphism $f: X \to Y$ in $\mathcal{C}$, the following diagram commutes:
+
+
+\[
+\begin{tikzcd}
+F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[d, "G(f)"] \\
+F(Y) \arrow[r, "\alpha_Y"] & G(Y)
+\end{tikzcd}
+\]
+\end{definition}
+
+
+\begin{remark}
+Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed:
+\[
+\beta \circ \alpha : F \Rightarrow H
+\]
+\[
+\begin{tikzcd}
+\mathcal{C}
+\arrow[r, bend left=100, "F"{name=U}]
+\arrow[r, ""'{name=V}]
+\arrow[r, bend right=100, "H"'{name=D}]
+& \mathcal{D}
+\arrow[Rightarrow, from=U, to=V, "\alpha" description]
+\arrow[Rightarrow, from=V, to=D, "\beta" description]
+\end{tikzcd}
+\]
+with components \( (\beta \circ \alpha)_X = \beta_X \circ \alpha_X \) for each object $X \in \mathrm{Ob}(\mathcal{C})$.
+\end{remark}
+
+\begin{remark}
+The collection of all functors $F : \mathcal{C} \to \mathcal{D}$ together with natural transformations between them forms the functor category $\mathbf{Fun}(\mathcal{C}, \mathcal{D}) \in \mathrm{Ob}(\mathbf{Cat})$.
+\end{remark}
 
 
 
-
-
-\subsection{\centering Universal Constructions}
+\subsubsection{\centering Universal Constructions}
 \begin{definition}
 Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
 A product of $A$ and $B$ is an object $A \times B$ together with morphisms
@@ -271,8 +318,6 @@ A & A \times B \arrow[l, "\pi_1"] \arrow[r, "\pi_2"'] & B
   \pi_2 \circ \langle f,g \rangle = g
 \]
 \end{definition}
-
-
 
 \begin{note}
   In these diagrams, the dashed arrow indicates a unique morphism guaranteed by the universal property of the product or coproduct. That is, for any mediating maps as in the diagram, there exists exactly one morphism making the diagram commute.

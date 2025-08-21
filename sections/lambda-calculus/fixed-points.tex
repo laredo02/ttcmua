@@ -1,4 +1,4 @@
-\subsection{\centering Fixed Point Combinators and Recursion}
+\section{\centering Fixed Point Combinators and Recursion}
 \label{sec:recursion-fixed-points}
 
 The Church Rosser Property labels the untyped \lcalc \ as a confluent system, therefore we know that whenever a term has a normal form it must be unique. \orange{what we did cover} We still have not given an answer to whether all \lterms \ have a normal form.
@@ -158,7 +158,7 @@ ghci> normalize (a fact (nat 3))
 (λf. (λx. (f (f (f (f (f (f x))))))))
 \end{minted}
 
-\subsection{\centering Conclusions}
+\subsubsection*{\centering Conclusions}
 We have covered some of the most important notions that surround the untyped \lcalc. It has been shown to satisfy the Church-Rosser property of confluence, it has also been shown that this property is not the strongest of its kind. It could be argued it is in fact the weakest. For this reason, it is in our best interest to add some spice to the \lcalc \ by means typing. This is to try and make it comply with some stronger requirements than the Church-Rosser property. There exist several typing flavors, the list shows the three basic categories:
 \begin{itemize}
 \item \textbf{Untyped}: Where the type of expressions is never specified. As we have seen, this gives us maximal expressiveness at the cost of being unsafe. Informally, this means we are at a risk of composing unrelated terms that produce miscalculations. For instance $x M$.

@@ -1,4 +1,4 @@
-\chapter{\lCalc}
+\chapter{Untyped \lCalc}
 
 In the early 20th century, mathematicians such as Bertrand Russell, David Hilbert, and Kurt Gödel were trying to set complete, consistent, and decidable foundations for mathematics. Within this context, Alonzo Church, in his effort to formalize the notion of computability, introduced a minimal symbolic language based upon function abstraction and function application, this system is now called \lcalc.
 
@@ -11,9 +11,10 @@ The Lambda Calculus together with Type Theory lay the theoretical groundwork tha
 
 \newpage
 
-\section{\centering Untyped \lCalc}
 In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \mathrel{\leadsto} (2 + 1) \mathrel{\leadsto} 3$. This process of reducing a $\la$-expression is referred to as \bred, it will be covered formally later in the chapter.
-\subsection{\centering The Language of \lCalc}
+
+\section{\centering The Language of \lCalc}
+
 \begin{definition} The set of all lambda terms \( \La \) is defined inductively as follows:
   \label{def:lambda-terms-1}
   \begin{itemize}
@@ -62,7 +63,7 @@ As a convention to avoid notational cluttering, the outermost parenthesis can be
 \item \( \la x. \la y. f(x,y) \iff \la xy. f(x,y) \)
 \end{itemize}
 All these are just to keep notation straight-forward, since the formal definition does not leave precedence under-specified thanks to parenthesis. Those interested in the implementation need not worry, as Haskell enforces an explicit order on constructors.
-\subsection{\centering Reduction of terms}
+\section{\centering Reduction of terms}
 Now that the \lcalc \ language has been introduced, it is time we move on to the mechanics of computation, manifested through $\beta$-equivalence. $\alpha$ and $\eta$ equivalence will also be introduced. These two are more difficult to grasp. Informally, it could be said that $\alpha$-equivalence is equivalence programs up to renaming of local variables. In this same scenario, $\eta$-equivalence would singnify equivalence of programs up to wrapping or unwrapping them with an identity function.
 \subsubsection{\centering Subterms}
 From the ground up, we define what a subterm is, since the definition of the language is self-referential and terms might contain other terms.

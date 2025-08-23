@@ -71,19 +71,20 @@ Examples of simple types include:
 where
 \begin{itemize}
 \item $\cdot$ is the empty context
-\item $x$ is a variable and $\sigma \in \Tset$ is a simple type
+\item $x$ is a variable
+\item $\sigma \in \Tset$ is a simple type
 \item $\Gamma, x : \sigma$ extends $\Gamma$ by mapping $x$ to $\sigma$
 \item \( \mathrm{dom}(\Gamma) = \{\, x \mid x : \sigma \in \Gamma \,\}\)
 \item \( \mathrm{rng}(\Gamma) = \{\, \sigma \mid x : \sigma \in \Gamma \,\} \)
 \end{itemize}
 A context is often represented as a finite sequence:
-\[
+\(
   \Gamma = x_1 : \sigma_1,\, x_2 : \sigma_2,\, \dots,\, x_n : \sigma_n
-\]
+\)
 with all $x_i$ distinct.
 \end{definition}
 
-With this in mind we distinguish two alternative methods for typing. Typing à la Church, where types are annotated alongside $\lambda$-terms. And Typing a la Curry, where typing judgements are provided externally through some inference method like the Hindley-Milner algorithm. Church's style of typing adds syntax on top of the already defined \lcalc. It can be said that while Church's typing introduces rules to generate well-typed terms, Curry's approach infers types from untyped expressions.
+With this in mind we distinguish two alternative methods for typing. Typing à la Church, where types are annotated alongside $\lambda$-terms. And Typing a la Curry, where typing judgements are provided externally through some inference algorithm. Church's style of typing adds syntax on top of the already defined \lcalc. It can be said that while Church's typing introduces rules to generate well-typed terms, Curry's approach infers types from untyped expressions.
 \begin{itemize}
 \item Curry-style:
 \[
@@ -244,7 +245,7 @@ The operational semantics extends \(\beta\)-reduction:
 \pi_2 (t, u) \to u.
 \]
 
-
+\section{\centering Normalization in Minimal and Extended Typing}
 
 
 

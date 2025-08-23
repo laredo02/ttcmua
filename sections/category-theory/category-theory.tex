@@ -29,6 +29,9 @@ Let us begin our dive into categories by defining what they are:
     for any $f : A \to B$
   \end{itemize}
 \end{definition}
+
+
+
 \begin{remark}
 Literature on the topic usually differentiates between small and large categories. Small categories are those whose collection of objects and whose collection of arrows are both sets. Large categories allow for collections of objects or arrows that are proper classes rather than sets. We will only be concerned with small categories.
 \end{remark}
@@ -51,8 +54,6 @@ Various mathematical constructs fit the description of a category. For example, 
     \[ \text{Ob}(\mathbf{2}) = \{A, B\}, \quad \text{Hom}(\mathbf{2}) = \{\operatorname{id}_A, \operatorname{id}_B, f\} \]
     where $\operatorname{id}_A: A \to A$ and $\operatorname{id}_B: B \to B$ are identity morphisms, and $f: A \to B$ is a unique non-identity morphism. The compositions are defined as $f \circ \operatorname{id}_A = f$ and $\operatorname{id}_B \circ f = f$.
 \end{itemize}
-
-
 
   
   The most elemental category is the category that has no elements and no arrows, it is commonly represented with a $0$. Category $1$ contains one object and one identity arrow, as required by the definition. Category $2$ contains three arrows, the identities and one arrow from $1$ to $2$. Category $3$ builds up on this as is observed in the following diagram:
@@ -78,7 +79,36 @@ Associativity holds automatically since there is at most one arrow between any t
 Lastly, each $p \in P$ has an identity arrow $p \to p$ that corresponds to the reflexivity property of partial orders.
 Therefore, every poset defines a category. \qed
 \end{example}
-\orange{There exist several well known categories tied to mathematics and compite. Category of categories... Monoid}
+%\orange{There exist several well known categories tied to mathematics and compite. Category of categories... Monoid}
+
+\begin{example}
+Let us consider a simple functional
+programming language with the following types:
+\[
+  T ::= \mathrm{Nat} \mid \mathrm{Bool} \mid T \times T \mid T \to T
+\]
+The type system is closed under product and function type
+constructors. A valid compound type is \( (\mathrm{Nat} \times \mathrm{Bool}) \to \mathrm{Nat} \).
+A categorical interpretation of this scenario reveals types are objects and functions morphisms.
+
+Identity \(\mathrm{id}_A : A \to A\) can be defined as \( \mathrm{id}_A = \lambda x\,{:}\,A . \, x  \), which is well-typed. Identity laws are verified trivially: \( \mathrm{id}_B \circ f = f = f \circ \mathrm{id}_A \).
+
+Compositionality is defined as sequential application of functions that share domain and codomain through \(f : A \to B\) and \(g : B \to C\) like \(g \circ f : A \to C\) by \(g \circ f = \lambda x\,{:}\,A . \, g (f(x))\), which is well-typed by function application.
+
+Composition is associative due to \(\beta\)-equivalence in lambda calculus:
+\[
+h \circ (g \circ f) = \lambda x{:}A . h (g (f(x))) = (h \circ g) \circ f
+\]
+Therefore, the language satisfies all axioms of a category.
+\end{example}
+
+\begin{example}
+$\mathbf{Hask}$ is a category where the objects are Haskell types such as \small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. The morphisms are total Haskell functions between those types such as  \small{\(\texttt{f::Int->Bool}\)}. For every type \small{\(\texttt{a}\)}, there is an identity morphism \small{\(\texttt{id::a->a}\)} that maps each value to itself.
+Morphisms can be composed using \small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)},
+meaning the output of one function becomes the input of another.
+This composition is associative, and the identity morphisms act as neutral elements for composition.
+These properties — types as objects, functions as morphisms, \small{\(\texttt{id}\)} as identity, and \texttt{\(\texttt{(.)}\)} as composition — make Hask a category.
+\end{example}
 
 \begin{table*}[h!]
 \centering
@@ -124,29 +154,8 @@ $\mathbf{Endo(Set)}$  & Endofunctors on the category of sets. \\
 %  It is ironic that the names of the better known categories are given by their objects and not their arrows.
 %\end{note}
 
-\orange{to build some intuition on why categories relate to programs}
-\magenta{que alguien que controle corrija el siquiente ejemplo q es mas inventado que que los gamusinos }
-
-\begin{example}
-Let us consider a simple functional
-programming language with the following types:
-\[
-  T ::= \mathrm{Nat} \mid \mathrm{Bool} \mid T \times T \mid T \to T
-\]
-The type system is closed under product and function type
-constructors. A valid compound type is \( (\mathrm{Nat} \times \mathrm{Bool}) \to \mathrm{Nat} \).
-A categorical interpretation of this scenario reveals types are objects and functions morphisms.
-
-Identity \(\mathrm{id}_A : A \to A\) can be defined as \( \mathrm{id}_A = \lambda x\,{:}\,A . \, x  \), which is well-typed. Identity laws are verified trivially: \( \mathrm{id}_B \circ f = f = f \circ \mathrm{id}_A \).
-
-Compositionality is defined as sequential application of functions that share domain and codomain through \(f : A \to B\) and \(g : B \to C\) like \(g \circ f : A \to C\) by \(g \circ f = \lambda x\,{:}\,A . \, g (f(x))\), which is well-typed by function application.
-
-Composition is associative due to \(\beta\)-equivalence in lambda calculus:
-\[
-h \circ (g \circ f) = \lambda x{:}A . h (g (f(x))) = (h \circ g) \circ f
-\]
-Therefore, the language satisfies all axioms of a category.
-\end{example}
+%\orange{to build some intuition on why categories relate to programs}
+%\magenta{que alguien que controle corrija el siquiente ejemplo q es mas inventado que que los gamusinos }
 
 Aside from defining categories from mathematical objects, categores can be built from other categories. One way to do this is via opposite categories.
 
@@ -170,7 +179,7 @@ In a category $\mathcal{C}$, for any two objects $A, B \in \functionfont{Ob}(\ma
 \]
 \end{definition}
 
-\subsubsection{\centering Monos Epis \& Zeros}
+\subsubsection{\centering Monos \& Epis}
 
 \begin{definition}
   \label{def:monos-epis} Let \( g_1, g_2 : X \to A \) (resp. \( h_1, h_2 : B \to Y \)). An arrow \( f : A \to B \) in \( \mathcal{C} \) is a monomorphism (resp. epimorphism) if:
@@ -224,11 +233,30 @@ F(X) \arrow[r, "F(f)"'] & F(Y)
 \]
 \end{definition}
 
+\begin{example} Haskell captures the notion of functor using the following type class:
+\begin{minted}{Haskell}
+  class Functor f where
+      fmap :: (a -> b) -> f a -> f b
+      (<$) :: a -> f b -> f a
+      (<$) = fmap . const
+\end{minted}
+There exist several instances for this class, among which we find:
+\begin{minted}{Haskell}
+  instance Functor [] where
+      fmap = map
+\end{minted}
+That allows us to perform mapping operations on lists like:
+\begin{minted}{shell-session}
+  ghci> fmap (*2) [1,2,3]
+  [2,4,6]
+\end{minted}
+\end{example}
+
 \begin{example} Consider the categories of groups $\mathbf{Grp}$ and sets $\mathbf{Set}$. 
 We define the functor \( U : \mathbf{Grp} \longrightarrow \mathbf{Set} \):
 \begin{itemize}
-    \item On objects: for each group $G \in \mathbf{Grp}$, set $U(G)$ to be the set of elements of $G$. 
-    \item On morphisms: for each group homomorphism $f: G \to H$, we define $U(f) = f$, now considered as a function $U(G) \to U(H)$ between sets.
+    \item \textbf{On objects}: for each group $G \in \mathbf{Grp}$, set $U(G)$ to be the set of elements of $G$. 
+    \item \textbf{On morphisms}: for each group homomorphism $f: G \to H$, we define $U(f) = f$, now considered as a function $U(G) \to U(H)$ between sets.
 \end{itemize}
 This mapping preserves identities and composition. Diagrammatically, we can represent the action of $U$ on a morphism $f : G \to H$ as:
 \[
@@ -239,6 +267,41 @@ U(G) \arrow[r, "U(f)"'] & U(H)
 \]
 Since this functor ``forgets'' the structure its domain category we refer to it as forgetful functor.
 \end{example}
+
+
+
+
+
+
+\begin{example} A reformulation from example 2.1.2 in \cite{pierce1991basic} that defines a functor called List from the category $\mathbf{Set} \to \mathbf{Set}$ to illustrate functors from a programming perspective.
+  
+\begin{itemize}
+\item For every set $S$, we define a new set:
+\[
+    \mathrm{List}(S) := \{ L \mid L \text{ is a finite list of belements of } S \}
+\]
+Where the order of elements matters, and duplicates are allowed.
+
+\item For every function $f : S \to S'$, we define a new function
+\begin{align*}
+  \mathrm{List}(f) : \mathrm{List}(S) &\to \mathrm{List}(S') \\
+  \mathrm{List}(f)([s_1, s_2, \dots, s_n]) &:= [f(s_1), f(s_2), \dots, f(s_n)].
+\end{align*}
+So, say for instance we have $S = \{ 1, 2 \}$ and $f(s) = 2 \cdot s $. Then, $S' = \{2, 4\}$, \( \mathrm{List}(\{1, 2\}) = \{ [], [1], [2], [1,1], [1,2], [2,1], [2,2], [1,1,1], \dots \} \), and \( \mathrm{List}(f)(\{2, 4\}) = \{ [], [2], [4], [2,2], [2,4], [4,2], [4,4], [2,2,2], \dots \} \).
+\end{itemize}
+To confirm that \(\mathrm{List}\) is a functor, it must satisfy the following two laws:
+\begin{itemize}
+\item \textbf{Identity Law:} For every set $S$ and every list $L \in \mathrm{List}(S)$: \(
+\mathrm{List}(\mathrm{id}_S)(L) = L. \)
+\item \textbf{Composition Law:} For any two functions $f : S \to S'$ and $g : S' \to S''$, and any list $L \in \mathrm{List}(S)$:
+\(
+\mathrm{List}(g \circ f)(L) = (\mathrm{List}(g) \circ \mathrm{List}(f))(L).
+\)
+\end{itemize}
+\end{example}
+
+\begin{note} \( (\mathrm{List}(S), ++, []) \) is a monoid, where $++$ is associative list concatenation and $[]$ is the identity, satisfying $ [] ++ L = L = L ++ []$.
+\end{note}
 
 \subsubsection{\centering Natural Transformations}
 To define natural transformations we will apply the same reasoning scheme as we did
@@ -264,7 +327,6 @@ to relate their outputs. Formally:
 \]
 is an assignment to every object $X \in \mathrm{Ob}(\mathcal{C})$ of a morphism \( \alpha_X : F(X) \to G(X) \text{ in } \mathcal{D} \) called the component of $\alpha$ at $X$, such that for every morphism $f: X \to Y$ in $\mathcal{C}$, the following diagram commutes:
 
-
 \[
 \begin{tikzcd}
 F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[d, "G(f)"] \\
@@ -272,8 +334,52 @@ F(Y) \arrow[r, "\alpha_Y"] & G(Y)
 \end{tikzcd}
 \]
 \end{definition}
+\noindent A Haskell example that makes the diagram commute is:
+\begin{minted}{shell-session}
+  ghci> (reverse . (fmap toUpper)) "abc"
+  "CBA"
+  ghci> ((fmap toUpper) . reverse) "abc"
+  "CBA"
+\end{minted}
+This example is one of the simplest of its kind since we are dealing with an endofunctor in $\mathbf{Hask}$.
+\begin{definition} An endofunctor on a category $\mathcal{C}$ is a functor $ F : \mathcal{C} \to \mathcal{C} $
+that maps objects and morphisms of $\mathcal{C}$ to objects and morphisms of the same category, preserving identities and composition.
+\end{definition}
 
+\begin{example} This example is in principle the same as the latter, but may help to grasp the idea of functor in Haskell:
+\begin{minted}{Haskell}
+  data BinTree a
+      = Empty
+      | Node a (BinTree a) (BinTree a)
+      deriving (Show, Eq)
 
+  instance Functor BinTree where
+      fmap _ Empty = Empty
+      fmap f (Node x l r) = Node (f x) (fmap f l) (fmap f r)
+
+  reversePairs :: BinTree a -> BinTree a
+  reversePairs Empty = Empty
+  reversePairs (Node x l r) = Node x (reversePairs r) (reversePairs l)
+  
+  testNaturality :: (Eq b) => (a -> b) -> BinTree a -> Bool
+  testNaturality f t =
+      (reversePairs . fmap f) t == (fmap f . reversePairs) t
+\end{minted}
+We now can call the \texttt{testNaturality} function to assert whether the \texttt{f} we provide makes the diagram commute.
+\begin{minted}{shell-session}
+  ghci> f n = 2 * n
+  ghci> testNaturality f t
+  True
+\end{minted}
+In this case, any function that just operates on the keys will be a valid operation since it does not alter structure.
+\end{example}
+\begin{note}
+  From this example we extract a design pattern. For a given data structure whether a graph, a tree or otherwise, an operation that modifies structure can be considered a natural transform whenever we only deal with functions that don't modify structure.
+\end{note}
+\begin{note}
+In standard Haskell, we can only create endofunctors since the syntax only allows us to work with types.
+\end{note}
+Natural transformations, as well as functors can be composed as well, we study now the two ways there are of composing natural transformations:
 \begin{remark}
 Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed:
 \[
@@ -294,11 +400,43 @@ with components \( (\beta \circ \alpha)_X = \beta_X \circ \alpha_X \) for each o
 \end{remark}
 
 \begin{remark}
+Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed \emph{vertically}:
+\[
+\beta \circ \alpha : F \Rightarrow H
+\]
+\[
+\begin{tikzcd}
+\mathcal{C}
+\arrow[r, bend left=100, "F"{name=U}]
+\arrow[r, ""'{name=V}]
+\arrow[r, bend right=100, "H"'{name=D}]
+& \mathcal{D}
+\arrow[Rightarrow, from=U, to=V, "\alpha" description]
+\arrow[Rightarrow, from=V, to=D, "\beta" description]
+\end{tikzcd}
+\]
+with components 
+\[
+(\beta \circ \alpha)_X = \beta_X \circ \alpha_X
+\] 
+for each object $X \in \mathrm{Ob}(\mathcal{C})$.
+
+\medskip
+
+\noindent
+Given categories $\mathcal{C}, \mathcal{D}, \mathcal{E}$, functors $F, G : \mathcal{C} \to \mathcal{D}$ and $J, K : \mathcal{D} \to \mathcal{E}$, and natural transformations $\alpha: F \Rightarrow G$ and $\gamma: J \Rightarrow K$, we can define the \emph{horizontal composition}:
+\[
+\gamma \ast \alpha : J \circ F \Rightarrow K \circ G
+\]
+with components
+\[
+(\gamma \ast \alpha)_X = \gamma_{G(X)} \circ J(\alpha_X) = K(\alpha_X) \circ \gamma_{F(X)}
+\]
+for each $X \in \mathrm{Ob}(\mathcal{C})$.
+\end{remark}
+\begin{remark}
 The collection of all functors $F : \mathcal{C} \to \mathcal{D}$ together with natural transformations between them forms the functor category $\mathbf{Fun}(\mathcal{C}, \mathcal{D}) \in \mathrm{Ob}(\mathbf{Cat})$.
 \end{remark}
-
-
-
 \subsubsection{\centering Universal Constructions}
 \begin{definition}
 Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  

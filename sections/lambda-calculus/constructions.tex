@@ -84,8 +84,8 @@ The first four axioms can be summarized using a graph:
   \begin{align*}
     \overline{\texttt{0}} &\equiv \la f.\la x. x \\
     \overline{\texttt{1}} &\equiv \la f.\la x. f x \\
-    \overline{\texttt{2}} &\equiv \la f.\la x. f f x \\
-    \overline{\texttt{3}} &\equiv \la f.\la x. f f f x \\
+    \overline{\texttt{2}} &\equiv \la f.\la x. f (f x) \\
+    \overline{\texttt{3}} &\equiv \la f.\la x. f (f (f x)) \\
     \overline{\texttt{n}} &\equiv \la f.\la x. f ^ n x
   \end{align*}
   where $ n $ denotes the number of times we append $ f $.

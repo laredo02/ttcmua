@@ -211,43 +211,8 @@ They allow us to bind two values together and query them independently.
   \]
 \end{proposition}
 
-
-
 \subsubsection{\centering Lists}
 We move on to how we can now define linear lists.
-\begin{center}
-  \[
-    \begin{aligned}
-      \begin{forest}
-        [\rotatebox{60}{\texttt{\ldots}}
-        [\PAIR
-        [\PAIR
-        [\NIL]
-        [\texttt{ELEM}]
-        ]
-        [\texttt{ELEM}]
-        ]
-        [\texttt{ELEM}]
-        ]
-      \end{forest}
-    \end{aligned}
-    \hspace{1cm}
-    \textit{or}
-    \hspace{1cm}
-    \begin{aligned}
-      \begin{forest}
-        [\rotatebox{-60}{\texttt{\ldots}}
-        [\texttt{ELEM}]
-        [\PAIR
-        [\texttt{ELEM}]
-        [\PAIR
-        [\texttt{ELEM}]
-        [\NIL]
-        ]]]
-      \end{forest}
-    \end{aligned}
-  \]
-\end{center}
 
 \begin{definition}
   We define the empty list in the same spirit as \texttt{0} and \FALSE:

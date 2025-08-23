@@ -9,8 +9,6 @@ One of the nuances formalized by the \lcalc \ is the distinction between extensi
 
 The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like LISP, Haskell and Erlang to name a few. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
 
-\newpage
-
 \subsubsection{\centering The Intuitive Notion}
 
 In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \mathrel{\leadsto} (2 + 1) \mathrel{\leadsto} 3$. This process of reducing a $\la$-expression is referred to as \bred, it will be covered formally later in the chapter.

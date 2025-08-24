@@ -326,16 +326,15 @@ Defines the means to perform computation in the \lcalc, applying substitution as
   \end{minted}
 \end{definition} 
 Single \bred s can be applied succesively, which induces the following definition
-\begin{definition} Multi-step \bred. We write $M \step^* N$ if and only if there exists a sequence of one-step $\beta$-reductions starting from $M$ and ending at $N$.\footnote{The convention in the literature is to use $\rightarrow_\beta$ for \bred s $\twoheadrightarrow_\beta$ for multi-step \bred s. I prefer to use $\curly$ and $\curly^n$ since this allows me to use the superscript to note the number of steps in the process \bred \ e.g. $ (\la f. \la x . \, x) \, M \, N \curly^2 $ N. Instead of $\curly^n$ I use $\curly^*$ whenever the number of steps is undefined.}
+\begin{definition}
+  \label{def:multi-step-beta-reduction}
+  Multi-step \bred. We write $M \step^* N$ if and only if there exists a sequence of one-step $\beta$-reductions starting from $M$ and ending at $N$.\footnote{The convention in the literature is to use $\rightarrow_\beta$ for \bred s $\twoheadrightarrow_\beta$ for multi-step \bred s. I prefer to use $\curly$ and $\curly^n$ since this allows me to use the superscript to note the number of steps in the process \bred \ e.g. $ (\la f. \la x . \, x) \, M \, N \curly^2 $ N. Instead of $\curly^n$ I use $\curly^*$ whenever the number of steps is undefined.}
   \label{def:zero-more-bred}
   \[
     M \equiv M_0 \step M_1 \step M_2 \step \cdots \step M_{n-1} \step M_n \equiv N
   \]
   That is, there exists an integer $n \geq 0$ and a sequence of terms $M_0, M_1, \dots, M_n$ such that: $ M_0 \equiv M $ and $ M_n \equiv N $ for all $ i $ with $ 0 \leq i < n $, we have $ M_i \step M_{i+1} $.
 \end{definition}
-\begin{note}
-  Multi-step $\curly^*$ is the reflexive transitive closure of $\curly$.
-\end{note}
 The process of succesively $\beta$-reducing a term leads raises the question of whether all terms can be reduced indefinitly. We know the answer to this, since for instance, variables in $\Vset$ cannot be reduced. The subsequent question is then, Do all all terms have some kind of normal form that cannot be reduced further? This is answered in Section \ref{sec:recursion-fixed-points}. To this end we introduce a formal definition of normal form that will allow us to gain insight into the normalization properties of the \lcalc.
 
 \begin{definition} A \(\lambda\)-term \(M\) is in normal form if there is no term \(N\) such that \( M \curly N \). Equivalently, \(M\) contains no subterm of the form \( (\la x . \, P) \, Q \) that can be reduced by beta-reduction. In other words, \(M\) is irreducible under beta-reduction.
@@ -371,7 +370,7 @@ We now explore a key aspect of the \lcalc, in the jargon referred to as first-cl
 \end{remark}
 
 \subsubsection{\centering $\eta$-equivalence}
-The last and indeed the least important notion of equivalence. It refers to a program being equivalent to itself wrapped with an identity function:
+This last notion of equivalence, refers to a program being equivalent to itself wrapped with an identity function:
 \begin{definition} Two lambda terms \( M \) and \( N \) are said to be $\eta$-equivalent, written \( M =_\eta N \), if:
   \[
     \begin{array}{@{}l@{\quad}l@{}}
@@ -398,5 +397,43 @@ The last and indeed the least important notion of equivalence. It refers to a pr
   Two terms are observationally equivalent if they cannot
   be distinguished by any context that can be papplied to them. $\eta$-equivalence can be understood as a form of weak extensionality, since it does not fully encode observational equivalence.
 \end{note}
+
+\subsubsection{\centering $\beta\eta$-reduction}
+
+To later prove the Church--Rosser property, we introduce a set of rules that captures reduction taking extensionality into account, we combine both $\beta$ and $\eta$-reduction into a single relation.
+
+\begin{definition}
+We write $M \betared N$ if $M$ reduces to $N$ by one application
+of either a $\beta$ or an $\eta$-rule, possibly in a subterm. The rules are:
+
+\[
+  \begin{array}{@{}l@{\quad}l@{}}
+    \inferrule*[right=\textsc{Beta}]
+    { }
+    { (\lambda x. M)\,N \;\betared\; M[x := N] }
+    &
+      \inferrule*[right=\textsc{Eta}]
+      { x \notin \FV{M} }
+      { \lambda x.(M\,x) \;\betared\; M } \\[2ex]
+    \inferrule*[right=\textsc{AppL}]
+    { M_1 \betared M_1' }
+    { M_1\,M_2 \;\betared\; M_1'\,M_2 }
+    &
+      \inferrule*[right=\textsc{AppR}]
+      { M_2 \betared M_2' }
+      { M_1\,M_2 \;\betared\; M_1\,M_2' } \\[2ex]
+  \end{array}
+\]
+\[
+  \inferrule*[right=\textsc{Abs}]
+  { M \betared M' }
+  { \lambda x.M \;\betared\; \lambda x.M' }
+\]
+
+\end{definition}
+
+\begin{definition}
+  We write $M \betareds N$ if $M$ reduces to $N$ by zero or more single-step $\beta\eta$-reductions, the same way we did for $\beta$-reduction in  \ref{def:multi-step-beta-reduction}.
+\end{definition}
 
 

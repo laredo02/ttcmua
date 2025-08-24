@@ -117,6 +117,7 @@ Note how Curry's style allows us to assign different valid types to terms. For e
   \]
 \end{definition}
 
+\orange{
 \begin{example} In this example we verify that $ $ is a valid type for $ $ using Curry style of typing.
   \[
     \inferrule*[right=App]
@@ -145,6 +146,7 @@ Note how Curry's style allows us to assign different valid types to terms. For e
     }
   \]
 \end{example}
+}
 
 \begin{note}
   Notice that we can replace $\alpha$ by any other basic type and the derivation tree would still hold. Moreover, we could replace $y$ by a different term with a different type and the structure of the tree would hold as long as we also replace $\alpha$ with the corresponging type.
@@ -243,8 +245,23 @@ The operational semantics extends \(\beta\)-reduction:
 \pi_2 (t, u) \to u.
 \]
 
+\subsubsection{\centering Kinds of problem in Type Theory}
+These are the usual problems type theorists face. A programmer should be at least familiar with typability, and even more so with Type Checking, the one responsible for the daily headaches of bug finding in typed languages:
+\begin{itemize}
+\item \textbf{Typability}:
+  Determine whether a term is legal. Formally, given a term, find a context and type such that
+  \( ? \;\vdash\; \texttt{term} \, : \; ? \) holds. If the term is not well-typed, identify where the derivation fails. Type Assignment is a variant where the context is given, so the task is only to find the type: \( \Gamma \;\vdash\; \texttt{term} \, : \; ? \)
+\item \textbf{Type Checking}: 
+  Given a context, term, and type, check whether \( \Gamma \;\vdash\; \texttt{term} : \texttt{type} \)
+  holds. The task is purely to verify that the term has the specified type in the given context.
+\item \textbf{Inhabitation}: 
+  Given a context and a type, determine whether there exists a term with that type: \( \Gamma \;\vdash\; ? : \texttt{type}  \)
+\end{itemize}
+\begin{remark}
+  In programming languages and theorem provers, these type problems have concrete meanings. Well-typedness asks whether a term or program is valid under the typing rules, ensuring correctness of proofs or programs. Type Checking verifies that a given term has a specified type, allowing compilers or proof assistants to confirm correctness. Term Finding constructs a term of a given type, corresponding to automatic proof generation in theorem provers or program synthesis in programming languages.
+\end{remark}
 \section{\centering Normalization in Minimal and Extended Typing}
-
+\label{sec:typed-normalization}
 
 
 

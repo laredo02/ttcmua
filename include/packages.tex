@@ -36,6 +36,7 @@
 \usemintedstyle{bw}
 \usepackage{stmaryrd}
 \usepackage{bussproofs}
+\usepackage{comment}
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
 \usepackage{stmaryrd}
@@ -47,6 +48,7 @@
 \usepackage{algpseudocode}
 \usepackage{xcolor}
 \usepackage{etoolbox}
+\usepackage{multicol}
 \definecolor{refcolor}{RGB}{0, 0, 0}
 \usepackage[
   colorlinks=true,
@@ -141,6 +143,11 @@
 \newcommand{\bequiv}{$\beta$-equivalence}
 \newcommand{\functionfont}[1]{\mathbf{#1}}
 \newcommand{\curly}{\mathrel{\leadsto}_\beta}
+
+\newcommand{\betared}{\mathrel{\leadsto}_{\beta\eta}}
+\newcommand{\betareds}{\mathrel{\leadsto}^*_{\beta\eta}}
+\newcommand{\psred}{\mathrel{\rightrightarrows}}
+
 \newcommand{\Sub}[1]{\functionfont{Sub}(#1)}
 \newcommand{\Subb}{\functionfont{Sub}}
 \newcommand{\FV}[1]{\functionfont{FV}(#1)}

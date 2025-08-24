@@ -109,9 +109,10 @@ In our Haskell program we use \texttt{nat} to convert from Haskell's prelude typ
 \begin{align*}
   \texttt{ADD} &\equiv \la m.\la n. \la f. \la x. m f ( n f x) \\
   \texttt{MUL} &\equiv \la f.\la x. \la f. \la x. m (n f) x \\
-  \texttt{ISZERO} &\equiv \lambda n. n\,(\lambda x.\texttt{FALSE})\,\texttt{TRUE}
+  \texttt{ISZERO} &\equiv \lambda n. n\,(\lambda x.\texttt{FALSE})\,\texttt{TRUE}\\
+  \texttt{PRED} &\equiv \la n.\,\la f.\,\la x.\, \bigl(((n \; (\la g.\,\la h.\, h\,(g\,f))) \; (\la u.\,x)) \; (\la u.\,u))\bigr)
 \end{align*}
-We omit Haskell implementation of terms from now on. What's the point...?
+\texttt{PRED} computes the predecessor of a church encoded natural. $\texttt{PRED} \, \overline{0} = \overline{0}$. We omit further Haskell implementation of constructions from now on since they are just literal translations to our programs representation of \lterms.
 \end{definition}
 \begin{example} Now we illustrate how addition works by performing $2 + 3$ with the system we defined.
     \[
@@ -122,11 +123,18 @@ We omit Haskell implementation of terms from now on. What's the point...?
                                            &\curly (\la f.\la x.\; f\,f\,f\,f\,f\,x) \\
                                            & \equiv \texttt{5}
     \end{aligned}
-    \]
-  Multiplication works similarly to addition. As for \texttt{ISZERO}, the intuition behind it is that if the number is zero, then \(\lambda x.\, \texttt{FALSE}\) is dropped, and the result is \texttt{TRUE}; otherwise, it is applied at least once, which immediately yields \texttt{FALSE}.
+  \]
+  In Haskell:
+  \begin{minted}{shell-session}
+  ghci> normalize (a (a mul (nat 2)) (nat 3))
+\end{minted}
+This unequivocally yields \texttt{(\lambda f.(\lambda x.f(f(f(f(f(fx)))))))}.
 \end{example}
 \begin{remark}
-  This proves that the \lcalc \ is capable of arithmetic, we leave them as a sidequest since we will not be extending or using them or in the rest of the text.
+  Multiplication works similarly to addition. As for \texttt{ISZERO}, the intuition behind it is that if the number is zero, then \(\lambda x.\, \texttt{FALSE}\) is dropped, and the result is \texttt{TRUE}; otherwise, it is applied at least once, which immediately yields \texttt{FALSE}.
+  \end{remark}
+\begin{remark}
+  This proves that the \lcalc \ is capable of arithmetic.
 \end{remark}
 \subsubsection{\centering Booleans \& Branching}
 The next constructions in line are the truth values of boolean logic, ``\textit{true}'' and ``\textit{false}'' for short.
@@ -145,7 +153,7 @@ The next constructions in line are the truth values of boolean logic, ``\textit{
     \texttt{IF} &\equiv \lambda b.\lambda t.\lambda e. b\,t\,e
   \end{align*}
 \end{definition}
-The \IF \ statement is just a combinator that happens to behave similarly to a branching statement whenever we pass a church encoded boolean as a first argument.
+\noindent The \IF \ statement is just a combinator that happens to behave similarly to a branching statement whenever we pass a church encoded boolean as a first argument.
 \begin{example} On the correct behabiour of $\IF$ i.e. check that it implements branching. $ M, N \in \La $ and $ \IF, \TRUE, \FALSE$ are as usual:
   \[
     \begin{aligned}
@@ -169,8 +177,9 @@ The \IF \ statement is just a combinator that happens to behave similarly to a b
     \NOT &\equiv \IF \, b \, \FALSE \, \TRUE \\
     \AND &\equiv \IF \, a \, (\IF \, b \, \TRUE \, \FALSE) \, \FALSE
   \end{align*}
-  This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic. Something on turing completeness.
+  This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic.
 \end{remark}
+
 \subsubsection{\centering Pairs}
 
 A fundamental construct for building data structures is the notion of pairs. 
@@ -194,7 +203,7 @@ They allow us to bind two values together and query them independently.
 
 \begin{definition}
   A \PAIR \ is nothing but an ordered relation $\langle A, B \rangle \in A \times B$.  
-  The projections are defined as:
+  The projections $\pi_1, \pi_2$ are defined as:
   \[
     \begin{aligned}
       \FST &\equiv \la p. p\,(\la x.\la y. x) \\
@@ -219,28 +228,22 @@ We move on to how we can now define linear lists.
   \[
     \NIL \equiv \la f.\la z. z
   \]
-  It represents the terminating element of the inductive definition of lists.  
-
-  To build non-empty lists we use the constructor:
+  It represents the terminating element of the inductive definition of lists. To build non-empty lists we use the constructor:
   \[
     \texttt{CONS} \equiv \la h.\la t.\la f.\la z. f\,h\,(t\,f\,z)
   \]
   which binds a new element $h$ to a pre-existing list $t$ or to \NIL.
 \end{definition}
-
-\begin{note}
-  This notion of inductively defined lists underlies the \textbf{LISP} family of programming languages, hence the name (LISt Processing).
-\end{note}
-
+\magenta{
 \begin{definition}
   Some other relevant list operators are:
   \begin{align*}
     \texttt{ISNIL} &\equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE \\
-    \texttt{HEAD} &\equiv \la l. l\,(\la h.\la t. h) \\
+    \texttt{HEAD} &\equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL}) \\
     \texttt{TAIL} &\equiv \la l. \FST (l\,(\la h.\la t. \PAIR \, t \, t)\,(\PAIR \, \NIL \, \NIL))
   \end{align*}
 \end{definition}
-
+}
 
 
 

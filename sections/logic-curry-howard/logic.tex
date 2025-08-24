@@ -36,76 +36,141 @@ There are irrational numbers $a$ and $b$ such that $a^b$ is rational.
 \end{proof}
 
 \subsubsection{\centering Syntax}
-
 The syntax for intuitionistic logic is the same as that of propositional logic. Where $\lor, \land, \to$ are used as binary connectives to compose logical statements and $\lnot$ is used to negate such statements.
 
-
 \begin{definition}
-The set $\mathrm{Frm}(L_0)$ of formulas of propositional intuitionistic logic is defined inductively as follows:
+The set of formulas of propositional intuitionistic logic is defined as follows:
 \begin{itemize}
     \item $\bot$ is an atomic formula.
-    \item Every propositional variable $p_i$ is an atomic formula.
+    \item Every propositional variable $p_i$ is a formula.
     \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \wedge \psi)$ is a formula.
     \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \vee \psi)$ is a formula.
     \item If $\varphi$ and $\psi$ are formulas, then $(\varphi \to \psi)$ is a formula.
-    \item Nothing else is a formula.
 \end{itemize}
 
 \medskip
-In addition to the primitive connectives introduced above, we also use the following defined symbols:
+In addition to the connectives introduced above, the following symbols define the following symbols to simplify notation:
 \begin{itemize}
     \item $\lnot \varphi$ abbreviates $(\varphi \to \bot)$.
     \item $\varphi \leftrightarrow \psi$ abbreviates $(\varphi \to \psi) \wedge (\psi \to \varphi)$.
 \end{itemize}
 \end{definition}
 
+\subsubsection{\centering The Brouwer--Heyting--Kolmogorov Interpretation}
+
+The Brouwer--Heyting--Kolmogorov Interpretation interpretation provides an informal, constructive understanding of intuitionistic connectives. It is based on the notion of a construction, which can be regarded as a constructive proof. The BHK interpretation assigns meanings to the intuitionistic connectives as
+follows:
+
+\begin{itemize}
+  \item We assume that we know what constitutes a construction for an atomic proposition.
+
+  \item A construction of
+  $\varphi_1 \wedge \varphi_2$ is a pair $\langle M_1, M_2\rangle$, where
+  $M_1$ is a construction of $\varphi_1$ and $M_2$ is a construction of
+  $\varphi_2$.
+
+  \item A construction of
+  $\varphi_1 \vee \varphi_2$ is a pair $\langle s, M\rangle$, where $s = 1$
+  and $M$ is a construction of $\varphi_1$, or $s = 2$ and $M$ is a
+  construction of $\varphi_2$.
+
+  \item A construction of
+  $\varphi \to \psi$ is a function that converts any construction of
+  $\varphi$ into a construction of $\psi$.
+
+  \item There is no construction for $\bot$; it
+  represents absurdity.
+
+  \item Defined as $\varphi \to \bot$.
+  Thus, a construction of $\neg\varphi$ is a function that converts a construction of $\varphi$ into a construction of $\bot$.
+\end{itemize}
+
+\begin{remark}
+  Generally speaking, $\neg\varphi$ means a construction of $\varphi$ is impossible.
+\end{remark}
+
 \subsubsection{\centering Natural Deduction}
+It is a deduction system within intuitionistic logic that uses constructive reasoning to derive conclusions. This structured proofs emphasize the existence of explicit constructions rather than abstract truth values.
+
 The rules of natural deduction for intuitionistic propositional logic (without~$\bot C$) can be presented as follows:
+
+\subsubsection{\centering Introduction / Elimination Rules}
+
 \[
-\begin{array}{@{}l@{\quad}l@{}}
-\multicolumn{2}{l}{\textbf{Introduction Rules}} \\[1ex]
-\inferrule*[right=\wedge\text{I}]
-  { \varphi \\ \psi }
-  { \varphi \wedge \psi }
+  \boxed{
+\begin{array}{@{}l@{\qquad}l@{}}
+
+% =====================
+% Conjunction Introduction & Elimination
+% =====================
+\inferrule*[right=\textsc{IntroConj}]
+  { \phi \\ \psi }
+  { \phi \land \psi }
 &
-\inferrule*[right=\to\text{I}]
-  { [\varphi]^u \\ \psi }
-  { \varphi \to \psi } \\[2ex]
-\inferrule*[right=\vee\text{I}_1]
-  { \varphi }
-  { \varphi \vee \psi }
-&
-\inferrule*[right=\vee\text{I}_2]
+\inferrule*[right=\textsc{ElimConj}]
+  { \phi \land \psi }
+  { \phi }
+\quad
+\inferrule*[right=\textsc{ElimConj}]
+  { \phi \land \psi }
   { \psi }
-  { \varphi \vee \psi } \\[2ex]
-\inferrule*[right=\neg\text{I}]
-  { [\varphi]^n \\ \bot }
-  { \neg \varphi }
-& \\[3ex]
-\multicolumn{2}{l}{\textbf{Elimination / Simplification Rules}} \\[1ex]
-\inferrule*[right=\wedge\text{E}_1]
-  { \varphi \wedge \psi }
-  { \varphi }
-&
-\inferrule*[right=\wedge\text{E}_2]
-  { \varphi \wedge \psi }
-  { \psi } \\[2ex]
-\inferrule*[right=\to\text{E}]
-  { \varphi \to \psi \\ \varphi }
+\\[4ex]
+
+% =====================
+% Disjunction Introduction & Elimination
+% =====================
+\inferrule*[right=\textsc{IntroDisj}]
+  { \phi }
+  { \phi \lor \psi }
+\quad
+\inferrule*[right=\textsc{IntroDisj}]
   { \psi }
-& \\[2ex]
-\inferrule*[right=\vee\text{E}]
-  { \varphi \vee \psi \\ [\varphi]^n \\ \chi \\ [\psi]^n \\ \chi }
-  { \chi } \\[2ex]
-\inferrule*[right=\bot\text{E}]
-  { \bot }
-  { \varphi }
+  { \phi \lor \psi }
 &
-\inferrule*[right=\neg\text{E}]
-  { \varphi \\ \neg \varphi }
+\inferrule*[right=\textsc{ElimDisj}]
+  { \phi \lor \psi \\ [\phi]^n \cdots \chi \\ [\psi]^n \cdots \chi }
+  { \chi }
+\\[4ex]
+
+% =====================
+% Implication Introduction & Elimination
+% =====================
+\inferrule*[right=\textsc{IntroImpl}]
+  { [\phi] \cdots \psi }
+  { \phi \to \psi }
+&
+\inferrule*[right=\textsc{ElimImpl}]
+  { \phi \\ \phi \to \psi }
+  { \psi }
+\\[4ex]
+
+% =====================
+% Negation Introduction & Elimination
+% =====================
+\inferrule*[right=\textsc{IntroNeg}]
+  { [\phi]^n \cdots \bot }
+  { \neg \phi }
+&
+\inferrule*[right=\textsc{ElimNeg}]
+  { \phi \\ \neg \phi }
   { \bot }
+\\[4ex]
+
+% =====================
+% Bottom / Absurdity
+% =====================
+&
+\inferrule*[right=\textsc{ElimBot}]
+  { \bot }
+  { \phi }
+
 \end{array}
+}
 \]
+
+\begin{example}
+  \orange{some deduction example}
+\end{example}
 
 \section{\centering The Curry-Howard Isomorphism}
 The $\lambda$-calculus, as introduced in the first section, provides a minimal but expressive framework for modeling computation. Independently, intuitionistic logic offers a formal system for constructive reasoning that requires the existence of witnesses for propositions. The Curry-Howard correspondence reveals a structural equivalence between them, providing a unifying perspective that connects proofs with programs. The Curry--Howard correspondence establishes the following associations:

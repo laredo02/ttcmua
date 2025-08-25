@@ -203,15 +203,6 @@ where $\Bset$ is the set of base types.
 Given $t \in \La^\times$, typing judgments are of the form \( \Gamma \vdash t : \Tset \), where \( \Gamma \) is a context \( x_1 : T_1, \dots, x_n : T_n \). The typing rules for \( \La^\times \) are:
 
 \[
-  \inferrule*[right=Unit]
-  { }
-  {\Gamma \vdash * : 1}
-  \quad
-  \inferrule*[right=Var]
-  { }
-  {\Gamma, x : A \vdash x : A}
-\]
-\[
   \inferrule*[right=app]
   {\Gamma \vdash m : a \to b \\ \Gamma \vdash n : a}
   {\Gamma \vdash m\,n : b}
@@ -233,9 +224,83 @@ Given $t \in \La^\times$, typing judgments are of the form \( \Gamma \vdash t : 
   {\Gamma \vdash M : A \times B}
   {\Gamma \vdash \pi_2 M : B}
 \]
+\[
+  \inferrule*[right=Unit]
+  { }
+  {\Gamma \vdash * : 1}
+  \quad
+  \inferrule*[right=Var]
+  { }
+  {\Gamma, x : A \vdash x : A}
+\]
+
 \end{definition}
 
-\paragraph{Reduction.}
+\subsubsection{\centering Reduction Rules}
+\subsubsection{\centering $\beta$-reduction}
+
+The core $\beta$-reduction rules for simply typed $\lambda$-calculus with products and unit are:
+
+\[
+  (\lambda x : A.\ M)\ N \;\curly\; M[N/x]
+\]
+\[
+  \pi_1 \langle M, N \rangle \;\curly\; M
+  \qquad
+  \pi_2 \langle M, N \rangle \;\curly\; N
+\]
+
+\noindent
+\textbf{Closure:}  
+By themselves, these rules only contract redexes at the root. To obtain a full operational semantics, one usually extends them by \emph{closure under contexts} (congruence rules or evaluation contexts), so that reductions are preserved inside applications, abstractions, pairs, and projections.
+
+---
+
+\subsubsection{\centering $\eta$-laws}
+
+The $\eta$-laws capture extensionality principles, identifying terms with their canonical expansions:
+
+\[
+  \lambda x : A.\ M\,x \;\equiv_\eta\; M \quad (x \notin FV(M))
+\]
+\[
+  \langle \pi_1 M, \pi_2 M \rangle \;\equiv_\eta\; M
+\]
+\[
+  M \;\equiv_\eta\; * \quad (M : 1)
+\]
+
+\noindent
+\textbf{Closure:}  
+Unlike $\beta$, $\eta$ is usually treated as an equational rule rather than a reduction. It is automatically closed under contexts, since definitional equality is taken as a congruence.
+
+---
+
+\subsubsection{\centering $\beta\eta$-conversion}
+
+The combined theory, called $\beta\eta$-conversion, is the smallest congruence $\equiv_{\beta\eta}$ satisfying:
+
+\[
+  M \curly N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
+  \qquad
+  M \equiv_\eta N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
+\]
+
+That is, $\beta\eta$-conversion identifies terms up to both computation ($\beta$) and extensionality ($\eta$), closed under all term formers.
+
+\noindent
+The operational semantics extends $\beta$-reduction as:
+
+\[
+  (\lambda x : A.\ t)\ u \;\curly\; t[x := u], 
+  \quad 
+  \pi_1 (t, u) \;\curly\; t, 
+  \quad 
+  \pi_2 (t, u) \;\curly\; u
+\]
+
+
+
 The operational semantics extends \(\beta\)-reduction:
 \[
 (\lambda x : A.\ t)\ u \to t[x := u],
@@ -262,6 +327,33 @@ These are the usual problems type theorists face. A programmer should be at leas
 \end{remark}
 \section{\centering Normalization in Minimal and Extended Typing}
 \label{sec:typed-normalization}
+
+\begin{definition}
+Let $\to$ be a reduction relation on terms.
+\begin{itemize}
+    \item A term $M$ is weakly normalizing if there exists a finite reduction sequence starting from $M$ that terminates in a normal form:
+    \item A term $M$ is strongly normalizing if there are no infinite reduction paths from $M$:
+\end{itemize}
+\noindent
+\begin{remark}
+  Strong normalization implies weak normalization.
+\end{remark}
+\end{definition}
+
+\begin{theorem}
+\label{thm:sn-stlc-products}
+Every well-typed term in the simply typed $\lambda$-calculus with product types and unit type is strongly normalizing.   Formally, if $\Gamma \vdash M : A$, then there is no infinite sequence of reductions starting from $M$:
+\[
+M \;\to\; M_1 \;\to\; M_2 \;\to\; \dots
+\]
+Equivalently, $M$ belongs to the set of \textbf{strongly normalizing terms}:
+\[
+M \in \mathrm{SN} = \{\, N \mid \text{all reduction sequences starting from $N$ terminate} \,\}.
+\]
+\end{theorem}
+
+
+
 
 
 

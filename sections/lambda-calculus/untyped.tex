@@ -5,7 +5,7 @@ In the early 20th century, mathematicians such as Bertrand Russell, David Hilber
 In 1936, Church used lambda calculus to address Hilbert’s Entscheidungsproblem --whether a mechanical method could determine the truth of any first-order logic statement. He proved no such algorithm exists, establishing the undecidability of first-order logic.
 
 One of the nuances formalized by the \lcalc \ is the distinction between extensional and intensional equality. The extensional approach to equivalence states that two functions are equivalent if they share input output pairs for every possible input. Its intensional counterpart extends this notion of equality by requiring that the procedures that compute these pairs share complexity i.e. they take the same steps toward yielding a result.\footnote{
-  Let \( p \) be a sufficiently large prime, and let \( f, g : \mathbb{Z}_p \to \mathbb{Z}_p \) be defined by \( f(x) = x^2 \) and \( g(x) = \log_a(a^{x+2}) \), where \( a \in \mathbb{Z}_p^\times \) is a fixed primitive root. Although \( f \) and \( g \) are extensionally equal, i.e., they yield the same output for all inputs in \( \mathbb{Z}_p \), they are intensionally distinct. The function \( f \) performs a simple squaring operation, while \( g \) requires evaluating a discrete logarithm, intractable in general. \parencite{bonilla2021}}
+  Let \( p \) be a sufficiently large prime, and let \( f, g : \mathbb{Z}_p \to \mathbb{Z}_p \) be defined by \( f(x) = x^2 \) and \( g(x) = \log_a(a^{x+2}) \), where \( a \in \mathbb{Z}_p^\times \) is a fixed primitive root. Although \( f \) and \( g \) are extensionally equal, i.e., they yield the same output for all inputs in \( \mathbb{Z}_p \), they are intensionally distinct. The function \( f \) performs a simple squaring operation, while \( g \) requires evaluating a discrete logarithm, intractable in general \cite{bonilla2021}.}
 
 The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like LISP, Haskell and Erlang to name a few. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
 
@@ -92,7 +92,7 @@ From the ground up, we define what a subterm is, since the definition of the lan
 \end{remark}
 \begin{definition} A term $ S \in \Sub M, \ M \in \La$ is said to be proper if $S \neq M$. $\Sub{M} \setminus \{M\}$ would be the set of proper subterms.
 \end{definition}
-\begin{definition} Let \( M = \lambda x. N \) be a \lterm:
+\begin{definition} Let \( M \equiv \lambda x. N \) be a \lterm:
   \begin{itemize}
   \item The variable \( x \) is the binding variable of the abstraction \( \lambda x. N \).
   \item An occurrence of a variable \( x \) in \( M \) is bound if \( x \in \Sub { \lambda x. N } \).
@@ -128,7 +128,7 @@ The set of Free Variables $\functionfont{FV}$, those that will not get replaced 
                                         &= \{x, y, z\} \setminus \{x, y\} \\
                                         &= \{z\}
   \end{align*}
-  Of course, $z$ is the only free variable in the expression as it is the only variable that is not captured by some $\la$-abstraction.
+  Of course, $z$ is the only free variable in the expression, since it is the only variable that is not captured by some $\la$-abstraction.
 \end{example}
 \begin{definition}
   A term $M \in \La$ is closed if and only if $\FV M = \emptyset$, closed lambda terms are often referred to as combinators. $\La^0$ is the set of all closed lambda terms.
@@ -150,34 +150,23 @@ We approach the definition for \aequiv \, to this end we have to introduce what 
     \end{aligned}
   \]
   where \( z \notin \FV { M } \cup \FV { N } \). Implementing the latter in Haskell requires a bit more code than previous definitions, along with making some practical tradeoffs:
-  \begin{minted}[fontsize=\small]{haskell}
-capAvoidSubs :: Term -> String -> Term -> Term
-capAvoidSubs same@(Var y) x n
-  | y == x = n
-  | otherwise = same
-capAvoidSubs (App t1 t2) s t3 =
-  App (capAvoidSubs t1 s t3) (capAvoidSubs t2 s t3)
-capAvoidSubs (Abs y m) x n
-  | y == x = (Abs y m)
-  | otherwise =
-      if Set.member y (freeVars n)
-      then
-        let z = freshVar y (Set.union (freeVars m) (freeVars n))
-        in (Abs z (capAvoidSubs (capAvoidSubs m y (Var z)) x n))
-      else
-        (Abs y (capAvoidSubs m x n))
-  where
-    freshVar :: String -> Set.Set String -> String
-    freshVar s terms =
-      if Set.member (s ++ "'") terms
-      then
-        freshVar (s ++ "'") terms
-      else
-        s ++ "'"
-      \end{minted}
-      
+  \begin{minted}[fontsize=\small]{Haskell}
+  subst :: String -> Term -> Term -> Term
+  subst x s v@(Var y)
+      | x == y = s
+      | otherwise = v
+  subst x s l@(Abs y body)
+      | x == y = l
+      | Set.notMember y (freeVars s) = Abs y (subst x s body)
+      | otherwise =
+          let used = Set.unions [allVars body, allVars s, Set.singleton x]
+              z = freshVar used
+              body' = rename y z body
+          in Abs z (subst x s body')
+  subst x s (App a b) = App (subst x s a) (subst x s b)
+\end{minted}      
       \begin{note}
-        \texttt{freshVar} generates a new name for binding variables such that \( z \notin \FV { M } \cup \FV { N } \). In this instance we have chosen to add single quotes as long as the variable name is contained in \( \FV { M } \cup \FV { N } \).
+        \texttt{freshVar} generates a new name for binding variables such that \( z \notin \FV { M } \cup \FV { N } \). More details are available in the source code.
       \end{note}
   \end{definition}
 Hopefully the meaning of the first three rules is clear, they ancapsulate renaming in the context of variables and applications. The subsequent rules are about abstractions, rule four states that renaming a binding variable has no effect, renaming only modifies a term whenever the renamed variable is different from the binding variable. Rule five is the general case, that is, when the substitution just moves in together with the abstracted term. Then there is the last case, when the binding variable is a bound occurrence in the term we are substituting, which poses a problem, to see why, let us work through an example:
@@ -209,27 +198,24 @@ M[y := P][x := N[y := P]], & \text{if } x \neq y \text{ and } y \notin \mathrm{F
 \]
 \end{lemma}
 
-\begin{proof}
+\begin{proof}[Proof Sketch]
   By structural induction on $M$, using $\alpha$-conversion to avoid capture and
 assuming bound variables $x,y,N,P$ are fresh.
 
 \begin{itemize}
-\item \textbf{Variable case:} Direct from the definition of substitution; check $z = x$,
+\item Base case: Direct from the definition of substitution; check $z = x$,
 $z = y$, and $z$ distinct from both.
-\item \textbf{Application case:} Substitution distributes:
+\item Inductive step on applications, where substitution distributes:
 \[
 (M_1M_2)[x:=N] = M_1[x:=N]\,M_2[x:=N],
 \]
 so both statements follow immediately from the induction hypothesis on $M_1$ and $M_2$.
-\item \textbf{Abstraction case:} With $z$ fresh,
+\item Inductive step on abstractions with $z$ fresh,
 \[
 (\lambda z.M_0)[x:=N] = \lambda z.(M_0[x:=N]),
 \]
 and the induction hypothesis applies to $M_0$.
 \end{itemize}
-
-The side condition in (2) ensures the $[y:=P]$ substitution does not enter $N$
-when changing the order.
 \end{proof}
 
 In the previous example a bound variable is renamed to avoid a naming collision and avoid binding a previously free variable, \aequiv \ is the generalization of this technique, it defines equivalence up to renaming of binding variables.
@@ -285,7 +271,7 @@ In the previous example a bound variable is renamed to avoid a naming collision 
   Remember terms are $\alpha$-equivalent \ only when bounded names are properly substituted.
 \end{example}
 \begin{remark}
-  \aequiv \ comes naturally once substitution is defined, since the names of bound variables are just placeholders that will eventually hold an argument, thus getting replaced.
+  \aequiv \ comes naturally once substitution is defined, since the names of bound variables are just placeholders that will eventually hold an argument.
 \end{remark}
 
 \begin{note}
@@ -296,7 +282,7 @@ In the previous example a bound variable is renamed to avoid a naming collision 
   We are better at names than we are at numbers, which is why we will prefer using symbols over De Brujn indexing. Programs like automated theorem provers and compilers do use similar naming strategies to simplify their work.
 \end{note}
 \subsubsection{\centering $\beta$-equivalence}
-Defines the means to perform computation in the \lcalc, applying substitution as a means of reduction for expressions. This is similar to how one simplifies an arithmetic expression, only it is more powerful, since arithmetic expressions lack expressiveness \ref{}. 
+Defines the means to perform computation in the \lcalc, applying substitution as a means of reduction for expressions. This is similar to how one simplifies an arithmetic expression, only it is more powerful, since arithmetic expressions lack expressiveness. It fails to reproduce branching for instance.
 \begin{definition} Single-step $\beta$-reduction $\step$ is defined using the following inference rules:
   \[
     \begin{array}{@{}l@{\quad}l@{}}
@@ -317,27 +303,33 @@ Defines the means to perform computation in the \lcalc, applying substitution as
     \end{array}
   \]
   where \( M, N \in \La \). In Haskell:
-  \begin{minted}[fontsize=\small]{haskell}
-    betaRed :: Term -> Term
-    betaRed same@(Var x) = same
-    betaRed (Abs x y) = Abs x (betaRed y)
-    betaRed (App (Abs x y) z) = capAvoidSubs y x z
-    betaRed (App x y) = App (betaRed x) (betaRed y)
+  \begin{minted}[fontsize=\small]{Haskell}
+  step :: Term -> Maybe Term
+  step (App (Abs x m) n) = Just (subst x n m)
+  step (App a b) = case step a of
+      Just a' -> Just (App a' b)
+      Nothing -> case step b of
+          Just b' -> Just (App a b')
+          Nothing -> Nothing
+  step (Abs x t) = case step t of
+      Just t' -> Just (Abs x t')
+      Nothing -> Nothing
+  step (Var _) = Nothing
   \end{minted}
 \end{definition} 
 Single \bred s can be applied succesively, which induces the following definition
 \begin{definition}
   \label{def:multi-step-beta-reduction}
-  Multi-step \bred. We write $M \step^* N$ if and only if there exists a sequence of one-step $\beta$-reductions starting from $M$ and ending at $N$.\footnote{The convention in the literature is to use $\rightarrow_\beta$ for \bred s $\twoheadrightarrow_\beta$ for multi-step \bred s. I prefer to use $\curly$ and $\curly^n$ since this allows me to use the superscript to note the number of steps in the process \bred \ e.g. $ (\la f. \la x . \, x) \, M \, N \curly^2 $ N. Instead of $\curly^n$ I use $\curly^*$ whenever the number of steps is undefined.}
+  Multi-step \bred. We write $M \step^* N$ if and only if there exists a sequence of one-step $\beta$-reductions starting from $M$ and ending at $N$.\footnote{The convention in the literature is to use $\rightarrow_\beta$ for \bred s $\twoheadrightarrow_\beta$ for multi-step \bred s. We prefer to use $\curly$ and $\curly^n$ since this allows us to numerate \bred \ steps e.g. $ (\la f. \la x . \, x) \, M \, N \curly^2 $ N. Instead of $\curly^n$, we use $\curly^*$ whenever the number of steps is undefined.}
   \label{def:zero-more-bred}
   \[
     M \equiv M_0 \step M_1 \step M_2 \step \cdots \step M_{n-1} \step M_n \equiv N
   \]
   That is, there exists an integer $n \geq 0$ and a sequence of terms $M_0, M_1, \dots, M_n$ such that: $ M_0 \equiv M $ and $ M_n \equiv N $ for all $ i $ with $ 0 \leq i < n $, we have $ M_i \step M_{i+1} $.
 \end{definition}
-The process of succesively $\beta$-reducing a term leads raises the question of whether all terms can be reduced indefinitly. We know the answer to this, since for instance, variables in $\Vset$ cannot be reduced. The subsequent question is then, Do all all terms have some kind of normal form that cannot be reduced further? This is answered in Section \ref{sec:recursion-fixed-points}. To this end we introduce a formal definition of normal form that will allow us to gain insight into the normalization properties of the \lcalc.
+The process of succesively $\beta$-reducing a term leads raises the question of whether all terms can be reduced indefinitly. We know the answer to this, since for instance, variables in $\Vset$ cannot be reduced. The subsequent question is then, Do all all terms have some kind of normal form that cannot be reduced further? This is answered in Section \ref{sec:recursion-fixed-points}. We now introduce a formal definition of normal form that will later allow us to gain insight into the normalization properties of the \lcalc.
 
-\begin{definition} A \(\lambda\)-term \(M\) is in normal form if there is no term \(N\) such that \( M \curly N \). Equivalently, \(M\) contains no subterm of the form \( (\la x . \, P) \, Q \) that can be reduced by beta-reduction. In other words, \(M\) is irreducible under beta-reduction.
+\begin{definition} A \(\lambda\)-term \(M\) is in normal form if there is no term \(N\) such that \( M \curly N \). Equivalently, \(M\) contains no subterm of the form \( (\la x . \, P) \, Q \) that can be reduced by beta-reduction. We say a term \(M\) is irreducible under beta-reduction.
 \end{definition}
 
 \begin{definition}
@@ -394,8 +386,7 @@ This last notion of equivalence, refers to a program being equivalent to itself 
   The abstraction \( \lambda x.\, (M\;x) \) performs the same operation as \( M \), so if \( x \) is not used freely within \( M \), the abstraction serves no purpose. This is shown in \textsc{Eta}, the rest of the inference rules propagate this equivalence throughout the whole term.
 \end{definition}
 \begin{note}
-  Two terms are observationally equivalent if they cannot
-  be distinguished by any context that can be papplied to them. $\eta$-equivalence can be understood as a form of weak extensionality, since it does not fully encode observational equivalence.
+  Two terms are observationally equivalent if they cannot be distinguished by any context that can be applied to them. $\eta$-equivalence can be understood as a form of weak extensionality\footnote{Understood as we presented it in the introduction}, since it does not fully encode observational equivalence.
 \end{note}
 
 \subsubsection{\centering $\beta\eta$-reduction}

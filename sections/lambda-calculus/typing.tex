@@ -101,6 +101,9 @@ Note how Curry's style allows us to assign different valid types to terms. For e
 
 \subsubsection{\centering Typing à la Church}
 
+Church-style typing embeds type annotations directly in terms, making typing syntax-directed and explicit. We define the following rules that tell whether a term is well-typed.
+
+
 \begin{definition} We define the following typing relation:
   \[
     \inferrule*[right=Var]{x \not\in \mathrm{dom}(\Gamma)}
@@ -117,36 +120,53 @@ Note how Curry's style allows us to assign different valid types to terms. For e
   \]
 \end{definition}
 
-\orange{
-\begin{example} In this example we verify that $ $ is a valid type for $ $ using Curry style of typing.
-  \[
-    \inferrule*[right=App]
+
+  
+\begin{example}
+In this example, we verify that 
+\(
+  (\lambda f.\,\lambda x.\,f\,x)(\lambda y.\,y)
+\)
+is a valid term of type \(\alpha \to \alpha\) using Church-style typing.
+\begin{footnotesize}
+\[
+  \inferrule*[right=App]
+  {
+    \inferrule*[right=Abs]
     {
       \inferrule*[right=Abs]
       {
-        \Gamma, x : \sigma \vdash \la x . \, f \, x : \tau
-      }
-      {
-        \Gamma \vdash \la f. \la x . \, f \, x : (\alpha \to \alpha) \to ( \alpha \to \alpha )
-      }
-      \inferrule*[right=Abs]
-      {
-        \inferrule*[right=Var]
-        { }
+        \inferrule*[right=App]
         {
-          \Gamma, y : \alpha \vdash y : \alpha
+          \inferrule*[right=Var]
+          { }
+          { \Gamma, f : \alpha \to \alpha, x : \alpha \vdash f : \alpha \to \alpha }
+          \quad
+          \inferrule*[right=Var]
+          { }
+          { \Gamma, f : \alpha \to \alpha, x : \alpha \vdash x : \alpha }
         }
+        { \Gamma, f : \alpha \to \alpha, x : \alpha \vdash f\,x : \alpha }
       }
-      {
-        \Gamma \vdash \la y. \, y : \alpha \to \alpha
-      }
+      { \Gamma, f : \alpha \to \alpha \vdash \lambda x.\,f\,x : \alpha \to \alpha }
     }
+    { \Gamma \vdash \lambda f.\,\lambda x.\,f\,x : (\alpha \to \alpha) \to (\alpha \to \alpha) }
+    \quad
+    \inferrule*[right=Abs]
     {
-      \vdash (\la f . \la x . \,f\,x)(\la y . \, y) : \alpha \to \alpha
+      \inferrule*[right=Var]
+      { }
+      { \Gamma, y : \alpha \vdash y : \alpha }
     }
-  \]
+    { \Gamma \vdash \lambda y.\,y : \alpha \to \alpha }
+  }
+  {
+    \vdash (\lambda f.\,\lambda x.\,f\,x)(\lambda y.\,y) : \alpha \to \alpha
+  }
+\]
+\end{footnotesize}
 \end{example}
-}
+
 
 Church-style annotations allow type inference to be straightforward because every abstraction carries its parameter type explicitly, this comes at the cost of requiring annotations on all binders, making the language more verbose.
 
@@ -201,42 +221,41 @@ If $\Gamma \vdash M : \sigma$, then we say that $M$ has type $\sigma$ in $\Gamma
 
 \subsubsection{\centering Typing à la Curry}
 
-This typing flavor is probably the more elegant version of the two alternatives presented. It provides complete separation between terms and types, meaning there is no need to extend the syntax of \lcalc \ to include type annotations in abstractions. Importantly, in the monomorphic case, if a term is indeed typable, there exists an algorithmic procedure to infer a type for it without requiring explicit type annotations. This approach can be further improved in more advanced systems, sometimes referred to as ``Algorithm W'', which systematically finds types for typable terms. In the polymorphic setting, this idea leads to the Hindley-Milner type system, which allows type inference for terms with polymorphic types, generalizing the monomorphic approach.
-
+This typing flavor is probably the more elegant version of the two alternatives presented. It provides complete separation between terms and types, meaning there is no need to extend the syntax of \lcalc \ to include type annotations in abstractions. Importantly, in the monomorphic case, if a term is indeed typable, there exists an algorithmic procedure to infer a type for it without requiring explicit type annotations. This approach can be further improved in more advanced systems, sometimes referred to as ``Algorithm W'', which systematically finds types for typable terms in the polymorphic setting. This idea leads to the Hindley-Milner type system, which allows type inference for terms with polymorphic types.
 
 We implement Typing à la Curry following \cite{NazarethNipkow1996AlgorithmW}. Algorithm \ref{algo:W-mono} presents a faithful synthesis of their monomorphic version of Algorithm W. We provide a similar alternative that is fully interoperable with the rest of our implementation; however, we omit the code to maintain clarity and readability.
 
 \begin{algorithm}
-\caption{Monomorphic Case of Algorithm W}
+\caption{Monomorphic Algorithm W}
 \label{algo:W-mono}
 \begin{algorithmic}[1]
-\Function{W}{expr, env, n}
-    \State \textbf{match} expr \textbf{with}
-    
-    \State \quad \textbf{Var} $x$:
-    \If{$x \in \text{dom}(env)$}
-        \State \Return $\text{Ok}(\text{id}, env(x))$
-    \Else
-        \State \Return $\text{Fail}$
-    \EndIf
+  \Function{W}{expr, env, n}
+  \State \textbf{match} expr \textbf{with}
+  
+  \State \quad \textbf{Var} $x$:
+  \If{$x \in \text{dom}(env)$}
+  \State \Return $\text{Ok}(\text{id}, env(x))$
+  \Else
+  \State \Return $\text{Fail}$
+  \EndIf
 
-    \State \quad \textbf{Abs} $e$:
-        \State $(s, t, m) \gets W(e, env[x \mapsto \text{TVar}(n)], n+1)$
-        \State \Return $\text{Ok}(s, \text{TVar}(n) \to t, m)$
+  \State \quad \textbf{Abs} $e$:
+  \State $(s, t, m) \gets W(e, env[x \mapsto \text{TVar}(n)], n+1)$
+  \State \Return $\text{Ok}(s, \text{TVar}(n) \to t, m)$
 
-    \State \quad \textbf{App} $e_1~e_2$:
-        \State $(s_1, t_1, m_1) \gets W(e_1, env, n)$
-        \State $(s_2, t_2, m_2) \gets W(e_2, s_1(env), m_1)$
-        \State $u \gets \text{mgu}(s_2(t_1), t_2 \to \text{TVar}(m_2))$
-        \State \Return $\text{Ok}(u \circ s_2 \circ s_1, u(\text{TVar}(m_2)), m_2+1)$
-\EndFunction
+  \State \quad \textbf{App} $e_1~e_2$:
+  \State $(s_1, t_1, m_1) \gets W(e_1, env, n)$
+  \State $(s_2, t_2, m_2) \gets W(e_2, s_1(env), m_1)$
+  \State $u \gets \text{mgu}(s_2(t_1), t_2 \to \text{TVar}(m_2))$
+  \State \Return $\text{Ok}(u \circ s_2 \circ s_1, u(\text{TVar}(m_2)), m_2+1)$
+  \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
 Here, \textbf{Var $x$} and \textbf{Abs $e$} are self-explanatory. For \textbf{App $e_1~e_2$}, the algorithm infers types for the function and argument, unifies them using \texttt{mgu}, and returns the resulting type along with the composed substitutions. \texttt{TVar(n)} generates fresh type variables, \texttt{mgu} computes the most general unifier, and $\circ$ denotes substitution composition.
 
 
-\begin{example} Using inference algorithms like the one explained earlier we can provide terms with suitable types without need for explicit type annotations:
+\begin{example} Using inference algorithms like the one earlier we can provide terms with suitable types without need for explicit type annotations:
   Let $\sigma, \tau, \rho$ be arbitrary types. Then:
   \begin{itemize}
   \item $\vdash \la x . x : \sigma \to \sigma$
@@ -254,13 +273,71 @@ Here, \textbf{Var $x$} and \textbf{Abs $e$} are self-explanatory. For \textbf{Ap
   $\la x . \la y . \la z . x \, z \, (y \, z)$ is omitted for readability. Clearly $\texttt{a0} \text{ corresponds to } \alpha$ and $\texttt{a1} \text{ to } \tau$. Note how the typing context is always empty at first.
 \end{example}
 
+\begin{note}
+  Typing style is largely a practical issue, a matter of taste even, since ultimately both approaches yield valid typings. The more we annotate, the less we have to infer, and the converse is also true. For the sake of simplicity, we therefore adopt typing à la Church, keeping type information explicit and straightforward.
+\end{note}
 
-\subsubsection{\centering Final notes on Typing Style}
+\subsubsection{\centering Properties of Minimal Typing}
 
-Typing style is largely a practical issue, even a matter of taste, since ultimately both approaches yield valid typings. The more we annotate, the less we have to infer, and the converse is also true. For the sake of simplicity, we therefore adopt typing à la Church, keeping type information explicit and straightforward.
+In the untyped \(\lambda\)-calculus, not all terms reach a normal form, as seen in \ref{sec:normalization}; some computations can run forever. This makes reasoning about programs more difficult and motivates the study of typed variants. In the following, we provide a few of the most relevant properties of this minimally typed variant, their proofs are given in \cite{nederpelt2014:type-theory} and also \cite{Barendregt1992}.
 
-\paragraph{References \& Examples}{Similar implementations to ours have been examined, namely
-\cite{NazarethNipkow1996AlgorithmW}, seen before, and \cite{Ahmed2012TypeInference}. The latter covers formal verification of ``Algorithm W'' and type inference in the \textbf{ML} Language.
+\begin{definition}
+\label{def:one-step-beta}
+\leavevmode
+The one-step $\beta$-reduction relation $\curly$ on terms of $\Lambda^\to$ is the smallest relation satisfying:
+\begin{enumerate}
+\item (Basis)
+  \(
+    (\lambda x : \sigma.\, M)\,N \;\curly\; M[x := N]
+  \)
+  \item (Compatibility) If \(M \curly M'\) then
+  \[
+    M\,N \curly M'\,N,\qquad
+    N\,M \curly N\,M',\qquad
+    \lambda x : \sigma.\,M \curly \lambda x : \sigma.\,M'
+  \]
+  and similarly for all subterms.
+\end{enumerate}
+\end{definition}
+
+
+\begin{theorem}[Church–Rosser Theorem]
+\label{thm:church-rosser}
+The Church–Rosser property holds for $\lambda^\to$.
+\end{theorem}
+
+\begin{corollary}
+\label{cor:church-rosser}
+Suppose \( M =_\beta N \). Then there exists \( L \) such that
+\[
+  M \twoheadrightarrow_\beta L
+  \quad\text{and}\quad
+  N \twoheadrightarrow_\beta L.
+\]
+\end{corollary}
+
+\begin{lemma}[Subject Reduction]
+\label{lem:subject-reduction}
+If \(\Gamma \vdash L : \rho\) and \(L \to_\beta L'\), then
+\[
+  \Gamma \vdash L' : \rho.
+\]
+\end{lemma}
+
+\begin{theorem}[Strong Normalisation Theorem (Termination)]
+\label{thm:strong-normalisation}
+Every legal term \( M \) in $\lambda^\to$ is strongly normalising.
+\end{theorem}
+
+
+
+
+
+
+
+
+
+
 
 \section{\centering Extended Typing}
 As discussed, minimal typing is the simplest form of typing. It follows from this statement that it can be extended. Here we introduce products that can be thought of as records or structs:
@@ -330,12 +407,18 @@ Given $t \in \La^\times$, typing judgments are of the form \( \Gamma \vdash t : 
 The core $\beta$-reduction rules for simply typed $\lambda$-calculus with products and unit are:
 
 \[
-  (\lambda x : A.\ M)\ N \;\curly\; M[N/x]
+  (\lambda x : A.\ M)\ N \;\curly\; M[x:=M]
 \]
 \[
   \pi_1 \langle M, N \rangle \;\curly\; M
   \qquad
   \pi_2 \langle M, N \rangle \;\curly\; N
+\]
+\[
+  \langle \pi_1 M,\, \pi_2 M\rangle = M
+\]
+\[
+  \lambda x : U.\, (M\,x) = t \quad (x \not\in \mathrm{FV}(M))
 \]
 
 \noindent
@@ -529,7 +612,10 @@ where: \( n = d(t) \text{ and  } m = \text{number of redexes of degree } n. \)
 \end{theorem}
 
 
-\paragraph{References \& Resources}{Notions that are ubiquitous to Type Theory have been outsourced from either \cite{nederpelt2014:type-theory}, \cite{selinger2008:lambdanotes} or \cite{sorensen2006:curry-howard}. The subsection on normalization is a synthesis of what can be found in \cite{girard1989:proofs-and-types}. Other texts that might have influenced the development of this section have been cited accordingly.
+
+
+\paragraph{References \& Resources}{Notions that are ubiquitous to Type Theory have been outsourced from either \cite{nederpelt2014:type-theory}, \cite{selinger2008:lambdanotes} or \cite{sorensen2006:curry-howard}. The subsection on normalization is a synthesis of what can be found in \cite{girard1989:proofs-and-types}. Other texts that might have influenced the development of this section have been cited accordingly. In regard to implementation details, similar implementations to ours have been examined, namely \cite{NazarethNipkow1996AlgorithmW}, seen before, and \cite{Ahmed2012TypeInference}. The latter covers formal verification of ``Algorithm W'' and type inference in the \textbf{ML} Language.
+
 }
 
 

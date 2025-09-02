@@ -84,22 +84,22 @@ with all $x_i$ distinct.
 
 With this in mind we distinguish two alternative methods for typing. Typing à la Church, where types are annotated alongside $\lambda$-terms. And Typing a la Curry, where typing judgements are provided externally through some inference algorithm. Church's style of typing adds syntax on top of the already defined \lcalc. It can be said that while Church's typing introduces rules to generate well-typed terms, Curry's approach infers types from untyped expressions.
 \begin{itemize}
-\item Curry-style:
-\[
-  \lambda x . x
-  \quad\text{with}\quad
-  \vdash \lambda x . x : \sigma \to \sigma
-\]
 \item Church-style:
-\[
-  \lambda x : \sigma . x
-  \quad\text{with}\quad
-  \vdash \lambda x : \sigma . x : \sigma \to \sigma
-\]
+  \[
+    \lambda x : \sigma . x
+    \quad\text{with}\quad
+    \vdash \lambda x : \sigma . x : \sigma \to \sigma
+  \]
+\item Curry-style:
+  \[
+    \lambda x . x
+    \quad\text{with}\quad
+    \vdash \lambda x . x : \sigma \to \sigma
+  \]
 \end{itemize}
 Note how Curry's style allows us to assign different valid types to terms. For example, $(\alpha \to \beta) \to (\alpha \to \beta)$ could be a valid type assignment for $\la x . \, x$, do not confuse this polymorphism.
 
-\subsubsection{\centering Typing à la Curry}
+\subsubsection{\centering Typing à la Church}
 
 \begin{definition} We define the following typing relation:
   \[
@@ -148,31 +148,119 @@ Note how Curry's style allows us to assign different valid types to terms. For e
 \end{example}
 }
 
-\begin{note}
-  Notice that we can replace $\alpha$ by any other basic type and the derivation tree would still hold. Moreover, we could replace $y$ by a different term with a different type and the structure of the tree would hold as long as we also replace $\alpha$ with the corresponging type.
-\end{note}
+Church-style annotations allow type inference to be straightforward because every abstraction carries its parameter type explicitly, this comes at the cost of requiring annotations on all binders, making the language more verbose.
 
-\begin{example}
-  Let $\sigma, \tau, \rho$ be arbitrary types. Then:
-  \begin{itemize}
-  \item $\vdash \lambda x . x : \sigma \to \sigma$
-  \item $\vdash \lambda x . \lambda y . x : \sigma \to \tau \to \sigma$
-  \item $\vdash \lambda x . \lambda y . \lambda z . x \, z \, (y \, z) 
-    : (\sigma \to \tau \to \rho) \to (\sigma \to \tau) \to \sigma \to \rho$
-  \end{itemize}
+\begin{example} The following implementation of inference on annotated types is witness of the previous statements. We first introduce type annotations on abstractions and define types according to \ref{}:
+\begin{minted}{Haskell}
+  data Type
+      = Base Natural
+      | Arr Type Type
+  data TypedTerm
+      = Var String
+      | Abs String Type TypedTerm
+      | App TypedTerm TypedTerm
+\end{minted}
+Then we add the notion of context as a map from variable names to types.
+\begin{minted}{Haskell}
+  type Context = [(String, Type)]
+\end{minted}
+We define \texttt{infer}:
+\begin{minted}{Haskell}
+  infer :: Context -> TypedTerm -> Maybe Type
+  infer ctx (Var x) =
+    lookup x ctx
+  infer ctx (Abs x t body) =
+    case infer ((x, t) : ctx) body of
+      Just bodyType -> Just (Arr t bodyType)
+      Nothing -> Nothing
+  infer ctx (App t1 t2) =
+    case infer ctx t1 of
+      Just (Arr argType resType) ->
+        case infer ctx t2 of
+          Just t2Type | t2Type == argType -> Just resType
+          _ -> Nothing
+      _ -> Nothing
+\end{minted}
+
+\begin{minted}{shell-session}
+  ghci> infer [] (Abs "x" (Base 0) (Var "x"))
+  Just 0->0
+\end{minted}
+Our Church style inference is smart enough to provide us with statements such as:
+\begin{minted}{shell-session}
+  ghci> infer [("y", (Base 0))] (App (Abs "x" (Base 0) (Var "x")) (Var "y"))
+  Just 0
+\end{minted}
+provided that the context carries sufficient information and the expressions are well formed and properly annotated.
+
 \end{example}
 
 \begin{definition}
 If $\Gamma \vdash M : \sigma$, then we say that $M$ has type $\sigma$ in $\Gamma$. A term $M$ is typable if there exist $\Gamma$ and $\sigma$ such that $\Gamma \vdash M : \sigma$.
 \end{definition}
-\subsubsection{\centering Typing à la Church}
+
+\subsubsection{\centering Typing à la Curry}
+
+This typing flavor is probably the more elegant version of the two alternatives presented. It provides complete separation between terms and types, meaning there is no need to extend the syntax of \lcalc \ to include type annotations in abstractions. Importantly, in the monomorphic case, if a term is indeed typable, there exists an algorithmic procedure to infer a type for it without requiring explicit type annotations. This approach can be further improved in more advanced systems, sometimes referred to as ``Algorithm W'', which systematically finds types for typable terms. In the polymorphic setting, this idea leads to the Hindley-Milner type system, which allows type inference for terms with polymorphic types, generalizing the monomorphic approach.
 
 
+We implement Typing à la Curry following \cite{NazarethNipkow1996AlgorithmW}. Algorithm \ref{algo:W-mono} presents a faithful synthesis of their monomorphic version of Algorithm W. We provide a similar alternative that is fully interoperable with the rest of our implementation; however, we omit the code to maintain clarity and readability.
 
-\orange{...}
+\begin{algorithm}
+\caption{Monomorphic Case of Algorithm W}
+\label{algo:W-mono}
+\begin{algorithmic}[1]
+\Function{W}{expr, env, n}
+    \State \textbf{match} expr \textbf{with}
+    
+    \State \quad \textbf{Var} $x$:
+    \If{$x \in \text{dom}(env)$}
+        \State \Return $\text{Ok}(\text{id}, env(x))$
+    \Else
+        \State \Return $\text{Fail}$
+    \EndIf
+
+    \State \quad \textbf{Abs} $e$:
+        \State $(s, t, m) \gets W(e, env[x \mapsto \text{TVar}(n)], n+1)$
+        \State \Return $\text{Ok}(s, \text{TVar}(n) \to t, m)$
+
+    \State \quad \textbf{App} $e_1~e_2$:
+        \State $(s_1, t_1, m_1) \gets W(e_1, env, n)$
+        \State $(s_2, t_2, m_2) \gets W(e_2, s_1(env), m_1)$
+        \State $u \gets \text{mgu}(s_2(t_1), t_2 \to \text{TVar}(m_2))$
+        \State \Return $\text{Ok}(u \circ s_2 \circ s_1, u(\text{TVar}(m_2)), m_2+1)$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Here, \textbf{Var $x$} and \textbf{Abs $e$} are self-explanatory. For \textbf{App $e_1~e_2$}, the algorithm infers types for the function and argument, unifies them using \texttt{mgu}, and returns the resulting type along with the composed substitutions. \texttt{TVar(n)} generates fresh type variables, \texttt{mgu} computes the most general unifier, and $\circ$ denotes substitution composition.
 
 
-For the rest of the text we will consider typing a la church.
+\begin{example} Using inference algorithms like the one explained earlier we can provide terms with suitable types without need for explicit type annotations:
+  Let $\sigma, \tau, \rho$ be arbitrary types. Then:
+  \begin{itemize}
+  \item $\vdash \la x . x : \sigma \to \sigma$
+  \item $\vdash \la x . \la y . x : \sigma \to \tau \to \sigma$
+  \item $\vdash \la x . \la y . \la z . x \, z \, (y \, z) 
+    : (\sigma \to \tau \to \rho) \to (\sigma \to \tau) \to \sigma \to \rho$
+  \end{itemize}
+  from our program:
+  \begin{minted}{shell-session}
+  ghci> infer [] (Abs "x" (Var "x")) 0
+  Just ([],(a0 -> a0),1)
+  ghci> infer [] (Abs "x" (Abs "y" (Var "x"))) 0
+  Just ([],(a0 -> (a1 -> a0)),2)
+\end{minted}
+  $\la x . \la y . \la z . x \, z \, (y \, z)$ is omitted for readability. Clearly $\texttt{a0} \text{ corresponds to } \alpha$ and $\texttt{a1} \text{ to } \tau$. Note how the typing context is always empty at first.
+\end{example}
+
+
+\subsubsection{\centering Final notes on Typing Style}
+
+Typing style is largely a practical issue, even a matter of taste, since ultimately both approaches yield valid typings. The more we annotate, the less we have to infer, and the converse is also true. For the sake of simplicity, we therefore adopt typing à la Church, keeping type information explicit and straightforward.
+
+\paragraph{References \& Examples}{Similar implementations to ours have been examined, namely
+\cite{NazarethNipkow1996AlgorithmW}, seen before, and \cite{Ahmed2012TypeInference}. The latter covers formal verification of ``Algorithm W'' and type inference in the \textbf{ML} Language.
 
 \section{\centering Extended Typing}
 As discussed, minimal typing is the simplest form of typing. It follows from this statement that it can be extended. Here we introduce products that can be thought of as records or structs:
@@ -322,11 +410,28 @@ These are the usual problems type theorists face. A programmer should be at leas
 \item \textbf{Inhabitation}: 
   Given a context and a type, determine whether there exists a term with that type: \( \Gamma \;\vdash\; ? : \texttt{type}  \)
 \end{itemize}
+
 \begin{remark}
   In programming languages and theorem provers, these type problems have concrete meanings. Well-typedness asks whether a term or program is valid under the typing rules, ensuring correctness of proofs or programs. Type Checking verifies that a given term has a specified type, allowing compilers or proof assistants to confirm correctness. Term Finding constructs a term of a given type, corresponding to automatic proof generation in theorem provers or program synthesis in programming languages.
 \end{remark}
-\section{\centering Normalization in Minimal and Extended Typing}
+
+\begin{note}
+  In our specific case, the implementations given show an increasing level of type inference. The simplest kind is capable of type checking and relies on annotations for every term, the second implements Church--style typing, and the third implements proper inference on monomorphic types given no annotations. The point of this note is to relate type checking and typability through annotations vs. inference, meaning the more type annotations we add, the more typability reduces to checking.
+\end{note}
+
+\section{\centering Normalization Revisited}
 \label{sec:typed-normalization}
+
+The same way we added types and products to the \lcalc, we now update our previous definition of normal form to adequately adjust to our new requirements:
+\begin{definition} A term is normal if none of its subterms is of any of the following forms:
+  \label{def:prod-normal}
+\[
+\pi_1 \langle u, v \rangle \quad
+\pi_2 \langle u, v \rangle \quad
+(\lambda x: u . v)\, u
+\]
+since otherwise it would be reducible.
+\end{definition}
 
 \begin{definition}
 Let $\to$ be a reduction relation on terms.
@@ -342,16 +447,90 @@ Let $\to$ be a reduction relation on terms.
 
 \begin{theorem}
 \label{thm:sn-stlc-products}
-Every well-typed term in the simply typed $\lambda$-calculus with product types and unit type is strongly normalizing.   Formally, if $\Gamma \vdash M : A$, then there is no infinite sequence of reductions starting from $M$:
+Every well-typed term in the simply typed $\lambda$-calculus with product types and unit type is strongly normalizing. Formally, if $\Gamma \vdash M : A$, then there is no infinite sequence of reductions starting from $M$:
 \[
 M \;\to\; M_1 \;\to\; M_2 \;\to\; \dots
 \]
-Equivalently, $M$ belongs to the set of \textbf{strongly normalizing terms}:
-\[
-M \in \mathrm{SN} = \{\, N \mid \text{all reduction sequences starting from $N$ terminate} \,\}.
-\]
 \end{theorem}
 
+\begin{corollary}
+  The simply typed \lcalc is weakly normalizing.
+\end{corollary}
+  
+The proofs are lengthy and well known. They are covered in full detail by \cite{girard1989:proofs-and-types} chapters $4$ and $6$. The strong normalization theorem is difficult to prove. In contrast, the proof of the weak normalization theorem is not as hard and provides measure of complexity based on the number of redexes of a given degree within a term.
+
+\subsubsection{\centering Proof Sketch of the Weak Normalization Theorem}
+
+To prove the weak normalization theorem, we assign a numerical measure of complexity to terms based on the degrees of their redexes. By carefully analyzing how these degrees behave under substitution and reduction, we construct an inductive argument showing that every term can be reduced, step by step, to a normal form
+
+\begin{definition}
+The degree $\partial(T)$ of a type $T$ is defined as:
+\begin{itemize}
+\item $\partial(T_i) = 1$ if $T_i$ is atomic
+\item $\partial(U \times V) = \partial(U \to V) = \max(\partial(U), \partial(V)) + 1$
+\end{itemize}
+\end{definition}
+\begin{definition}
+The degree $\partial(r)$ of a redex \ref{def:prod-normal} $r$ is defined by:
+\begin{itemize}
+    \item $\partial(\pi_1\langle u, v \rangle) = \partial(\pi_2\langle u, v \rangle) = \partial(U \times V)$, where $U \times V$ is the type of $\langle u, v \rangle$
+    \item $\partial((\lambda x. v)\, u) = \partial(U \to V)$, where $U \to V$ is the type of $(\lambda x. v)$
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+\label{def:term-degree}
+The degree $d(t)$ of a term $t$ is the supremum of the degrees of the redexes it contains. For any redex $r$, we have
+\[
+\partial(r) \le d(r)
+\]
+since \( d(r) = \sup\bigl(\partial(r),\, \{\partial(r') \mid r' \subset r\}\bigr) \)
+\end{definition}
+
+\paragraph{Key Lemmas}{We cover the necessary lemmas to give the reader an intuition of how the proof develops. We omit the proofs since they are already covered in detail by \cite{girard1989:proofs-and-types}
+}
+
+\begin{lemma} Degree and Substitution:
+\label{lem:degree-substitution}
+If $x$ is of type $U$, then
+\[
+  d(t[x := u]) \leq \max(d(t),\, d(u),\, \partial(U))
+\]
+The effect substitution has on degree does not blow up and has a limited upper bound. Not only that, we also know the upper bound.
+\end{lemma}
+
+\begin{lemma} Degree and Conversion:
+\label{lem:degree-conversion}
+If $t \to u$, then
+\[
+d(u) \le d(t)
+\]
+Reduction only decreases degree.
+\end{lemma}
+
+\begin{lemma} Conversion of Maximal Degree:
+\label{lem:max-degree-conversion}
+Let $r$ be a redex of maximal degree $n$ in $t$, and suppose all redexes strictly contained in $r$ have degree less than $n$. If $u$ is obtained by converting $r$ to $c$, then $u$ has strictly fewer redexes of degree $n$. Meaning that the a term of maximal degree reduces to a term of smaller degree.
+\end{lemma}
+
+Putting the lemmas together, we use the notion of measure to finalize the proof sketch:
+
+\begin{definition} The Measure of a term
+\label{def:term-measure}
+$t$, is defined as
+\[
+  \mu(t) = (n, m)
+\]
+where: \( n = d(t) \text{ and  } m = \text{number of redexes of degree } n. \)
+\end{definition}
+
+\begin{theorem}
+\label{thm:weak-normalisation} By iteratively applying Lemma~\ref{lem:max-degree-conversion} to reduce the measure $\mu(t)$ in lexicographic order, every term $t$ eventually reaches a normal form. Hence, weak normalization holds.
+\end{theorem}
+
+
+\paragraph{References \& Resources}{Notions that are ubiquitous to Type Theory have been outsourced from either \cite{nederpelt2014:type-theory}, \cite{selinger2008:lambdanotes} or \cite{sorensen2006:curry-howard}. The subsection on normalization is a synthesis of what can be found in \cite{girard1989:proofs-and-types}. Other texts that might have influenced the development of this section have been cited accordingly.
+}
 
 
 

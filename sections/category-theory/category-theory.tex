@@ -28,14 +28,11 @@ Let us begin our dive into categories by defining what they are:
   \end{itemize}
 \end{definition}
 
-
-
 \begin{remark}
 Literature on the topic usually differentiates between small and large categories. Small categories are those whose collection of objects and whose collection of arrows are both sets. Large categories allow for collections of objects or arrows that are proper classes rather than sets. We will only be concerned with small categories.
 \end{remark}
 
 Various mathematical constructs fit the description of a category. For example, the category $\mathbf{Set}$ consists of sets as objects and functions as morphisms, where composition is ordinary function composition and identities are identity functions. Another example is the category $\mathbf{Grp}$, whose objects are groups and whose morphisms are group homomorphisms. Other examples are:
-
 
 \begin{example} Let $\mathcal{C}$ denote a category, consisting of a set of objects, $\functionfont{Ob}(\mathcal{C})$, and a set of arrows, $\functionfont{Hom}(\mathcal{C})$, satisfying the category axioms.
 
@@ -52,7 +49,6 @@ Various mathematical constructs fit the description of a category. For example, 
     \[ \text{Ob}(\mathbf{2}) = \{A, B\}, \quad \text{Hom}(\mathbf{2}) = \{\operatorname{id}_A, \operatorname{id}_B, f\} \]
     where $\operatorname{id}_A: A \to A$ and $\operatorname{id}_B: B \to B$ are identity morphisms, and $f: A \to B$ is a unique non-identity morphism. The compositions are defined as $f \circ \operatorname{id}_A = f$ and $\operatorname{id}_B \circ f = f$.
 \end{itemize}
-
   
   The most elemental category is the category that has no elements and no arrows, it is commonly represented with a $0$. Category $1$ contains one object and one identity arrow, as required by the definition. Category $2$ contains three arrows, the identities and one arrow from $1$ to $2$. Category $3$ builds up on this as is observed in the following diagram:
   \[
@@ -185,11 +181,26 @@ In a category $\mathcal{C}$, for any two objects $A, B \in \functionfont{Ob}(\ma
   f \circ g_1 = f \circ g_2 \ \implies g_1 = g_2 \quad \text{(resp. } h_1 \circ f = h_2 \circ f \implies h_1 = h_2 \text{)}
 \]
 
+
 \end{definition}
 
 \begin{note}
   Monomorphisims generalize the notion of injectivity, while epimorphisms are the categorical generalization of surjectivity.
 \end{note}
+
+\begin{definition}
+An object \(A\) is isomorphic to \(B\) in a category \(\mathcal{C}\) if there exists a morphism
+\(
+f: A \to B
+\)
+such that there exists an inverse morphism
+\( g: B \to A \)
+with
+\[
+g \circ f = \mathrm{id}_A \quad \text{and} \quad f \circ g = \mathrm{id}_B.
+\]
+Denoted \(A \cong B\).
+\end{definition}
 
 
 \subsubsection{\centering Functors}
@@ -436,6 +447,24 @@ for each $X \in \mathrm{Ob}(\mathcal{C})$.
 The collection of all functors $F : \mathcal{C} \to \mathcal{D}$ together with natural transformations between them forms the functor category $\mathbf{Fun}(\mathcal{C}, \mathcal{D}) \in \mathrm{Ob}(\mathbf{Cat})$.
 \end{remark}
 \subsubsection{\centering Universal Constructions}
+
+
+\begin{definition}
+An object \(T \in \mathcal{C}\) is terminal if for every object \(X \in \mathcal{C}\) there exists a unique morphism
+\[
+!_X : X \to T.
+\]
+Dually, an object \(I \in \mathcal{C}\) is initial if for every object \(X \in \mathcal{C}\) there exists a unique morphism
+\[
+!_X : I \to X.
+\]
+\end{definition}
+
+\begin{note}
+
+\end{note}
+
+
 \begin{definition}
 Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
 A product of $A$ and $B$ is an object $A \times B$ together with morphisms
@@ -480,5 +509,14 @@ A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g
 
 
 \section{\centering Closed Cartesian Categories}
+
+\paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science.
+}
+
+
+
+
+
+
 
 

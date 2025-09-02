@@ -111,13 +111,13 @@ Classically, factorial is defined as $n! = \prod_{k=1}^{n} k$, that has the foll
 \begin{example} Implementing factorial using the acquired toolkit:
   \[
     \underline{\texttt{fact}}
-    = \lambda n.\; \texttt{if\ then\ else}\;(\texttt{iszero}\; n)\;(\overline{\texttt{1}})\;(\texttt{mult}\; n\;(\underline{\texttt{fact}}\;(\texttt{pred}\; n))),
+    = \lambda n.\; \texttt{if}\;(\texttt{iszero}\; n)\;(\overline{\texttt{1}})\;(\texttt{mult}\; n\;(\underline{\texttt{fact}}\;(\texttt{pred}\; n))),
   \]
 \end{example}
 \noindent As already seen, the problem with a recursive definition such as this one is that the name $\texttt{fact}$, appears both on the left and the right-hand side. This means finding $\texttt{fact}$ requires solving an equation, which we will do thanks to fixed points. We start by abstracting away $\texttt{fact}$ from the term:
 \[
   \texttt{fact}
-  = \overbrace{\bigl(\lambda f.\,\lambda n.\; \texttt{if\ then\ else}\;(\texttt{iszero}\; n)\;(1)\;(\texttt{mult}\; n\;(f\;(\texttt{pred}\; n)))\bigr)}^{F}\;\texttt{fact}.
+  = \overbrace{\bigl(\lambda f.\,\lambda n.\; \texttt{if}\;(\texttt{iszero}\; n)\;(1)\;(\texttt{mult}\; n\;(f\;(\texttt{pred}\; n)))\bigr)}^{F}\;\texttt{fact}.
 \]
 \noindent Then the last equation becomes $\texttt{fact} = F \, \texttt{fact}$, which is a fixed point equation.
 We can solve it up to $\beta$-equivalence by letting \( \texttt{fact} = \Theta F \). Using our Haskell program we define \texttt{fact}:

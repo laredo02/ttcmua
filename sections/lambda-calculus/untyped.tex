@@ -73,7 +73,7 @@ From the ground up, we define what a subterm is, since the definition of the lan
     &\Sub {MN} = \Sub M  \cup \Sub N \cup \{MN\} \\
     &\Sub {\la x . M} = \Sub M  \cup \{\la x. M\}
   \end{align*}
-  Where $x \in \Vset$ and $M, N \in \La $. In Haskell:
+  Where $x \in \Vset$, $M, N \in \La $ and $\mathcal{P}$ denotes the power set. In Haskell:
   \begin{minted}[fontsize=\small]{haskell}
     subTerms :: Term -> Set.Set Term
     subTerms (Var x) = Set.singleton (Var x)
@@ -113,7 +113,7 @@ The set of Free Variables $\functionfont{FV}$, those that will not get replaced 
     & \FV {MN} = \FV M \cup \FV N \\
     & \FV {\lambda x . M} = \FV M \setminus \{x\}
   \end{align*}
-  Where $ x \in \Vset $ and $ M, N \in \La $, and $\mathcal{P}$ denotes the power set. In Haskell:
+  Where $ x \in \Vset $ and $ M, N \in \La $. In Haskell:
   \begin{minted}[fontsize=\small]{haskell}
     freeVars :: Term -> Set.Set String
     freeVars (Var x) = Set.singleton x

@@ -139,21 +139,22 @@ This unequivocally yields \texttt{(\lambda f.(\lambda x.f(f(f(f(f(fx)))))))}.
 \subsubsection{\centering Booleans \& Branching}
 The next constructions in line are the truth values of boolean logic, ``\textit{true}'' and ``\textit{false}'' for short.
 \begin{definition} Boolean truth values:
-  \begin{align*}
-    \texttt{TRUE} &\equiv \lambda t.\lambda f. t \\
-    \texttt{FALSE} &\equiv \lambda t.\lambda f. f
-  \end{align*}
+\(
+    \texttt{TRUE} \equiv \lambda t.\lambda f. t \text{ and }
+    \texttt{FALSE} \equiv \lambda t.\lambda f. f
+\)
 \end{definition}
 \begin{remark}
   \label{rem:true-false}
   Note how $\TRUE \ M \ N \curly M $ and $ \FALSE \ M \ N \curly N $
 \end{remark}
 \begin{definition} Conditional, in other words \textit{``if statement''}.
-  \begin{align*}
-    \texttt{IF} &\equiv \lambda b.\lambda t.\lambda e. b\,t\,e
-  \end{align*}
+  \(
+    \texttt{IF} \equiv \lambda b.\lambda t.\lambda e. b\,t\,e \)
 \end{definition}
-\noindent The \IF \ statement is just a combinator that happens to behave similarly to a branching statement whenever we pass a church encoded boolean as a first argument.
+\begin{note}
+  \IF \ statement is just a combinator that happens to behave similarly to a branching statement whenever we pass a church encoded boolean as a first argument.
+  \end{note}
 \begin{example} On the correct behabiour of $\IF$ i.e. check that it implements branching. $ M, N \in \La $ and $ \IF, \TRUE, \FALSE$ are as usual:
   \[
     \begin{aligned}
@@ -234,17 +235,14 @@ We move on to how we can now define linear lists.
   \]
   which binds a new element $h$ to a pre-existing list $t$ or to \NIL.
 \end{definition}
-\magenta{
 \begin{definition}
   Some other relevant list operators are:
   \begin{align*}
     \texttt{ISNIL} &\equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE \\
     \texttt{HEAD} &\equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL}) \\
-    \texttt{TAIL} &\equiv \la l. \FST (l\,(\la h.\la t. \PAIR \, t \, t)\,(\PAIR \, \NIL \, \NIL))
+    \texttt{TAIL} &\equiv \la l.\la c.\la n.l\ (\la h.\la r.\la g.g\ h\ (r\ c))\ (\la c.n)\ (\la h.\la t.t)
   \end{align*}
 \end{definition}
-}
-
 
 
 

@@ -1,4 +1,5 @@
 \section{\centering Normalization \& The Church-Rosser Theorem}
+\label{sec:normalization-and-cr}
 In this section we attempt to give the reader an overview of the properties behind this calculus. We analyze what makes the untyped \lcalc \ a suitable computation model, and provide enough evidence that it is missing some desirable properties that motivate the introduction of typing.
 \subsubsection{\centering  The Church-Rosser in the \lCalc}
 To this end we specify some tools general to relations, specifically, those that help us reason about confluence and termination.
@@ -44,12 +45,8 @@ where $x, y, z, w \in A$. In a diagram:
 The following section covers the proof of this property for the untyped \lcalc. We deemed it necessary to include the proof since it provides evidence that the \lcalc is a viable system to perform computation with, since it ensures that no matter what reduction path we choose first the reduction can always converge into a unique term. See \ref{cor:unique-normal-form}. This notion of confluence is strengthened when we introduce typing \ref{sec:typed-normalization}.
 \begin{remark} If you have no time to waste, \cite{nagele2016mechanized} is a mechanized proof of the Church-Rosser Theorem using the $Z$-property written in Nominal Isabelle, which enables you to swiftly glance over the following section.
 \end{remark}
-\magenta{
+
 \input{sections/lambda-calculus/church-rosser-proof}
-}
-\begin{remark}
-  The untyped \lcalc \ does not obey the Diamond property. The proof of this fact is given later on when we present fixed points and recursion \ref{}.
-\end{remark}
 
 \begin{corollary}
 \label{cor:unique-normal-form}
@@ -68,11 +65,10 @@ Since \( N_1 \) and \( N_2 \) are normal forms, they cannot be reduced further.
 Thus, the only possible \( P \) is \( N_1 =_\alpha N_2 \).
 \end{proof}
 
-Looking at the big picture, we find this normalization property to be a non-trivial result that helps us verify that the \lcalc \ is a deterministic model of computation. Meaning that if we take a program and run it, it will always give the same output for a given input. Of course, when we say a program, we mean a \lterm, and when we say run, we mean $\beta$-reduce. Perhaps the following section enables the reader to better grasp why we informally speak of lambda terms as programs.
 
 \subsubsection{\centering Normalization}
 \label{sec:normalization}
-Normalization properties essentially summarize the termination properties of terms in the context of $\beta$-reduction.
+Normalization properties essentially summarize the termination properties of terms in the context of $\beta$-reduction. So, while The Church-Rosser property ensures confluence, normalization focuses on termination i.e. whether reduction eventually terminates.
 
 \begin{definition} Consider a lambda term \(M\) and all possible \(\beta\)-reduction sequences
 \[
@@ -114,5 +110,8 @@ We classify \(M\) as follows:
   Checking whether a term is terminating is undecidable in general, since it is an instance of the halting problem.
 \end{remark}
 
+Looking at the big picture, we find the Church-Rosser Property to be a non-trivial result that helps us verify that the \lcalc \ is a deterministic model of computation. Meaning that if we take a program and run it, it will always give the same output for a given input. Of course, when we say a program, we mean a \lterm, and when we say run, we mean $\beta$-reduce. Perhaps the following section enables the reader to better grasp why we informally speak of lambda terms as programs.
+
+Also, we established the untyped \lcalc \ to have pretty weak normalization properties, meaning within the space of possible terms we find everything from strongly-normalizing to non-normalizing terms.
 
 

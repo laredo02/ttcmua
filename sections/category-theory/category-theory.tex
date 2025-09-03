@@ -508,7 +508,104 @@ A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g
 \end{definition}
 
 
+\subsubsection{\centering Adjunctions}
+
+\begin{definition}
+
+  Let $\mathcal{C}$ and $\mathcal{D}$ be categories. An adjunction between them consists of two functors
+\[
+F : \mathcal{C} \to \mathcal{D}, \qquad G : \mathcal{D} \to \mathcal{C}
+\]
+and a natural family of bijections
+\[
+\Phi_{C,D} : \mathrm{Hom}_{\mathcal{D}}\bigl(F(C), D\bigr)
+\;\cong\;
+\mathrm{Hom}_{\mathcal{C}}\bigl(C, G(D)\bigr)
+\]
+that is natural in both $C \in \mathcal{C}$ and $D \in \mathcal{D}$.
+
+This is denoted by
+\[
+F \dashv G,
+\]
+where $F$ is the \emph{left adjoint} and $G$ is the \emph{right adjoint}.
+
+Equivalently, an adjunction can be described by a pair of natural transformations:
+\[
+\eta : \mathrm{Id}_{\mathcal{C}} \Rightarrow G F,
+\qquad
+\varepsilon : F G \Rightarrow \mathrm{Id}_{\mathcal{D}}
+\]
+called the \emph{unit} and \emph{counit}, satisfying the \emph{triangle identities}
+\[
+G \xrightarrow{G \varepsilon} G F G \xrightarrow{\eta G} G
+= \mathrm{Id}_{G},
+\qquad
+F \xrightarrow{\varepsilon F} F G F \xrightarrow{F \eta} F
+= \mathrm{Id}_{F}.
+\]
+
+\end{definition}
+
+Let $\mathcal{C}$ be a category with finite products. For objects $A,B \in \mathcal{C}$,
+an \emph{exponential object} $B^{A}$ is defined together with an \emph{evaluation morphism}
+\[
+\mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
+\]
+such that for every object $C \in \mathcal{C}$ and every morphism
+\[
+f : C \times A \longrightarrow B
+\]
+there exists a unique morphism
+\[
+\lambda f : C \longrightarrow B^{A}
+\]
+making the following diagram commute:
+\[
+\begin{array}{c}
+C \times A \xrightarrow{\ \lambda f \times 1_{A}\ } B^{A} \times A \xrightarrow{\ \mathrm{ev}_{A,B}\ } B
+\end{array}
+\]
+that is,
+\[
+\mathrm{ev}_{A,B} \circ (\lambda f \times 1_{A}) = f.
+\]
+
+The object $B^{A}$, if it exists, is unique up to unique isomorphism. A category
+in which such exponentials exist for all pairs of objects is called a
+\emph{cartesian closed category (CCC)}.
+
+
 \section{\centering Closed Cartesian Categories}
+
+Let $\mathcal{C}$ be a category with finite products. For objects $A,B \in \mathcal{C}$,
+an \emph{exponential object} $B^{A}$ is defined together with an \emph{evaluation morphism}
+\[
+\mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
+\]
+such that for every object $C \in \mathcal{C}$ and every morphism
+\[
+f : C \times A \longrightarrow B
+\]
+there exists a unique morphism
+\[
+\lambda f : C \longrightarrow B^{A}
+\]
+making the following diagram commute:
+\[
+\begin{array}{c}
+C \times A \xrightarrow{\ \lambda f \times 1_{A}\ } B^{A} \times A \xrightarrow{\ \mathrm{ev}_{A,B}\ } B
+\end{array}
+\]
+that is,
+\[
+\mathrm{ev}_{A,B} \circ (\lambda f \times 1_{A}) = f.
+\]
+
+The object $B^{A}$, if it exists, is unique up to unique isomorphism. A category
+in which such exponentials exist for all pairs of objects is called a
+\emph{cartesian closed category (CCC)}.
+
 
 \paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science.
 }

@@ -278,8 +278,7 @@ Here, \textbf{Var $x$} and \textbf{Abs $e$} are self-explanatory. For \textbf{Ap
 \end{note}
 
 \subsubsection{\centering Properties of Minimal Typing}
-
-In the untyped \(\lambda\)-calculus, not all terms reach a normal form, as seen in \ref{sec:normalization}; some computations can run forever. This makes reasoning about programs more difficult and motivates the study of typed variants. In the following, we provide a few of the most relevant properties of this minimally typed variant, their proofs are given in \cite{nederpelt2014:type-theory} and also \cite{Barendregt1992}.
+In \ref{sec:normalization-and-cr} we analyzed the untyped \lcalc \ as a computation model. We also provided evidence that it is missing some desirable properties, for instance, not all terms reached a normal form, as seen in \ref{sec:normalization}, some computations can run forever. This makes reasoning about programs more difficult and motivates the study of typed variants. In the following, we provide a few of the most relevant properties of this minimally typed variant, that wile restricting expressiveness, add safety and decidability. Proofs are omitted, refer to \cite{nederpelt2014:type-theory} and \cite{Barendregt1992}.
 
 \begin{definition}
 \label{def:one-step-beta}
@@ -402,6 +401,9 @@ Given $t \in \La^\times$, typing judgments are of the form \( \Gamma \vdash t : 
 \end{definition}
 
 \subsubsection{\centering Reduction Rules}
+The following presents the core operational semantics for the extended types with products and unit. We naturally extend $\beta$-reduction for products and projections. We the do the same for $\eta$ reduction. It is important to
+ close this root rules under a context to form a full reduction relation.
+
 \subsubsection{\centering $\beta$-reduction}
 
 The core $\beta$-reduction rules for simply typed $\lambda$-calculus with products and unit are:
@@ -421,12 +423,6 @@ The core $\beta$-reduction rules for simply typed $\lambda$-calculus with produc
   \lambda x : U.\, (M\,x) = t \quad (x \not\in \mathrm{FV}(M))
 \]
 
-\noindent
-\textbf{Closure:}  
-By themselves, these rules only contract redexes at the root. To obtain a full operational semantics, one usually extends them by \emph{closure under contexts} (congruence rules or evaluation contexts), so that reductions are preserved inside applications, abstractions, pairs, and projections.
-
----
-
 \subsubsection{\centering $\eta$-laws}
 
 The $\eta$-laws capture extensionality principles, identifying terms with their canonical expansions:
@@ -445,8 +441,6 @@ The $\eta$-laws capture extensionality principles, identifying terms with their 
 \textbf{Closure:}  
 Unlike $\beta$, $\eta$ is usually treated as an equational rule rather than a reduction. It is automatically closed under contexts, since definitional equality is taken as a congruence.
 
----
-
 \subsubsection{\centering $\beta\eta$-conversion}
 
 The combined theory, called $\beta\eta$-conversion, is the smallest congruence $\equiv_{\beta\eta}$ satisfying:
@@ -457,50 +451,43 @@ The combined theory, called $\beta\eta$-conversion, is the smallest congruence $
   M \equiv_\eta N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
 \]
 
-That is, $\beta\eta$-conversion identifies terms up to both computation ($\beta$) and extensionality ($\eta$), closed under all term formers.
+That is, $\beta\eta$-conversion identifies terms up to both computation and extensionality, closed under all term formers.
 
-\noindent
-The operational semantics extends $\beta$-reduction as:
+\section{\centering Church Rosser Revisited}
+One important theorem that fails for $\beta\eta$-reduction in the simply-typed 
+$\lambda^{\to,\times,1}$-calculus is the Church–Rosser property. The culprit is the 
+$\eta_1$-rule. For example, let $x$ be a variable of type $A \times 1$, and consider 
+the term 
+\[
+M = \langle \pi_1 x, \pi_2 x \rangle.
+\] 
+By the $(\eta_\times)$-rule, $M$ reduces to $x$, whereas by the $(\eta_1)$-rule, 
+$M$ reduces to $\langle \pi_1 x, *\rangle$. Both resulting terms are normal forms, 
+so there is no common reduct. Hence, the Church–Rosser property fails:
 
 \[
-  (\lambda x : A.\ t)\ u \;\curly\; t[x := u], 
-  \quad 
-  \pi_1 (t, u) \;\curly\; t, 
-  \quad 
-  \pi_2 (t, u) \;\curly\; u
+\langle \pi_1 x, \pi_2 x \rangle 
+\;\overset{\eta_1}{\longrightarrow}\; \langle \pi_1 x, * \rangle, \quad
+\langle \pi_1 x, \pi_2 x \rangle 
+\;\overset{\eta_\times}{\longrightarrow}\; x.
 \]
 
+There are two natural ways to restore the Church–Rosser property:
+
+\begin{enumerate}
+  \item If we consider only $\beta$-reductions and omit all $\eta$-rules, 
+  confluence holds. Computationally, this is sufficient: $\beta$-reductions 
+  drive all actual computation, while $\eta$-reductions merely simplify terms. 
+  Moreover, $\eta$-reductions never block $\beta$-redexes and always reduce 
+  term size. Hence, any $\beta$-normal form can be further reduced to a 
+  $\beta\eta$-normal form (though not necessarily uniquely).
+
+  \item Alternatively, if we remove the type $1$ and the constant $*$ from the 
+  calculus, the Church–Rosser property holds even for $\beta\eta$-reduction.
+\end{enumerate}
 
 
-The operational semantics extends \(\beta\)-reduction:
-\[
-(\lambda x : A.\ t)\ u \to t[x := u],
-\quad
-\pi_1 (t, u) \to t,
-\quad
-\pi_2 (t, u) \to u.
-\]
-
-\subsubsection{\centering Kinds of problem in Type Theory}
-These are the usual problems type theorists face. A programmer should be at least familiar with typability, and even more so with Type Checking, the one responsible for the daily headaches of bug finding in typed languages:
-\begin{itemize}
-\item \textbf{Typability}:
-  Determine whether a term is legal. Formally, given a term, find a context and type such that
-  \( ? \;\vdash\; \texttt{term} \, : \; ? \) holds. If the term is not well-typed, identify where the derivation fails. Type Assignment is a variant where the context is given, so the task is only to find the type: \( \Gamma \;\vdash\; \texttt{term} \, : \; ? \)
-\item \textbf{Type Checking}: 
-  Given a context, term, and type, check whether \( \Gamma \;\vdash\; \texttt{term} : \texttt{type} \)
-  holds. The task is purely to verify that the term has the specified type in the given context.
-\item \textbf{Inhabitation}: 
-  Given a context and a type, determine whether there exists a term with that type: \( \Gamma \;\vdash\; ? : \texttt{type}  \)
-\end{itemize}
-
-\begin{remark}
-  In programming languages and theorem provers, these type problems have concrete meanings. Well-typedness asks whether a term or program is valid under the typing rules, ensuring correctness of proofs or programs. Type Checking verifies that a given term has a specified type, allowing compilers or proof assistants to confirm correctness. Term Finding constructs a term of a given type, corresponding to automatic proof generation in theorem provers or program synthesis in programming languages.
-\end{remark}
-
-\begin{note}
-  In our specific case, the implementations given show an increasing level of type inference. The simplest kind is capable of type checking and relies on annotations for every term, the second implements Church--style typing, and the third implements proper inference on monomorphic types given no annotations. The point of this note is to relate type checking and typability through annotations vs. inference, meaning the more type annotations we add, the more typability reduces to checking.
-\end{note}
+We don't cover the proofs, but this note was necessary given the emphasis given to the notions of normalization and confluence throughout the document.
 
 \section{\centering Normalization Revisited}
 \label{sec:typed-normalization}
@@ -611,6 +598,27 @@ where: \( n = d(t) \text{ and  } m = \text{number of redexes of degree } n. \)
 \label{thm:weak-normalisation} By iteratively applying Lemma~\ref{lem:max-degree-conversion} to reduce the measure $\mu(t)$ in lexicographic order, every term $t$ eventually reaches a normal form. Hence, weak normalization holds.
 \end{theorem}
 
+
+\subsubsection{\centering Kinds of problem in Type Theory}
+These are the usual problems type theorists face. A programmer should be at least familiar with typability, and even more so with Type Checking, the one responsible for the daily headaches of bug finding in typed languages:
+\begin{itemize}
+\item \textbf{Typability}:
+  Determine whether a term is legal. Formally, given a term, find a context and type such that
+  \( ? \;\vdash\; \texttt{term} \, : \; ? \) holds. If the term is not well-typed, identify where the derivation fails. Type Assignment is a variant where the context is given, so the task is only to find the type: \( \Gamma \;\vdash\; \texttt{term} \, : \; ? \)
+\item \textbf{Type Checking}: 
+  Given a context, term, and type, check whether \( \Gamma \;\vdash\; \texttt{term} : \texttt{type} \)
+  holds. The task is purely to verify that the term has the specified type in the given context.
+\item \textbf{Inhabitation}: 
+  Given a context and a type, determine whether there exists a term with that type: \( \Gamma \;\vdash\; ? : \texttt{type}  \)
+\end{itemize}
+
+\begin{remark}
+  In programming languages and theorem provers, these type problems have concrete meanings. Well-typedness asks whether a term or program is valid under the typing rules, ensuring correctness of proofs or programs. Type Checking verifies that a given term has a specified type, allowing compilers or proof assistants to confirm correctness. Term Finding constructs a term of a given type, corresponding to automatic proof generation in theorem provers or program synthesis in programming languages.
+\end{remark}
+
+\begin{note}
+  In our specific case, the implementations given show an increasing level of type inference. The simplest kind is capable of type checking and relies on annotations for every term, the second implements Church--style typing, and the third implements proper inference on monomorphic types given no annotations. The point of this note is to relate type checking and typability through annotations vs. inference, meaning the more type annotations we add, the more typability reduces to checking.
+\end{note}
 
 
 

@@ -1,4 +1,4 @@
-\subsubsection{\centering  Proof of the Church-Rosser for $\beta\eta$-Reduction}
+\subsubsection{\centering  Proof Sketch of the Church-Rosser for $\beta\eta$-Reduction}
 
 In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction as done in \cite{selinger2008:lambdanotes}, even though proof is due to Tait and Martin-L\"of. We begin by defining a new relation $M \psred M'$ on terms, called parallel one-step reduction. It is the smallest relation satisfying the following rules:
 \begin{mathpar}
@@ -8,7 +8,7 @@ In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction a
 \inferrule{N \psred N'}{\lambda x.N \psred \lambda x.N'} \quad {\textsc{ParAbs}(2)}
 
 
-\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[N'/x]} \quad \textsc{ParBeta}(3)
+\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[x := N']} \quad \textsc{ParBeta}(3)
 
 
 \inferrule{P \psred P' \\ x \notin \FV {P}}{\lambda x.(P\,x) \psred P'} \quad \textsc{ParEta}(4)
@@ -17,66 +17,15 @@ In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction a
 \noindent The relation $\psred$ \ is also reflexive, $x \psred x$ for every $x$.
 
 
-\begin{comment}
-\begin{lemma} (A)
-  For all $M, M'$, if $M \betared M'$ then $M \psred M'$.
-\end{lemma}
-\begin{proof} We first note that $P \psred P$ for any term $P$, which is shown easily by induction on the structure of $P$. We now prove the claim by induction on the derivation of $M \betared M'$.
-\begin{itemize}
-\item If the last rule was $(\beta)$, then $M = (\lambda x.Q)N$ and $M' = Q[N/x]$. We have $Q \psred Q$ and $N \psred N$, hence by rule (4), $M \psred M'$.
-\item If the last rule was $(\eta)$, then $M = \lambda x.(P x)$ and $M' = P$, with $x \notin \FV(P)$. Since $P \psred P$, we get $M \psred M'$ by rule (5).
-\item If the last rule was $(\mathrm{cong1})$, then $M = P N$ and $M' = P'N$, with $P \betared P'$. By IH, $P \psred P'$, and $N \psred N$, so by rule (2), $M \psred M'$.
-\item If the last rule was $(\mathrm{cong2})$, the argument is analogous.
-\item If the last rule was $(\xi)$, then $M = \lambda x.N$ and $M' = \lambda x.N'$, with $N \betared N'$. By IH, $N \psred N'$, hence $M \psred M'$ by rule (3).
-\end{itemize}
 
-\end{proof}
-
-\begin{lemma} (B)
-  For all $M, M'$, if $M \psred M'$ then $M \betareds M'$.
+\begin{lemma} For all $M, M'$, if $M \betared M'$ then $M \psred M'$.
 \end{lemma}
 
-\begin{lemma} (C)
-  $\betareds$ is the reflexive, transitive closure of $\psred$.
+\begin{lemma} For all $M, M'$, if $M \psred M'$ then $M \betareds M'$.
 \end{lemma}
 
-\begin{proof}
-
-
-\noindent \textbf{(b)} By induction on the derivation of $M \psred M'$.
-
-
-\begin{itemize}
-\item If the last rule was (1), then $M = M' = x$, and trivially $x \betareds x$.
-
-
-\item If the last rule was (2), then $M = P N$, $M' = P' N'$, with $P \psred P'$ and $N \psred N'$. By IH, $P \betareds P'$ and $N \betareds N'$. Since $\betareds$ is closed under congruence, $P N \betareds P'N'$, hence $M \betareds M'$.
-
-
-\item If the last rule was (3), then $M = \lambda x.N$, $M' = \lambda x.N'$, with $N \psred N'$. By IH, $N \betareds N'$, and hence $M \betareds M'$ by $(\xi)$.
-
-
-\item If the last rule was (4), then $M = (\lambda x.Q)N$, $M' = Q'[N'/x]$, with $Q \psred Q'$ and $N \psred N'$. By IH, $Q \betareds Q'$ and $N \betareds N'$. Therefore,
-\[
-(\lambda x.Q)N \betareds (\lambda x.Q')N' \betared Q'[N'/x] = M'.
-\]
-
-
-\item If the last rule was (5), then $M = \lambda x.(P x)$, $M' = P'$, with $P \psred P'$, $x \notin \FV(P)$. By IH, $P \betareds P'$, and since $\lambda x.(P x) \betared P$, we obtain $M \betareds P \betareds P' = M'$.
-\end{itemize}
-
-
-\noindent \textbf{(c)} Let $R^*$ denote the reflexive, transitive closure of $R$.
-
-
-By part (a), $\betared \subseteq \psred$, hence $\betareds = (\betared)^* \subseteq (\psred)^*$. By part (b), $\psred \subseteq \betareds$, hence $(\psred)^* \subseteq \betareds$. Therefore,
-\[
-(\psred)^* = \betareds.
-\]
-\end{proof}
-
-
-\end{comment}
+\begin{lemma} $\betareds$ is the reflexive, transitive closure of $\psred$.
+\end{lemma}
 
 \begin{theorem} The Church-Rosser Theorem states that if $M \curly^* N_1$ and $M \curly^* N_2$, then there exists $P$ such that
 \[
@@ -92,3 +41,49 @@ N_1 \Longrightarrow_\beta M^*_\beta \quad \text{and} \quad N_2 \Longrightarrow_\
 \]
 Parallel reduction implies ordinary multi-step $\beta$-reduction: $N_1 \curly^* M^*_\beta$ and $N_2 \curly^* M^*_\beta$. Hence $M^*_\beta$ is a common reduct.
 \end{proof}
+
+\subsubsection{\centering  Proof Sketch of the Church-Rosser for $\beta\eta$-Reduction}
+In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction as done in \cite{selinger2008:lambdanotes}, even though the proof is due to Tait and Martin-L\"of. We begin by defining a new relation $M \psred M'$ on terms, called parallel one-step reduction. It is the smallest relation satisfying the following rules:
+\begin{mathpar}
+\inferrule{P \psred P' \\ N \psred N'}{P N \psred P' N'} \quad {\textsc{ParApp}(1)}
+
+\inferrule{N \psred N'}{\lambda x.N \psred \lambda x.N'} \quad {\textsc{ParAbs}(2)}
+
+\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[x := N']} \quad \textsc{ParBeta}(3)
+
+\inferrule{P \psred P' \\ x \notin \FV {P}}{\lambda x.(P\,x) \psred P'} \quad \textsc{ParEta}(4)
+\end{mathpar}
+
+\noindent The relation $\psred$ is also reflexive: $x \psred x$ for every variable $x$.
+
+\begin{lemma}\label{lemma:beta-implies-parallel}
+For all $M, M'$, if $M \to_\beta M'$ then $M \psred M'$.
+\end{lemma}
+
+\begin{lemma}
+For all $M, M'$, if $M \psred M'$ then $M \to_\beta^* M'$.
+\end{lemma}
+
+\begin{lemma}
+The relation $\to_\beta^*$ is the reflexive, transitive closure of $\psred$.
+\end{lemma}
+
+\begin{theorem}[Church--Rosser Theorem]\label{thm:church-rosser}
+If $M \to_\beta^* N_1$ and $M \to_\beta^* N_2$, then there exists a term $P$ such that
+\[
+N_1 \to_\beta^* P
+\quad \text{and} \quad
+N_2 \to_\beta^* P.
+\]
+\end{theorem}
+
+\begin{proof}
+Any $\beta$-reduction can be simulated by parallel reduction. Suppose $M \psred N_1$ and $M \psred N_2$. By Lemma~\ref{lemma:beta-implies-parallel}, each parallel reduction step corresponds to a $\beta$-reduction step. The parallel reduction has the diamond property, so there exists a term $P$ such that
+\[
+N_1 \psred P
+\quad \text{and} \quad
+N_2 \psred P.
+\]
+By the previous lemma, parallel reduction implies ordinary multi-step $\beta$-reduction: $N_1 \to_\beta^* P$ and $N_2 \to_\beta^* P$. Hence $P$ is a common reduct.
+\end{proof}
+

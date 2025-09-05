@@ -270,7 +270,12 @@ Here, \textbf{Var $x$} and \textbf{Abs $e$} are self-explanatory. For \textbf{Ap
   ghci> infer [] (Abs "x" (Abs "y" (Var "x"))) 0
   Just ([],(a0 -> (a1 -> a0)),2)
 \end{minted}
-  $\la x . \la y . \la z . x \, z \, (y \, z)$ is omitted for readability. Clearly $\texttt{a0} \text{ corresponds to } \alpha$ and $\texttt{a1} \text{ to } \tau$. Note how the typing context is always empty at first.
+$\la x . \la y . \la z . x \, z \, (y \, z)$ is omitted for readability. Clearly $\texttt{a0} \text{ corresponds to } \alpha$ and $\texttt{a1} \text{ to } \tau$. Note how the typing context is always empty at first. For testing purposes, let us try and find a type for the $Y$ combinator:
+\begin{minted}{shell-session}
+  ghci> infer [] ycomb 0
+  Nothing
+\end{minted}
+
 \end{example}
 
 \begin{note}

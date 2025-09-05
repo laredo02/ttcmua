@@ -206,4 +206,37 @@ Given a proposition $P$ in intuitionistic logic, constructing a proof of $P$ is 
 Consider the implication $A \rightarrow B$ in intuitionistic logic. A proof of $A \rightarrow B$ is a construction that, given a proof of $A$, produces a proof of $B$. Under the Curry--Howard correspondence, this directly maps to a function type $A \to B$ in $\lambda$-calculus, where a $\lambda$-term $f : A \to B$ takes an argument of type $A$ and returns a result of type $B$. Similarly, conjunction $A \land B$ corresponds to a product type $A \times B$, and disjunction $A \lor B$ corresponds to a sum type $A + B$. In each case, the rules for constructing and deconstructing proofs mirror the operations on the corresponding $\lambda$-terms.
 \end{example}
 
-  
+\begin{example} Modus Ponens via Curry--Howard. The logical rule for modus ponens is:
+\[
+\inferrule*[right=\textsc{MP}]
+  {P \to Q \quad P}
+  {Q}
+\]
+Walking our way back through table \ref{tab:curry-howard}, the $\la$--term should be of type $(P \to Q) \to P \to Q$, since it takes a proof of $P \to Q$ and a proof of $P$ and produces a proof of $Q$. Also, we can inhabitate the type using the fact that applying a term of type $P$ to a term of type $(P \to Q)$ yields a term of type $Q$ by \textsc{App} in the typed \lcalc. The rule \textsc{MP} corresponds to the following typed term:
+\[
+  \vdash \la f.\, \la x.\, f\, x : (P \to Q) \to P \to Q
+\]
+Step-by-step $\beta$-reduction:
+\[
+(\la f.\, \la x.\, f\, x)\ f\ x
+\;\;\curly\;\; (\la x.\, f\, x)\ x
+\;\;\curly\;\; f\, x
+\]
+This reduction might not say much by itself, so let us annotate it with the most general type of each of the terms in the reduction:
+
+\[
+\begin{aligned}
+&(\lambda f : P \to Q.\, \lambda x : P.\, f\, x)\;\; f : P \to Q \;\; x : P 
+&&\vdash (P \to Q) \to P \to Q \\
+&\;\;\curly\;\;
+(\lambda x : P.\, f\, x) \;\; x : P 
+&&\vdash P \to Q \\
+&\;\;\curly\;\;
+f\, x 
+&&\vdash Q 
+\end{aligned}
+\]
+
+\end{example}
+
+

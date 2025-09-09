@@ -1,17 +1,9 @@
-\section{\centering Relevant Constructions}
+\section{\centering Encodings \& Constructions in the \lCalc}
 
 This section presents a number of conventional constructions that represent key ideas common to computer science and other fields. We are specifically referring to natural numbers, branching statements, booleans and lists among others, as well as the operations over them. These constructions can be used to prove relevant statements concerning the expressiveness of the $\la$-calculus.
 
 \begin{note}
-  We use our Haskell program to bring some computer science constructions to life, which means that some of the details in this section are implementation dependent. In addition, we use the following type aliases to simplify notation:
-  \begin{minted}{Haskell}
-    v :: String -> Term
-    v = Var
-    l :: String -> Term -> Term
-    l = Abs
-    a :: Term -> Term -> Term
-    a = App
-  \end{minted}
+  We use our Haskell program to bring some computer science constructions to life, which means that some of the details in this section are implementation dependent. In addition, we use the following type aliases to simplify notation: \texttt{v} \; \texttt{=} \; \texttt{Var;} \texttt{l} \; \texttt{=} \; \texttt{Abs;} \texttt{a} \; \texttt{=} \; \texttt{App}.
 \end{note}
 
 \subsubsection{\centering Natural Numbers}
@@ -25,25 +17,6 @@ This section presents a number of conventional constructions that represent key 
 \item (Induction) \( P(0) \land \forall ( P(n) \Rightarrow P(S(n))) \Rightarrow \forall n,  P (n) \)
 \end{itemize}
 The first four axioms can be summarized using a graph:
-\begin{center}
-  \begin{tikzpicture}[
-    roundnode/.style={circle, draw=black!60, fill=gray!20, very thick, minimum size=7mm},
-    emptynode/.style={circle, draw=black!0, fill=gray!20, very thick, minimum size=8mm}
-    ]
-    \node[roundnode]      (zero)                        {\textbf{0}};
-    \node[roundnode]      (one)       [right=of zero]   {1};
-    \node[roundnode]      (two)       [right=of one]    {2};
-    \node[roundnode]      (three)     [right=of two]    {3};
-    \node[emptynode]      (dots)      [right=of three]  {...};
-    \node[roundnode]      (nth)       [right=of dots]   {n};
-
-    \draw[->] (zero.east) -- node[midway, above] {s} (one.west);
-    \draw[->] (one.east) -- node[midway, above] {s} (two.west);
-    \draw[->] (two.east) -- node[midway, above] {s} (three.west);
-    \draw[->] (three.east) -- node[midway, above] {s} (dots.west);
-    \draw[->] (dots.east) -- node[midway, above] {s} (nth.west);
-  \end{tikzpicture}
-\end{center}
 \end{definition}
 \begin{example}
   Say for instance we mean to represent $ 3 $ using Peano notation, using the graph, we would come up with $ s(s(s(0))) $, since it is $3$ steps away from $0$.
@@ -63,11 +36,6 @@ The first four axioms can be summarized using a graph:
     \end{cases}
   \]
 \end{definition}
-\begin{itemize}
-\item $\mathbf{a + b}$: A recursive rule that performs the addition, and a base case to stop the recursion for n + 0, since there is no such number that has $ 0 $ as succesor.
-\item $\mathbf{a \cdot b}$: Using addition we define multiplication in a similar way, adding $a$ as many times as the function $s$ is applied to $0$ in $b$.
-\end{itemize}
-
 \begin{definition} Representation of the set of all naturals in the \lcalc, usually referred to as Church numerals:
   \label{def:church-naturals}
   \begin{align*}

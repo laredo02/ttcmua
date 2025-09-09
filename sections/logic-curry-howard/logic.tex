@@ -90,7 +90,40 @@ follows:
 \end{remark}
 
 \subsubsection{\centering Natural Deduction}
-It is a deduction system within intuitionistic logic that uses constructive reasoning to derive conclusions. This structured proofs emphasize the existence of explicit constructions rather than abstract truth values.
+
+The syntax that to create formulas is not sufficient, we need to pair it with a system that enables the deduction of other formulas from a set of given ones.
+
+\newcommand{\Fm}{\mathcal{F}}
+\newcommand{\Rules}{\mathcal{R}}
+\newcommand{\Axioms}{\mathcal{A}}
+\newcommand{\Cn}{\mathrm{Cn}}
+
+\begin{definition} A deductive system is a pair
+\(
+\mathcal{D} = (\Axioms, \Rules),
+\)
+where:
+\begin{itemize}
+    \item $\Axioms \subseteq \Fm$ is a set of axioms and $\Fm$ is the set of formulas.
+    \item $\Rules$ is a set of inference rules used to derive new formulas from the already known ones.
+\end{itemize}
+A derivation or proof in $\mathcal{D}$ from a set of premises $\Gamma \subseteq \Fm$ is a finite sequence of formulas
+\(
+\varphi_1, \dots, \varphi_n
+\)
+such that each $\varphi_i$ is either:
+\begin{itemize}
+    \item an axiom ($\varphi_i \in \Axioms$),
+    \item a member of $\Gamma$, or
+    \item obtained from previous formulas in the sequence by an inference rule in $\Rules$.
+\end{itemize}
+We write
+\(
+\Gamma \vdash \varphi
+\)
+if there exists a derivation of $\varphi$ from $\Gamma$ in the deductive system $\mathcal{D}$.
+\end{definition}
+Natural deduction is a deduction system within intuitionistic logic that uses constructive reasoning to derive conclusions. This structured proofs emphasize the existence of explicit constructions rather than abstract truth values.
 
 The rules of natural deduction for intuitionistic propositional logic (without~$\bot C$) can be presented as follows:
 

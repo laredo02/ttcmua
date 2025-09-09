@@ -1,6 +1,123 @@
 
 \chapter{Curry--Howard--Lambek \& Categorical Semantics}
 
+%\section{\centering Categorical Semantics}
+
+Categorical semantics provides a formal, structural interpretation of type systems using the language of category theory. Having introduced typed $\lambda$-calculus and the Curry--Howard correspondence, we have seen how types correspond to propositions and terms to proofs. These systems can be viewed as deduction systems, where derivations are constructed according to inference rules, identities correspond to trivial proofs, and composition of derivations reflects sequential application of rules. This perspective emphasizes the compositional nature of proofs: complex derivations are built from simpler ones, and the structure of the system ensures correctness and consistency.
+
+Categories provide a natural generalization of this viewpoint. A category can itself be interpreted as an abstract deduction system in which objects represent propositions or types, morphisms represent proofs or derivations, and composition of morphisms corresponds to chaining proofs, while identity morphisms correspond to reflexive or trivial derivations. Categorical constructions naturally mirror logical operations and type constructors: products correspond to conjunctions, coproducts correspond to disjunctions, and exponentials correspond to implication or function types. In this way, a category encodes the structural relationships between types and proofs, providing a compositional framework that abstracts and extends the reasoning we observed in typed $\lambda$-calculus.
+
+This perspective also suggests a natural pathway for further generalization. Just as Curry--Howard relates types and proofs, one can extend the correspondence to Curry--Howard--Lambek (CHL), interpreting typed $\lambda$-calculi fully within categorical structures. This extension allows reasoning not only about individual proofs and terms but about entire type systems and their semantic behavior, opening the door to categorical models of richer logical systems and functional programming languages.
+
+\section{\centering Categories as Deduction Systems}
+
+Categories can be viewed as abstract deduction systems where:
+
+\begin{itemize}
+    \item \textbf{Objects} correspond to propositions or types.
+    \item \textbf{Morphisms} correspond to proofs or derivations: a morphism 
+    $f: A \to B$ can be seen as a proof that $A$ entails $B$.
+    \item \textbf{Composition} of morphisms corresponds to composition of proofs: 
+    if $f: A \to B$ and $g: B \to C$, then $g \circ f: A \to C$ represents the derived proof.
+    \item \textbf{Identity morphisms} correspond to trivial or reflexive proofs ($A$ implies $A$).
+\end{itemize}
+
+In this view:
+
+\begin{itemize}
+    \item \textbf{Products} model conjunction: $A \times B$ represents $A \wedge B$, with projections corresponding to elimination rules.
+    \item \textbf{Coproducts} model disjunction: $A + B$ represents $A \vee B$, with injections corresponding to introduction rules.
+    \item \textbf{Exponentials} ($B^A$) model implication: a morphism $f: C \times A \to B$ corresponds to a proof of $A \to B$ under context $C$.
+\end{itemize}
+
+This is essentially the \emph{Curry--Howard--Lambek correspondence}:
+\[
+\text{Types} \leftrightarrow \text{Propositions}, \quad
+\text{Terms} \leftrightarrow \text{Proofs}, \quad
+\text{Category structure} \leftrightarrow \text{Deduction system}.
+\]
+
+Thus, a category is not just a collection of objects and arrows—it encodes how propositions can be derived from each other in a formal, compositional way.
+
+
+
+
+\begin{proposition}
+The category of types in the simply typed $\lambda$-calculus, with objects as types and morphisms as closed terms modulo $\beta\eta$-equivalence, forms a \emph{Cartesian Closed Category}.
+\end{proposition}
+
+\begin{proof}
+Define the category $\mathcal{C}(\lambda)$ as follows:
+\begin{itemize}
+    \item Objects: Types.
+    \item Morphisms: $A \to B$ are closed terms $c : A \to B$ modulo $\beta\eta$-equivalence.
+    \item Identity: $1_A = \lambda x. x$.
+    \item Composition: $c \circ b = \lambda x.\, c(b\,x)$.
+\end{itemize}
+
+\paragraph{Well-defined category.}
+Unit laws:
+\[
+c \circ 1_B = \lambda x.\, c((\lambda y.y)x) = \lambda x.\, c(x) = c, \quad
+1_C \circ c = \lambda x.\, (\lambda y.y)(c\,x) = \lambda x.\, c(x) = c
+\]
+Associativity:
+\[
+c \circ (b \circ a) = \lambda x.\, c((b \circ a)\,x) = \lambda x.\, c(b(a\,x)) = (c \circ b) \circ a.
+\]
+
+\paragraph{Binary products.}
+For types $A, B$, define
+\[
+p_1 = \lambda z.\, \mathrm{fst}(z), \quad
+p_2 = \lambda z.\, \mathrm{snd}(z), \quad
+(a,b) = \lambda x.\, (a\,x,\, b\,x).
+\]
+Then
+\[
+p_1 \circ (a,b) = a, \quad p_2 \circ (a,b) = b,
+\]
+and for any $c : X \to A \times B$ with $p_1 \circ c = a$ and $p_2 \circ c = b$, we have
+\[
+c = \lambda x.\, (p_1 \circ c\,x,\, p_2 \circ c\,x) = (a,b),
+\]
+so the product is unique.
+
+
+\paragraph{CCC structure.}
+Function types $A \to B$ and $\lambda$-abstraction provide exponentials, completing the CCC structure.
+\end{proof}
+
+\begin{table}[h!]
+  \centering
+  \caption{The Curry--Howard--Lambek Correspondence}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Intuitionistic Logic} & \textbf{Typed $\lambda$-Calculus} & \textbf{Category Theory / Lambek} \\
+    \hline
+    Proposition $A$ & Type $A$ & Object $A$ \\
+    Proof of $A$ & Term of type $A$ & Morphism $f: 1 \to A$ \\
+    Implication $A \rightarrow B$ & Function type $A \to B$ & Exponential object $B^A$ \\
+    Conjunction $A \land B$ & Product type $A \times B$ & Product $A \times B$ and projections \\
+    Disjunction $A \lor B$ & Sum type $A + B$ & Coproduct $A + B$ and injections\\
+    $\top$ & $1$ & Terminal object $1$ \\
+    $\bot$ & $0$ & Initial object $0$ \\
+    Proof normalization & $\beta$-reduction & { Commutativity of diagrams } \\
+    \hline
+  \end{tabular}
+  \label{tab:curry-howard-lambek}
+\end{table}
+
+\section{\centering Closing Remarks and Perspectives}
+
+
+\subsubsection{\centering Dependent Typing}
+
+
+\subsubsection{\centering Dependent Types and Categories}
+
+
+
 
 
 

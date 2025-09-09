@@ -1,15 +1,14 @@
-\chapter{Introduction to Category Theory}
+\chapter{Categories at Work}
 
-Category Theory abstracts the notion of internal structure and studies mathematical objects indirectly through their connections to other objects. In practical terms, instead of studying objects in isolation, category theory shifts the focus onto morphisms among objects, and instead of studying mathematical entities from a definitional stand point, it emphasizes the importance of how constructions relate to one another, keeping us away from manipulating objects directly, instead it uses universality to pinpoint specific properties by uniqueness of morphisms.
+Category Theory abstracts the notion of internal structure and studies mathematical objects indirectly. Morphisms are the central objects of study, compositionality and abstraction drive the categorical thought process. In this context, constructions are studied though their relations to one another, instead of from a definitional stand point. This keeps us away from manipulating objects directly, instead, encourages us to apply principles of universality to pinpoint specific properties by uniqueness of morphisms.
 
-Category Theory offers extreme generality and has great power to unify seemingly unrelated fields. It can serve to create blueprints that describe mathematical environments and their properties, and to give structure to patterns that repeat within different fields of mathematics. In some instances, category theory serves as a medium for transporting mathematical statements --such as theorems or lemmas--between domains. A categorical formulation of such results can often be translated to other contexts via functors or equivalences of categories.
+It also offers extreme generality and has great power to unify seemingly unrelated fields. It can serve to create blueprints that describe mathematical environments and their properties, and to give structure to patterns that repeat within different fields of mathematics. In some instances, category theory serves as a medium for transporting statements between domains. A categorical formulation some result can often be translated to other context via functors or equivalences of categories.
 
-One of the fields that benefits from the practical applications of categorical reasoning is computer science, deeply related to category theory through type theory, intuitionistic logic and natural deduction.
+One field that benefits from practical applications of categorical reasoning is computer science. In particular, categories and type theory are closely intertwined through the notion of compositionality: in category theory, composition is a fundamental structural principle, whereas in type theory, compositionality ensures that complex terms and proofs are constructed in a manner that preserves their meaning.
 
+\section{\centering What are Categories?}
 
-\section{\centering Fundamentals of Category Theory}
-
-Let us begin our dive into categories by defining what they are:
+For our purposes, categories arise as a tool to study compositionality, which is why its subject of study are morphisms and not objects. From this point of view, defining what a category is should not result unfamiliar:
 
 \begin{definition} A category $\mathcal{C}$ consists of:
   \begin{itemize}
@@ -29,217 +28,293 @@ Let us begin our dive into categories by defining what they are:
 \end{definition}
 
 \begin{remark}
-Literature on the topic usually differentiates between small and large categories. Small categories are those whose collection of objects and whose collection of arrows are both sets. Large categories allow for collections of objects or arrows that are proper classes rather than sets. We will only be concerned with small categories.
+  Literature on the topic usually differentiates between small and large categories. Small categories are those whose collection of objects and whose collection of arrows are both sets. Large categories allow for collections of objects or arrows that are proper classes rather than sets. We will only be concerned with small categories.
 \end{remark}
 
-Various mathematical constructs fit the description of a category. For example, the category $\mathbf{Set}$ consists of sets as objects and functions as morphisms, where composition is ordinary function composition and identities are identity functions. Another example is the category $\mathbf{Grp}$, whose objects are groups and whose morphisms are group homomorphisms. Other examples are:
-
-\begin{example} Let $\mathcal{C}$ denote a category, consisting of a set of objects, $\functionfont{Ob}(\mathcal{C})$, and a set of arrows, $\functionfont{Hom}(\mathcal{C})$, satisfying the category axioms.
-
-\begin{itemize}
-  \item
-    \textbf{empty category}, denoted by $\mathbf{0}$, is the category with no objects and no morphisms.
-    \[\text{Ob}(\mathbf{0}) = \emptyset, \quad \text{Hom}(\mathbf{0}) = \emptyset \]
-  \item
-    \textbf{terminal category} (or \textbf{point category}), denoted by $\mathbf{1}$, is the category with a single object and a single morphism, which must be the identity morphism on that object. Formally,
-    \[ \text{Ob}(\mathbf{1}) = \{*\}, \quad \text{Hom}(\mathbf{1}) = \{\operatorname{id}_*\} \]
-    where $\operatorname{id}_*: * \to *$ is the identity morphism on $*$.
-  \item
-    \textbf{category \(\mathbf{2}\)}, often representing the poset $A \le B$, is a category with two objects and three morphisms. Formally,
-    \[ \text{Ob}(\mathbf{2}) = \{A, B\}, \quad \text{Hom}(\mathbf{2}) = \{\operatorname{id}_A, \operatorname{id}_B, f\} \]
-    where $\operatorname{id}_A: A \to A$ and $\operatorname{id}_B: B \to B$ are identity morphisms, and $f: A \to B$ is a unique non-identity morphism. The compositions are defined as $f \circ \operatorname{id}_A = f$ and $\operatorname{id}_B \circ f = f$.
-\end{itemize}
-  
-  The most elemental category is the category that has no elements and no arrows, it is commonly represented with a $0$. Category $1$ contains one object and one identity arrow, as required by the definition. Category $2$ contains three arrows, the identities and one arrow from $1$ to $2$. Category $3$ builds up on this as is observed in the following diagram:
-  \[
-    \begin{tikzcd}
-      1 \arrow[loop right, "id_1"] & & & & & 2 \arrow[d] \arrow[loop right, "id_2"] \\
-      1 \arrow[r] \arrow[loop left, "id_1"] & 2 \arrow[loop right, "id_2"] & & &1 \arrow[r] \arrow[ru] \arrow[loop left, "id_1"] & 3 \arrow[loop right, "id_3"]
-    \end{tikzcd}
-  \]
+\begin{example}
+  Various mathematical constructs fit the description of a category. For example, the category $\mathbf{Set}$ consists of sets as objects and functions as morphisms, where composition is ordinary function composition and identities are identity functions. Another example is the category $\mathbf{Grp}$, whose objects are groups and whose morphisms are group homomorphisms.
 \end{example}
-\begin{example} In this example we show that \textbf{Set} is a category where objects correspond to sets $A,B,C,\dots$ and arrows to functions.
+
+
+\begin{proposition} \textbf{Set} is a category where objects correspond to sets $A,B,C,\dots$ and arrows to functions.
   For $f: A \to B$ and $g: B \to C$, composition of functions is $(g \circ f)(a) = g(f(a))$, which is a function $ g \circ f : A \to C$.
   Composition is associative since for $h: C \to D$ we have that: \( h \circ (g \circ f)(a) = h(g(f(a))) = (h \circ g)(f(a)) = (h \circ g) \circ f(a) \).
   Lastly, each set $A$, the identity morphism is $\mathrm{id}_A(a) = a$, satisfying $f \circ \mathrm{id}_A = f = \mathrm{id}_B \circ f$.
   Therefore, $\mathbf{Set}$ is a category. \qed
-\end{example}
-\begin{example}
-In this example we show that any partially ordered set $(P, \leq)$ can be viewed as a category $\mathbf{Pos}$ whose objects are elements of $P$ and there is a unique arrow $p \to q$ 
-if and only if $p \leq q$.  
-Composition is defined by transitivity: if $p \leq q$ and $q \leq r$, then $p \leq r$, 
-so the composite $p \to r$ exists and is unique.  
-Associativity holds automatically since there is at most one arrow between any two objects.  
-Lastly, each $p \in P$ has an identity arrow $p \to p$ that corresponds to the reflexivity property of partial orders.
-Therefore, every poset defines a category. \qed
-\end{example}
-%\orange{There exist several well known categories tied to mathematics and compite. Category of categories... Monoid}
-
-\begin{example}
-Let us consider a simple functional
-programming language with the following types:
-\[
-  T ::= \mathrm{Nat} \mid \mathrm{Bool} \mid T \times T \mid T \to T
-\]
-The type system is closed under product and function type
-constructors. A valid compound type is \( (\mathrm{Nat} \times \mathrm{Bool}) \to \mathrm{Nat} \).
-A categorical interpretation of this scenario reveals types are objects and functions morphisms.
-
-Identity \(\mathrm{id}_A : A \to A\) can be defined as \( \mathrm{id}_A = \lambda x\,{:}\,A . \, x  \), which is well-typed. Identity laws are verified trivially: \( \mathrm{id}_B \circ f = f = f \circ \mathrm{id}_A \).
-
-Compositionality is defined as sequential application of functions that share domain and codomain through \(f : A \to B\) and \(g : B \to C\) like \(g \circ f : A \to C\) by \(g \circ f = \lambda x\,{:}\,A . \, g (f(x))\), which is well-typed by function application.
-
-Composition is associative due to \(\beta\)-equivalence in lambda calculus:
-\[
-h \circ (g \circ f) = \lambda x{:}A . h (g (f(x))) = (h \circ g) \circ f
-\]
-Therefore, the language satisfies all axioms of a category.
-\end{example}
-
-\begin{example}
-$\mathbf{Hask}$ is a category where the objects are Haskell types such as \small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. The morphisms are total Haskell functions between those types such as  \small{\(\texttt{f::Int->Bool}\)}. For every type \small{\(\texttt{a}\)}, there is an identity morphism \small{\(\texttt{id::a->a}\)} that maps each value to itself.
-Morphisms can be composed using \small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)},
-meaning the output of one function becomes the input of another.
-This composition is associative, and the identity morphisms act as neutral elements for composition.
-These properties — types as objects, functions as morphisms, \small{\(\texttt{id}\)} as identity, and \texttt{\(\texttt{(.)}\)} as composition — make Hask a category.
-\end{example}
-
-\begin{table*}[h!]
-\centering
-\begin{tabular}{ll}
-\hline
-\textbf{Category} & \textbf{Description} \\
-\hline
-$\mathbf{Set}$      & Sets as objects, functions as morphisms. \\
-$\mathbf{Grp}$      & Groups and group homomorphisms. \\
-$\mathbf{Ring}$     & Rings and ring homomorphisms. \\
-$\mathbf{Mod}_R$    & Modules over a ring $R$ and $R$-linear maps. \\
-$\mathbf{Vect}_k$   & Vector spaces over field $k$ and linear maps. \\
-$\mathbf{Top}$      & Topological spaces and continuous functions. \\
-$\mathbf{Man}$      & Smooth manifolds with smooth maps. \\
-$\mathbf{Hilb}$     & Hilbert spaces and bounded linear maps. \\
-\hline
-\end{tabular}
-\caption{Key mathematical categories.}
-\label{tab:math-categories}
-\end{table*}
-
-\begin{table*}[h!]
-\centering
-\begin{tabular}{ll}
-\hline
-\textbf{Category} & \textbf{Description} \\
-  \hline
-$\mathbf{Mon}$ & Monoids and monoid homomorphisms. \\
-$\mathbf{CPO}$        & Complete partial orders and continuous maps. \\
-$\mathbf{Dom}$        & Domains as posets with Scott-continuous maps. \\
-$\mathbf{Rel}$        & Sets and binary relations as morphisms. \\
-$\mathbf{Pfn}$        & Sets and partial functions as morphisms. \\
-$\mathbf{Par}$        & Sets and partial maps (generalized morphisms). \\
-$\mathbf{Kl}(T)$      & Kleisli category of a monad $T$ on a base category. \\
-$\mathbf{Endo(Set)}$  & Endofunctors on the category of sets. \\
-\hline
-\end{tabular}
-\caption{Key categories in computer science.}
-\label{tab:cs-categories}
-\end{table*}
-
-%\begin{note}
-%  It is ironic that the names of the better known categories are given by their objects and not their arrows.
-%\end{note}
-
-%\orange{to build some intuition on why categories relate to programs}
-%\magenta{que alguien que controle corrija el siquiente ejemplo q es mas inventado que que los gamusinos }
-
-Aside from defining categories from mathematical objects, categores can be built from other categories. One way to do this is via opposite categories.
-
-\begin{definition} For a category $\mathcal{C}$, the opposite or dual category $\mathcal{C}^{op}$ is defined by:
-\begin{itemize}
-    \item $\mathrm{Ob}(\mathcal{C}^{op}) = \mathrm{Ob}(\mathcal{C})$,
-    \item For $A,B \in \mathrm{Ob}(\mathcal{C})$, $\mathcal{C}^{op}(A,B) = \mathcal{C}(B,A)$,
-    \item Composition is reversed: if $f : A \to B$ and $g : B \to C$ in $\mathcal{C}$, then
-    \[
-    f^{op} \circ g^{op} = (g \circ f)^{op}.
-    \]
-\end{itemize}
-\end{definition}
+\end{proposition}
 
 \subsubsection{\centering Hom-set}
 
+Take any category $\mathcal{C}$, note how from any given objects $a, b \in \mathcal{C}$, in the general case, there potentially exist several different morphisms. Hom-sets are nothing but the set of all morphisms that can relate any two given objects in a category.
+
 \begin{definition}
-In a category $\mathcal{C}$, for any two objects $A, B \in \functionfont{Ob}(\mathcal{C})$, the hom-set from $A$ to $B$ is the set of all morphisms from $A$ to $B$. This set is denoted by $\functionfont{Hom}(A, B)$.
-\[
-    \functionfont{Hom}(A, B) = \{ f \mid f \colon A \to B \text{ is a morphism in } \mathcal{C} \}
-\]
+  In a category $\mathcal{C}$, for any two objects $A, B \in \mathrm{Ob}(\mathcal{C})$, the hom-set from $A$ to $B$ is the set of all morphisms from $A$ to $B$. This set is denoted by $\mathrm{Hom}(A, B)$.
+  \[
+    \mathrm{Hom}(A, B) = \{ f \mid f \colon A \to B \text{ is a morphism in } \mathcal{C} \}
+  \]
+  We use sets since we deal only with small categories.  
 \end{definition}
 
-\subsubsection{\centering Monos \& Epis}
+\begin{example} Let $\mathcal{C}$ denote a category, consisting of a set of objects, $\mathrm{Ob}(\mathcal{C})$, and a set of arrows, $\mathrm{Hom}(\mathcal{C})$, satisfying the category axioms.
+  \label{ex:012-categories}
+  \begin{itemize}
+  \item
+    \textbf{empty category}, denoted by $0$, is the category with no objects and no morphisms.
+    \[\text{Ob}(0) = \emptyset, \quad \text{Hom}(0) = \emptyset \]
+  \item
+    \textbf{point category}, denoted by $1$, is the category with a single object and a single morphism, which must be the identity morphism on that object.
+    \[ \text{Ob}(1) = \{*\}, \quad \text{Hom}(1) = \{\operatorname{id}_*\} \]
+    where $\operatorname{id}_*: * \to *$ is the identity morphism on $*$.
+  \item
+    \textbf{category \(\mathbf{2}\)}, often representing the poset $A \le B$, is a category with two objects and three morphisms. Formally,
+    \[ \text{Ob}(2) = \{A, B\}, \quad \text{Hom}(2) = \{\operatorname{id}_A, \operatorname{id}_B, f\} \]
+    where $\operatorname{id}_A: A \to A$ and $\operatorname{id}_B: B \to B$ are identity morphisms, and $f: A \to B$ is a unique non-identity morphism. The compositions are defined as $f \circ \operatorname{id}_A = f$ and $\operatorname{id}_B \circ f = f$.
+  \end{itemize}
+\end{example}
 
 \begin{definition}
-  \label{def:monos-epis} Let \( g_1, g_2 : X \to A \) (resp. \( h_1, h_2 : B \to Y \)). An arrow \( f : A \to B \) in \( \mathcal{C} \) is a monomorphism (resp. epimorphism) if:
-\[
-  f \circ g_1 = f \circ g_2 \ \implies g_1 = g_2 \quad \text{(resp. } h_1 \circ f = h_2 \circ f \implies h_1 = h_2 \text{)}
-\]
+  A directed graph consists of a collection of vertices and a collection of edges, where each edge has a designated source vertex and target vertex.
+\end{definition}
+\begin{example} Using a directed graph we can represent the categories $1$ and $2$ given in \ref{ex:012-categories}, as well as category $3$ and further. It goes without saying that we won't use directed graphs to represent the $0$ category.
+  \[
+    \begin{tikzcd}
+      * \arrow[loop right, "id_*"] & & & & & B \arrow[d] \arrow[loop right, "id_B"] \\
+      A \arrow[r] \arrow[loop left, "id_A"] & B \arrow[loop right, "id_B"] & & &A \arrow[r] \arrow[ru] \arrow[loop left, "id_C"] & C \arrow[loop right, "id_C"]
+    \end{tikzcd}
+  \]
+\end{example}
+
+\begin{proposition} Any partially ordered set $(P, \leq)$ can be viewed as a category $\mathbf{Pos}$ whose objects are elements of $P$ and there is a unique arrow $p \to q$ 
+  if and only if $p \leq q$.  
+  Composition is defined by transitivity: if $p \leq q$ and $q \leq r$, then $p \leq r$, 
+  so the composite $p \to r$ exists and is unique.  
+  Associativity holds automatically since there is at most one arrow between any two objects.  
+  Lastly, each $p \in P$ has an identity arrow $p \to p$ that corresponds to the reflexivity property of partial orders.
+  Therefore, every poset defines a category. \qed
+\end{proposition}
+% \orange{There exist several well known categories tied to mathematics and compite. Category of categories... Monoid}
+
+\begin{example}
+  Let us consider a simple functional
+  programming language with the following types:
+  \[
+    T ::= \mathrm{Nat} \mid \mathrm{Bool} \mid T \times T \mid T \to T
+  \]
+  The type system is closed under product and function type
+  constructors. A valid compound type is \( (\mathrm{Nat} \times \mathrm{Bool}) \to \mathrm{Nat} \).
+  A categorical interpretation of this scenario reveals types are objects and functions morphisms.
+  \begin{itemize}
+  \item Identity \(\mathrm{id}_A : A \to A\) can be defined as \( \mathrm{id}_A = \lambda x\,{:}\,A . \, x  \), which is well-typed. Identity laws are verified trivially: \( \mathrm{id}_B \circ f = f = f \circ \mathrm{id}_A \).
+  \item Compositionality is defined as sequential application of functions that share domain and codomain through \(f : A \to B\) and \(g : B \to C\) like \(g \circ f : A \to C\) by \(g \circ f = \lambda x\,{:}\,A . \, g (f(x))\), which is well-typed by function application.
+  \item Composition is associative due to \(\beta\)-equivalence in lambda calculus:
+    \[
+      h \circ (g \circ f) = \lambda x{:}A . h (g (f(x))) = (h \circ g) \circ f
+    \]
+  \end{itemize}
+  Therefore, the language satisfies all axioms of a category.
+\end{example}
+
+\begin{example}
+  $\mathbf{Hask}$ is a category where the objects are Haskell types such as \small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. The morphisms are total Haskell functions between those types such as  \small{\(\texttt{f::Int->Bool}\)}. For every type \small{\(\texttt{a}\)}, there is an identity morphism \small{\(\texttt{id::a->a}\)} that maps each value to itself.
+  Morphisms can be composed using \small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)},
+  meaning the output of one function becomes the input of another.
+  This composition is associative, and the identity morphisms act as neutral elements for composition.
+  These properties — types as objects, functions as morphisms, \small{\(\texttt{id}\)} as identity, and \texttt{\(\texttt{(.)}\)} as composition — make Hask a category.
+\end{example}
+
+\begin{table*}[h!]
+  \centering
+  \begin{tabular}{ll}
+    \hline
+    \textbf{Category} & \textbf{Description} \\
+    \hline
+    $\mathbf{Set}$      & Sets as objects, functions as morphisms. \\
+    $\mathbf{Grp}$      & Groups and group homomorphisms. \\
+    $\mathbf{Ring}$     & Rings and ring homomorphisms. \\
+    $\mathbf{Mod}_R$    & Modules over a ring $R$ and $R$-linear maps. \\
+    $\mathbf{Vect}_k$   & Vector spaces over field $k$ and linear maps. \\
+    $\mathbf{Top}$      & Topological spaces and continuous functions. \\
+    $\mathbf{Man}$      & Smooth manifolds with smooth maps. \\
+    $\mathbf{Hilb}$     & Hilbert spaces and bounded linear maps. \\
+    \hline
+  \end{tabular}
+  \caption{Key mathematical categories.}
+  \label{tab:math-categories}
+\end{table*}
+
+\begin{table*}[h!]
+  \centering
+  \begin{tabular}{ll}
+    \hline
+    \textbf{Category} & \textbf{Description} \\
+    \hline
+    $\mathbf{Mon}$ & Monoids and monoid homomorphisms. \\
+    $\mathbf{CPO}$        & Complete partial orders and continuous maps. \\
+    $\mathbf{Dom}$        & Domains as posets with Scott-continuous maps. \\
+    $\mathbf{Rel}$        & Sets and binary relations as morphisms. \\
+    $\mathbf{Pfn}$        & Sets and partial functions as morphisms. \\
+    $\mathbf{Par}$        & Sets and partial maps (generalized morphisms). \\
+    $\mathbf{Kl}(T)$      & Kleisli category of a monad $T$ on a base category. \\
+    $\mathbf{Endo(Set)}$  & Endofunctors on the category of sets. \\
+    \hline
+  \end{tabular}
+  \caption{Key categories in computer science.}
+  \label{tab:cs-categories}
+\end{table*}
+
+% \begin{note}
+%   It is ironic that the names of the better known categories are given by their objects and not their arrows.
+% \end{note}
+
+% \orange{to build some intuition on why categories relate to programs}
+% \magenta{que alguien que controle corrija el siquiente ejemplo q es mas inventado que que los gamusinos }
 
 
+\subsubsection{\centering Duality}
+\label{sec:duality}
+
+The categories we have built up until now, have been built by matching structures to the definition of category. However, if we look closely at any category we find that by reversing every morphism $f : A \to B$ into $f^{op} : B \to A$, we find ourselves with a newly created category in our hands. That is if we also reverse composition of morphisms.
+
+\begin{definition} For a category $\mathcal{C}$, the opposite or dual category $\mathcal{C}^{op}$ is defined by:
+  \begin{itemize}
+  \item $\mathrm{Ob}(\mathcal{C}^{op}) = \mathrm{Ob}(\mathcal{C})$
+  \item For $A,B \in \mathrm{Ob}(\mathcal{C})$, $\mathcal{C}^{op}(A,B) = \mathcal{C}(B,A)$
+  \item Composition is reversed: if $f : A \to B$ and $g : B \to C$ in $\mathcal{C}$, then
+    \(
+    f^{op} \circ g^{op} = (g \circ f)^{op}
+    \)
+  \end{itemize}
+  This reversal allows any property or construction to be mirrored.
+\end{definition}
+
+\section{\centering Monos \& Epis \& Isos}
+
+Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstract counterparts to injective, surjective, and bijective maps, but their definitions rely on morphisms instead of on elements.
+
+\begin{definition}
+  \label{def:monomorphism}
+  Let \( g_1, g_2 : X \to A \) be morphisms in a category \(\mathcal{C}\).  
+  A morphism \( f : A \to B \) is monic if
+  \[
+    f \circ g_1 = f \circ g_2 \implies g_1 = g_2
+    \qquad
+    \begin{tikzcd}
+      X \arrow[r, shift left=0.5ex, "g_1"] 
+      \arrow[r, shift right=0.5ex, swap, "g_2"] 
+      & A \arrow[r, "f"] & B
+    \end{tikzcd}
+  \]
+  In other words, \(f\) is left-cancellable.
+
+\end{definition}
+
+\begin{definition}
+  \label{def:epimorphism}
+  Let \( h_1, h_2 : B \to Y \) be morphisms in a category \(\mathcal{C}\).  
+  A morphism \( f : A \to B \) is epic if
+  \[
+    h_1 \circ f = h_2 \circ f \implies h_1 = h_2
+    \qquad
+    \begin{tikzcd}
+      A \arrow[r, "f"] & B \arrow[r, shift left=0.5ex, "h_1"] 
+      \arrow[r, shift right=0.5ex, swap, "h_2"] & Y
+    \end{tikzcd}
+  \]
+  In other words, \(f\) is right-cancellable.
 \end{definition}
 
 \begin{note}
-  Monomorphisims generalize the notion of injectivity, while epimorphisms are the categorical generalization of surjectivity.
+  Monomorphisims generalize the notion of injectivity, while epimorphisms are the generalization of surjectivity.
 \end{note}
 
+\begin{proposition} Given $\mathcal{C}$, monomorphisms in $\mathcal{C}$ are dual to epimorphisms in $\mathcal{C}^{op}$.
+
+  \begin{proof}
+    Let $\mathcal{C}$ be a category and $ g_1, g_2 : X \to A, f : A \to B$, the dual category $\mathcal{C}^{op}$ has $g_1^{op}, g_2^{op} : A \to X, f^{op} : B \to A $ and so:
+    \[
+      f \circ g_1 = f \circ g_2 \implies g_1 = g_2
+    \]
+    in the dual category becomes
+    \[
+      g_1^{op} \circ f^{op} = g_2^{op} \circ f^{op} \implies g_1^{op} = g_2^{op}
+    \]
+    which is exactly the definition of epi in $\mathcal{C}$. It is equally easy to check that the converse is also true.
+  \end{proof}
+\end{proposition}
+
 \begin{definition}
-An object \(A\) is isomorphic to \(B\) in a category \(\mathcal{C}\) if there exists a morphism
-\(
-f: A \to B
-\)
-such that there exists an inverse morphism
-\( g: B \to A \)
-with
-\[
-g \circ f = \mathrm{id}_A \quad \text{and} \quad f \circ g = \mathrm{id}_B.
-\]
-Denoted \(A \cong B\).
+  An object \(A\) is isomorphic to \(B\) in a category \(\mathcal{C}\) if there exists a morphism
+  \(
+  f: A \to B
+  \)
+  such that there exists an inverse morphism
+  \( g: B \to A \)
+  with
+  \[
+    g \circ f = \mathrm{id}_A \quad \text{and} \quad f \circ g = \mathrm{id}_B.
+  \]
+  Denoted \(A \cong B\).
 \end{definition}
 
+\begin{proposition}
+  \label{prop:iso-dual}
+  Let $\mathcal{C}$ be a category and $f: A \to B$ a morphism in $\mathcal{C}$.  
+  If $f$ is an isomorphism in $\mathcal{C}$, then $f$ is also an isomorphism in the opposite category $\mathcal{C}^{\mathrm{op}}$.
+  \begin{proof}
+    Since $f$ is an isomorphism in $\mathcal{C}$, there exists a morphism $g: B \to A$ such that
+    \[
+      g \circ f = \operatorname{id}_A \quad \text{and} \quad f \circ g = \operatorname{id}_B.
+    \]
 
-\subsubsection{\centering Functors}
-Categories provide a way of representing mathematical structures using only objects and arrows. Category theory takes itself very seriously, and since its focus is not on the objects themselves but on the relations between them, it is natural to consider functors, which are themselves morphisms in the category of categories. In this way, category theory can study itself.
+    In $\mathcal{C}^{\mathrm{op}}$, the morphisms $f$ and $g$ are reversed: $f^{\mathrm{op}}: B \to A$ and $g^{\mathrm{op}}: A \to B$.  
+    The compositions in $\mathcal{C}^{\mathrm{op}}$ satisfy
+    \[
+      f^{\mathrm{op}} \circ g^{\mathrm{op}} = (g \circ f)^{\mathrm{op}} = \operatorname{id}_A, \quad
+      g^{\mathrm{op}} \circ f^{\mathrm{op}} = (f \circ g)^{\mathrm{op}} = \operatorname{id}_B.
+    \]
 
-With this perspective, the definition of a functor arises naturally as a pair of functions that map both objects and arrows from one category to another while preserving identities and composition. Formally:
+    Hence $f^{\mathrm{op}}$ is an isomorphism in $\mathcal{C}^{\mathrm{op}}$.
+  \end{proof}
+
+\end{proposition}
+Isomorphisms are fundamental because they formalize the idea of structural equivalence between objects. As explained, Category Theory is mostly concerned with morphisms, which is why, isomorphisms play an important role. Many of the constructions we will introduce, such as products, coproducts, are unique only up to isomorphism, meaning, that they are unable to tell isomorphic objects apart from one another. This is one of the keys to the level of abstraction that Category Theory provides,  only reaching up to isomorphism.
+
+\section{\centering Functors}
+Category Theory takes itself very seriously. Hence, it is natural to consider functors, that are themselves morphisms in the category of categories. In this way, category theory can study itself. From this perspective, the definition of a functor arises naturally as a pair of functions that map both objects and arrows from one category to another while preserving identities and composition.
+
 \begin{definition} Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A functor $F : \mathcal{C} \to \mathcal{D}$ consists of:
-\begin{itemize}
-\item A function that maps objects from $\mathcal{C}$ to $\mathcal{D}$:
-  \[
-    \begin{aligned}
-      F : \mathrm{Ob}(\mathcal{C}) &\longrightarrow \mathrm{Ob}(\mathcal{D}) \\
-      X &\longmapsto F(X)
-    \end{aligned}
-  \]
-\item A function that maps arroes in $\mathcal{C}$ to $\mathcal{D}$:
-  \[
-    \begin{aligned}
-      F : \mathrm{Hom}_{\mathcal{C}}(X,Y) &\longrightarrow \mathrm{Hom}_{\mathcal{D}}(F(X),F(Y)) \\
-      f &\longmapsto F(f)
-    \end{aligned}
-  \]
-\end{itemize}
-such that the properties of a category are kept across the transformation:
-\begin{itemize}
-\item For every object $X \in \mathcal{C}$, $F(\mathrm{id}_X) = \mathrm{id}_{F(X)}$.
-\item For all composable morphisms $f : X \to Y$ and $g : Y \to Z$ in $\mathcal{C}$,
-  \[
-    F(g \circ f) = F(g) \circ F(f).
-  \]
-\end{itemize}
+  \begin{itemize}
+  \item A function that maps objects from $\mathcal{C}$ to $\mathcal{D}$:
+    \[
+      \begin{aligned}
+        F : \mathrm{Ob}(\mathcal{C}) &\longrightarrow \mathrm{Ob}(\mathcal{D}) \\
+        X &\longmapsto F(X)
+      \end{aligned}
+    \]
+  \item A function that maps arroes in $\mathcal{C}$ to $\mathcal{D}$:
+    \[
+      \begin{aligned}
+        F : \mathrm{Hom}_{\mathcal{C}}(X,Y) &\longrightarrow \mathrm{Hom}_{\mathcal{D}}(F(X),F(Y)) \\
+        f &\longmapsto F(f)
+      \end{aligned}
+    \]
+  \end{itemize}
+  such that the properties of a category are kept across the transformation:
+  \begin{itemize}
+  \item For every object $X \in \mathcal{C}$, $F(\mathrm{id}_X) = \mathrm{id}_{F(X)}$.
+  \item For all composable morphisms $f : X \to Y$ and $g : Y \to Z$ in $\mathcal{C}$,
+    \[
+      F(g \circ f) = F(g) \circ F(f)
+    \]
+  \end{itemize}
 
-The following diagram elegantly summarizes the latter definition:
-\[
-\begin{tikzcd}[row sep=2em, column sep=3em]
-X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
-F(X) \arrow[r, "F(f)"'] & F(Y)
-\end{tikzcd}
-\]
+  The following diagram elegantly summarizes the latter definition:
+  \[
+    \begin{tikzcd}[row sep=2em, column sep=3em]
+      X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
+      F(X) \arrow[r, "F(f)"'] & F(Y)
+    \end{tikzcd}
+  \]
 \end{definition}
 
 \begin{example} Haskell captures the notion of functor using the following type class:
@@ -260,12 +335,76 @@ That allows us to perform mapping operations on lists like:
   [2,4,6]
 \end{minted}
 \end{example}
+\begin{example} A reformulation from example 2.1.2 in \cite{pierce1991basic} that defines a functor called List from the category $\mathbf{Set} \to \mathbf{Set}$ to illustrate functors from a programming perspective.
+\begin{itemize}
+\item For every set $S$, we define a new set:
+\[
+    \mathrm{List}(S) := \{ L \mid L \text{ is a finite list of belements of } S \}
+\]
+Where the order of elements matters, and duplicates are allowed.
+
+\item For every function $f : S \to S'$, we define a new function
+\begin{align*}
+  \mathrm{List}(f) : \mathrm{List}(S) &\to \mathrm{List}(S') \\
+  \mathrm{List}(f)([s_1, s_2, \dots, s_n]) &:= [f(s_1), f(s_2), \dots, f(s_n)].
+\end{align*}
+So, say for instance we have $S = \{ 1, 2 \}$ and $f(s) = 2 \cdot s $. Then,
+\[
+  S' = \{2, 4\}, \mathrm{List}(\{1, 2\}) = \{ [], [1], [2], [1,1], [1,2], [2,1], [2,2], [1,1,1], \dots \}
+\]
+and
+\[
+  \mathrm{List}(f)(\{2, 4\}) = \{ [], [2], [4], [2,2], [2,4], [4,2], [4,4], [2,2,2], \dots \}
+\]
+
+\end{itemize}
+To confirm that \(\mathrm{List}\) is a functor, it must satisfy the following two laws:
+\begin{itemize}
+\item Identity: For every set $S$ and every list $L \in \mathrm{List}(S)$: \(
+\mathrm{List}(\mathrm{id}_S)(L) = L. \)
+\item Composition: For any two functions $f : S \to S'$ and $g : S' \to S''$, and any list $L \in \mathrm{List}(S)$:
+\(
+\mathrm{List}(g \circ f)(L) = (\mathrm{List}(g) \circ \mathrm{List}(f))(L).
+\)
+\end{itemize}
+\end{example}
+
+\begin{note} \( (\mathrm{List}(S), ++, []) \) is a monoid, where $++$ is associative list concatenation and $[]$ is the identity, satisfying $ [] ++ L = L = L ++ []$.
+\end{note}
+
+We have so far used directed graphs to informally represent categories, now, we leverage functors to introduce a purpose-specific form of directed graph tailored to our setting. We refer to this fine-tuned graphs as diagrams, we emphasize commutative diagrams, those where all paths from any given object to any other are equivalent.
+
+\begin{definition} A diagram in category theory is a functor
+  \(
+    F : D \to \mathcal{C}
+  \)
+  where \(D\) is the indexing category, that describes the diagram's shape, and \(\mathcal{C}\) is the target category. Each object of \(D\) is mapped to an object of \(\mathcal{C}\), and each morphism of \(D\) is mapped to a morphism of \(\mathcal{C}\), preserving composition and identities.
+
+\end{definition}
+
+\begin{example} Let $W, X, Y, Z$ be objects in a category $\mathcal{C}$ with morphisms
+  \[
+    f: W \to X, \quad g: W \to Y, \quad h: X \to Z, \quad k: Y \to Z, \quad m: W \to Z.
+  \]
+  The following diagram illustrates these morphisms:
+  \[
+    \begin{tikzcd}
+      W \arrow[r, "f"] \arrow[d, "g"'] \arrow[dr, "m", dashed] & X \arrow[d, "h"] \\
+      Y \arrow[r, "k"'] & Z
+    \end{tikzcd}
+  \]
+  This diagram commutes if 
+  \[
+    m = h \circ f = k \circ g,
+\]
+so all three paths from $W$ to $Z$ are equal. For a diagram to commute, this property should hold for any pair of objects.
+\end{example}
 
 \begin{example} Consider the categories of groups $\mathbf{Grp}$ and sets $\mathbf{Set}$. 
 We define the functor \( U : \mathbf{Grp} \longrightarrow \mathbf{Set} \):
 \begin{itemize}
-    \item \textbf{On objects}: for each group $G \in \mathbf{Grp}$, set $U(G)$ to be the set of elements of $G$. 
-    \item \textbf{On morphisms}: for each group homomorphism $f: G \to H$, we define $U(f) = f$, now considered as a function $U(G) \to U(H)$ between sets.
+    \item On objects: for each group $G \in \mathbf{Grp}$, set $U(G)$ to be the set of elements of $G$. 
+    \item On morphisms: for each group homomorphism $f: G \to H$, we define $U(f) = f$, now considered as a function $U(G) \to U(H)$ between sets.
 \end{itemize}
 This mapping preserves identities and composition. Diagrammatically, we can represent the action of $U$ on a morphism $f : G \to H$ as:
 \[
@@ -280,51 +419,19 @@ Since this functor ``forgets'' the structure its domain category we refer to it 
 
 
 
-
-
-\begin{example} A reformulation from example 2.1.2 in \cite{pierce1991basic} that defines a functor called List from the category $\mathbf{Set} \to \mathbf{Set}$ to illustrate functors from a programming perspective.
-  
-\begin{itemize}
-\item For every set $S$, we define a new set:
-\[
-    \mathrm{List}(S) := \{ L \mid L \text{ is a finite list of belements of } S \}
-\]
-Where the order of elements matters, and duplicates are allowed.
-
-\item For every function $f : S \to S'$, we define a new function
-\begin{align*}
-  \mathrm{List}(f) : \mathrm{List}(S) &\to \mathrm{List}(S') \\
-  \mathrm{List}(f)([s_1, s_2, \dots, s_n]) &:= [f(s_1), f(s_2), \dots, f(s_n)].
-\end{align*}
-So, say for instance we have $S = \{ 1, 2 \}$ and $f(s) = 2 \cdot s $. Then, $S' = \{2, 4\}$, \( \mathrm{List}(\{1, 2\}) = \{ [], [1], [2], [1,1], [1,2], [2,1], [2,2], [1,1,1], \dots \} \), and \( \mathrm{List}(f)(\{2, 4\}) = \{ [], [2], [4], [2,2], [2,4], [4,2], [4,4], [2,2,2], \dots \} \).
-\end{itemize}
-To confirm that \(\mathrm{List}\) is a functor, it must satisfy the following two laws:
-\begin{itemize}
-\item \textbf{Identity Law:} For every set $S$ and every list $L \in \mathrm{List}(S)$: \(
-\mathrm{List}(\mathrm{id}_S)(L) = L. \)
-\item \textbf{Composition Law:} For any two functions $f : S \to S'$ and $g : S' \to S''$, and any list $L \in \mathrm{List}(S)$:
-\(
-\mathrm{List}(g \circ f)(L) = (\mathrm{List}(g) \circ \mathrm{List}(f))(L).
-\)
-\end{itemize}
-\end{example}
-
-\begin{note} \( (\mathrm{List}(S), ++, []) \) is a monoid, where $++$ is associative list concatenation and $[]$ is the identity, satisfying $ [] ++ L = L = L ++ []$.
-\end{note}
-
-\subsubsection{\centering Natural Transformations}
+\section{\centering Natural Transformations}
 To define natural transformations we will apply the same reasoning scheme as we did
 with functors. We had categories and we defined functors as morphisms between
 categories, we do the same with natural transformations, that are nothing
-but functor morphisms.
+but morphisms from functors to functors.
 Suppose we have two functors $F, G : \mathcal{C} \to \mathcal{D}$. 
 These represent two distinct ways of translating $\mathcal{C}$ into $\mathcal{D}$. 
 A natural transformation between $F$ and $G$ then provides a systematic way 
-to relate their outputs. Formally:
+to relate their outputs.
 
 \begin{definition}
 
-  Let $\mathcal{C}$ and $\mathcal{D}$ be categories, and let $F, G : \mathcal{C} \to \mathcal{D}$ be functors. A natural transformation \( \alpha : F \Rightarrow G \) between them, denoted:
+  Let $\mathcal{C}$ and $\mathcal{D}$ be categories, and let $F, G : \mathcal{C} \to \mathcal{D}$ be functors. A natural transformation \( \alpha : F \Rightarrow G \) between them:
 \[
 \begin{tikzcd}
 \mathcal{C}
@@ -343,19 +450,19 @@ F(Y) \arrow[r, "\alpha_Y"] & G(Y)
 \end{tikzcd}
 \]
 \end{definition}
-\noindent A Haskell example that makes the diagram commute is:
+\noindent An example from the \texttt{ghci} prompt that shows \texttt{reverse} is natural and preserves commutativity:
 \begin{minted}{shell-session}
   ghci> (reverse . (fmap toUpper)) "abc"
   "CBA"
   ghci> ((fmap toUpper) . reverse) "abc"
   "CBA"
 \end{minted}
-This example is one of the simplest of its kind since we are dealing with an endofunctor in $\mathbf{Hask}$.
 \begin{definition} An endofunctor on a category $\mathcal{C}$ is a functor $ F : \mathcal{C} \to \mathcal{C} $
 that maps objects and morphisms of $\mathcal{C}$ to objects and morphisms of the same category, preserving identities and composition.
 \end{definition}
 
-\begin{example} This example is in principle the same as the latter, but may help to grasp the idea of functor in Haskell:
+
+\begin{example} A custom instantiation of functor similar to the previous example:
 \begin{minted}{Haskell}
   data BinTree a
       = Empty
@@ -380,36 +487,59 @@ We now can call the \texttt{testNaturality} function to assert whether the \text
   ghci> testNaturality f t
   True
 \end{minted}
-In this case, any function that just operates on the keys will be a valid operation since it does not alter structure.
 \end{example}
 \begin{note}
   From this example we extract a design pattern. For a given data structure whether a graph, a tree or otherwise, an operation that modifies structure can be considered a natural transform whenever we only deal with functions that don't modify structure.
 \end{note}
-\begin{note}
-In standard Haskell, we can only create endofunctors since the syntax only allows us to work with types.
-\end{note}
+In this case, any function that just operates on the keys will be a valid operation since it does not alter structure. Note how \texttt{testNaturality} just test naturality on a given argument. To support the claim that \texttt{reversePairs} it is in fact a natural transformation we proceed using structural induction.
+\begin{theorem}
+  \label{th:rpisnatural}
+  Let \texttt{RP}, \texttt{No} and \texttt{Em} represent \texttt{reversePairs}, \texttt{Node} and \texttt{Empty} respectively. The function $\texttt{RP} : \texttt{BinTree} \to \texttt{BinTree}$ defined by
+  \(
+  \texttt{RP}(\texttt{Em}) = \texttt{Em}, \text{ } \texttt{RP}(\texttt{No}\ x\ l\ r) = \texttt{No}\ x\ (\texttt{RP}(r))\ (\texttt{RP}(l))
+  \)
+  is a natural transformation. That is, for all functions $f : A \to B$ and trees $t : \texttt{BinTree}\ A$,
+  \(
+  \texttt{fmap}\ f\ (\texttt{RP}(t)) = \texttt{RP}(\texttt{fmap}\ f\ t).
+  \)
+\end{theorem}
+
+\begin{proof}
+We prove by structural induction on $t$.
+\begin{itemize}
+    \item Base case: $t = \texttt{Em}$. Then
+    \(
+    \texttt{fmap}\ f\ (\texttt{RP}(\texttt{Em})) = \texttt{fmap}\ f\ (\texttt{Em}) = \texttt{Em} = \texttt{RP}(\texttt{Em}) = \texttt{RP}(\texttt{fmap}\ f\ \texttt{Em})
+    \)
+    and the naturality condition holds.
+    \item Inductive step: assume the naturality condition holds for subtrees $l$ and $r$ of depth $\le n$. Let $t = \texttt{No}\ x\ l\ r$. Then
+    \(
+    \texttt{RP}(t) = \texttt{No}\ x\ (\texttt{RP}(r))\ (\texttt{RP}(l))
+    \)
+    and
+    \[
+    \texttt{fmap}\ f\ (\texttt{RP}(t)) = \texttt{fmap}\ f\ (\texttt{No}\ x\ (\texttt{RP}(r))\ (\texttt{RP}(l))) = \texttt{No}\ (f x)\ (\texttt{fmap}\ f\ (\texttt{RP}(r)))\ (\texttt{fmap}\ f\ (\texttt{RP}(l)))
+    \]
+    By the inductive hypothesis,
+    \(
+    \texttt{fmap}\ f\ (\texttt{RP}(l)) = \texttt{RP}(\texttt{fmap}\ f\ l), \texttt{fmap}\ f\ (\texttt{RP}(r)) = \texttt{RP}(\texttt{fmap}\ f\ r)
+    \)
+    so we can write:
+    \[
+    \texttt{fmap}\ f\ (\texttt{RP}(t)) = \texttt{No}\ (f x)\ (\texttt{RP}(\texttt{fmap}\ f\ r))\ (\texttt{RP}(\texttt{fmap}\ f\ l)) = \texttt{RP}(\texttt{No}\ (f x)\ (\texttt{fmap}\ f\ l)\ (\texttt{fmap}\ f\ r)) = \texttt{RP}(\texttt{fmap}\ f\ t)
+    \]
+    Hence the naturality condition holds for $t$.
+\end{itemize}
+
+By structural induction, $\texttt{RP}$ is a natural transformation.
+\end{proof}
+
+
+
 Natural transformations, as well as functors can be composed as well, we study now the two ways there are of composing natural transformations:
-\begin{remark}
-Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed:
-\[
-\beta \circ \alpha : F \Rightarrow H
-\]
-\[
-\begin{tikzcd}
-\mathcal{C}
-\arrow[r, bend left=100, "F"{name=U}]
-\arrow[r, ""'{name=V}]
-\arrow[r, bend right=100, "H"'{name=D}]
-& \mathcal{D}
-\arrow[Rightarrow, from=U, to=V, "\alpha" description]
-\arrow[Rightarrow, from=V, to=D, "\beta" description]
-\end{tikzcd}
-\]
-with components \( (\beta \circ \alpha)_X = \beta_X \circ \alpha_X \) for each object $X \in \mathrm{Ob}(\mathcal{C})$.
-\end{remark}
 
 \begin{remark}
-Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed \emph{vertically}:
+Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed vertically:
 \[
 \beta \circ \alpha : F \Rightarrow H
 \]
@@ -417,197 +547,438 @@ Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations 
 \begin{tikzcd}
 \mathcal{C}
 \arrow[r, bend left=100, "F"{name=U}]
-\arrow[r, ""'{name=V}]
+\arrow[r, "G"'{name=V}]
 \arrow[r, bend right=100, "H"'{name=D}]
 & \mathcal{D}
 \arrow[Rightarrow, from=U, to=V, "\alpha" description]
 \arrow[Rightarrow, from=V, to=D, "\beta" description]
 \end{tikzcd}
+\qquad
+\begin{tikzcd}[row sep=huge, column sep=huge]
+F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[r, "\beta_X"] \arrow[d, "G(f)"'] & H(X) \arrow[d, "H(f)"] \\
+F(Y) \arrow[r, "\alpha_Y"] & G(Y) \arrow[r, "\beta_Y"] & H(Y)
+\end{tikzcd}
 \]
-with components 
-\[
+with components \(
 (\beta \circ \alpha)_X = \beta_X \circ \alpha_X
-\] 
-for each object $X \in \mathrm{Ob}(\mathcal{C})$.
-
-\medskip
-
-\noindent
-Given categories $\mathcal{C}, \mathcal{D}, \mathcal{E}$, functors $F, G : \mathcal{C} \to \mathcal{D}$ and $J, K : \mathcal{D} \to \mathcal{E}$, and natural transformations $\alpha: F \Rightarrow G$ and $\gamma: J \Rightarrow K$, we can define the \emph{horizontal composition}:
+\) for each object $X \in \mathrm{Ob}(\mathcal{C})$.
+\end{remark}
+\begin{remark}
+Given categories $\mathcal{C}, \mathcal{D}, \mathcal{E}$, functors $F, G : \mathcal{C} \to \mathcal{D}$ and $J, K : \mathcal{D} \to \mathcal{E}$, and natural transformations $\alpha: F \Rightarrow G$ and $\gamma: J \Rightarrow K$, we can define the horizontal composition:
 \[
 \gamma \ast \alpha : J \circ F \Rightarrow K \circ G
 \]
-with components
 \[
-(\gamma \ast \alpha)_X = \gamma_{G(X)} \circ J(\alpha_X) = K(\alpha_X) \circ \gamma_{F(X)}
+\begin{tikzcd}
+\mathcal{C}
+\arrow[r, bend left=75, "F"{name=U}]
+\arrow[r, bend right=75, "G"'{name=D}]
+& \mathcal{D}
+\arrow[r, bend left=75, "J"{name=W}]
+\arrow[r, bend right=75, "K"'{name=X}]
+& \mathcal{E}
+\arrow[Rightarrow, from=U, to=D, "\alpha" description]
+\arrow[Rightarrow, from=W, to=X, "\gamma" description]
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[row sep=huge, column sep=huge]
+J(F(X)) \arrow[r, "\gamma_{F(X)}"] \arrow[d, "J(\alpha_X)"'] & K(F(X)) \arrow[d, "K(\alpha_X)"] \\
+J(G(X)) \arrow[r, "\gamma_{G(X)}"] & K(G(X))
+\end{tikzcd}
 \]
-for each $X \in \mathrm{Ob}(\mathcal{C})$.
+with components
+\(
+(\gamma \ast \alpha)_X = \gamma_{G(X)} \circ J(\alpha_X) = K(\alpha_X) \circ \gamma_{F(X)}
+\) for each $X \in \mathrm{Ob}(\mathcal{C})$.
 \end{remark}
+
 \begin{remark}
 The collection of all functors $F : \mathcal{C} \to \mathcal{D}$ together with natural transformations between them forms the functor category $\mathbf{Fun}(\mathcal{C}, \mathcal{D}) \in \mathrm{Ob}(\mathbf{Cat})$.
 \end{remark}
-\subsubsection{\centering Universal Constructions}
+
+\begin{example} This example builds the natural transform \texttt{reversePairs} from the composition of two variants of reverse pairs, one that reverses even depths, and another that does the converse on odd depths.
+  \begin{minted}{Haskell}
+  reverseDepth :: BinTree a -> Int -> BinTree a
+  reverseDepth Empty _ = Empty
+  reverseDepth (Node x l r) d
+      | even d    = Node x (reverseDepth r (d+1)) (reverseDepth l (d+1))
+      | otherwise = Node x (reverseDepth l (d+1)) (reverseDepth r (d+1))
+
+  reverseEven :: BinTree a -> BinTree a
+  reverseEven t = reverseDepth t 0
+      
+  reverseOdd :: BinTree a -> BinTree a
+  reverseOdd t = reverseDepth t 1
+
+  horizReversePairs :: BinTree a -> BinTree a
+  horizReversePairs = reverseEven . reverseOdd
+
+  testHorizNaturality :: (Eq b) => (a -> b) -> BinTree a -> Bool
+  testHorizNaturality f t =
+      (horizReversePairs . fmap f) t == (fmap f . horizReversePairs) t
+    \end{minted}
+  \end{example}
+    \begin{theorem}
+      \label{th:reverseevenoddtheorem}
+Let $\texttt{RE} = \texttt{reverseEven}$, $\texttt{RO} = \texttt{reverseOdd}$, and $\texttt{RP} = \texttt{reversePairs}$, and let $\texttt{Em}$ and $\texttt{No}$ denote \texttt{Empty} and \texttt{Node}, respectively. Then for any binary tree $t$,
+\(
+\texttt{RP}(t) = (\texttt{RO} \ast \texttt{RE})(t).
+\)
+\end{theorem}
+
+\begin{proof}
+We prove the statement by structural induction on $t$.
+
+\begin{itemize}
+    \item Base case:
+    \begin{itemize}
+        \item If $t = \texttt{Em}$, then 
+        \(
+        \texttt{RE}(\texttt{Em}) = \texttt{RO}(\texttt{Em}) = \texttt{RP}(\texttt{Em}) = \texttt{Em}.
+        \)
+        \item If $t = \texttt{No}\ x\ \texttt{Em}\ \texttt{Em}$, then
+        \(
+        \texttt{RE}(t) = \texttt{RO}(t) = \texttt{RP}(t) = \texttt{No}\ x\ \texttt{Em}\ \texttt{Em}.
+        \)
+    \end{itemize}
+    
+    \item Inductive step: Assume that for all subtrees of depth $\le n$, the equality $\texttt{RP}(s) = (\texttt{RO} \ast \texttt{RE})(s)$ holds. Let $t = \texttt{No}\ x\ L\ R$ be a tree of depth $n+1$.
+    \begin{itemize}
+        \item Applying $\texttt{RE}$ gives
+        \(
+        \texttt{RE}(t) = \texttt{No}\ x\ (\texttt{RE}(R))\ (\texttt{RE}(L)).
+        \)
+        \item Applying $\texttt{RO}$ to $\texttt{RE}(t)$ gives
+        \(
+        \texttt{RO}(\texttt{RE}(t)) = \texttt{No}\ x\ (\texttt{RO}(\texttt{RE}(R)))\ (\texttt{RO}(\texttt{RE}(L))).
+        \)
+        \item By the inductive hypothesis, 
+        \(
+        \texttt{RO}(\texttt{RE}(L)) = \texttt{RP}(L) \text{ and } \texttt{RO}(\texttt{RE}(R)) = \texttt{RP}(R).
+        \)\\
+        Hence,
+        \(
+        \texttt{RO}(\texttt{RE}(t)) = \texttt{No}\ x\ (\texttt{RP}(R))\ (\texttt{RP}(L)) = \texttt{RP}(t).
+        \)
+    \end{itemize}
+\end{itemize}
+By structural induction, we conclude that $\texttt{RP} = \texttt{RO} \ast \texttt{RE}$ for all binary trees $t$.
 
 
+
+
+
+\end{proof}
+\begin{corollary}
+\(
+(\texttt{RO} \ast \texttt{RE})
+\) is a natural transformation.
+\end{corollary}
+\begin{proof}
+  Direct by
+  \ref{th:rpisnatural} and
+  \ref{th:reverseevenoddtheorem}.
+\end{proof}
+\begin{remark} Compilers can use natural transforms to avoid performing unnecessary work and wasting precious resources. Take for instance the following \texttt{safeRoot} function that returns the element at the root of a tree if there is one:
+  \begin{minted}{Haskell}
+  safeRoot :: BinTree a -> Maybe (BinTree a)
+  safeRoot Empty = Nothing
+  safeRoot (Node x _ _) = Just (Node x Empty Empty)
+\end{minted}
+Check, that by naturality, \texttt{(safeRoot} $ . $ \texttt{fmap} \texttt{f)} achieves the same as \texttt{(fmap} \texttt{f} $ . $ \texttt{safeRoot)}. So in the case that \texttt{f} is particularly expensive, we can apply \texttt{(f} $.$ \texttt{safeRoot)} instead of \texttt{(f} $.$ \texttt{safeRoot)}. The former more inexpensive because we first get rid of every element other than the root and then perform \texttt{f}, as opposed to performing \texttt{f} on every single node of the tree.
+\end{remark}
+
+
+
+
+\begin{comment}
+\begin{example} To show composition of natural transforms, we further extend \texttt{BinTree}. We do so by defining yet another natural transform \texttt{safeRoot} similar to \texttt{reversePairs}.
+
+  \begin{minted}{Haskell}
+  safeRoot :: BinTree a -> Maybe (BinTree a)
+  safeRoot Empty = Nothing
+  safeRoot (Node x _ _) = Just (Node x Empty Empty)
+
+  horizComp :: BinTree a -> Maybe (BinTree a)
+  horizComp = safeRoot . reversePairs
+
+  testNaturality_ :: Eq b => (a -> b) -> BinTree a -> Bool
+  testNaturality_ f t =
+      fmap (fmap f) (horizComp t) == horizComp (fmap f t)
+    \end{minted}
+    \begin{note}
+      The \texttt{fmap (fmap f) (horizonComp t)} is due to each node in (horizComp t) containing \(\texttt{Maybe a}\); \(\texttt{fmap f}\) acts inside \(\texttt{Maybe}\); outer \(\texttt{fmap}\) applies this to every node, giving \(\texttt{BinTree (Maybe b)}\).
+    \end{note}
+  \end{example}
+\end{comment}
+
+\section{\centering Universal Constructions}
+Universality is a central concept in category theory, capturing the idea that certain
+constructions are optimal or canonical in a precise sense. A universal construction
+ensures that any relevant morphism factors uniquely through a specific object and
+arrow. Universal arrows formalize this notion: they express a universal property
+from an object in one category to a functor into another. Moreover, by their very
+nature, universal arrows explain why universal properties are unique up to
+isomorphism.
 \begin{definition}
-An object \(T \in \mathcal{C}\) is terminal if for every object \(X \in \mathcal{C}\) there exists a unique morphism
-\[
-!_X : X \to T.
-\]
-Dually, an object \(I \in \mathcal{C}\) is initial if for every object \(X \in \mathcal{C}\) there exists a unique morphism
-\[
-!_X : I \to X.
-\]
+  Let $S : \mathcal{D} \to \mathcal{C}$ be a functor and let $X$ be an object
+  of $\mathcal{C}$. A universal arrow from $X$ to $S$ is a pair
+  $\langle R, u \rangle$ consisting of an object $R$ of $\mathcal{D}$ and a morphism
+  $u : X \to S(R)$ in $\mathcal{C}$ such that for every object $Y$ of
+  $\mathcal{D}$ and every morphism $f : X \to S(Y)$ in $\mathcal{C}$,
+  there exists a unique morphism $f' : R \to Y$ in $\mathcal{D}$ with
+  $S(f') \circ u = f$.
 \end{definition}
+This condition means that every arrow from $X$ to $S(Y)$ factors uniquely
+through $u$,   \(
+S(f') \circ u = f
+\)
+, as shown in the following commutative diagram:
+\[
+  \begin{tikzcd}
+    X \arrow[r, "u"] \arrow[dr, "f"'] & S(R) \arrow[d, dashed, "S(f')"] \\
+    & S(Y)
+  \end{tikzcd}
+  \qquad
+  \begin{tikzcd}
+    R \arrow[d, "f'" ] \\
+    Y
+  \end{tikzcd}
+\]
+\subsubsection{\centering Terminal \& Initial Objects}
+\begin{definition}
+  An object $T$ in a category $\mathcal{C}$ is terminal if for every object 
+  $X \in \text{Ob}(\mathcal{C})$, there exists a unique morphism
+  \(
+    !_X : X \to T
+    \).
+  This property characterizes $T$ up to unique isomorphism.
+\begin{proposition}
+  In the category of small categories, $\mathbf{Cat}$, the point category $1$ is terminal:
+  for every small category $\mathcal{C}$, there exists a unique functor
+  \(
+    !_\mathcal{C} : \mathcal{C} \to 1
+  \). which sends every object of $\mathcal{C}$ to $*$ and every morphism to $\operatorname{id}_*$.
+\end{proposition}
 
-\begin{note}
+\begin{proof}
+Recall that the point category $1$ has a single object $*$ and a single morphism $\mathrm{id}_*:* \to *$.
+\begin{itemize}
+\item Existence: Define $!_{\mathcal{C}}$ on objects by $!_{\mathcal{C}}(X)=*$ for every object $X\in\mathrm{Ob}(\mathcal{C})$, and on morphisms by $!_{\mathcal{C}}(f)=\mathrm{id}_*$ for every morphism $f$ of $\mathcal{C}$. This assignment is well defined and preserves identities and composition:
+\[
+!_{\mathcal{C}}(\mathrm{id}_X)=\mathrm{id}_* \quad\text{and}\quad
+!_{\mathcal{C}}(g\circ f)=\mathrm{id}_*=\mathrm{id}_*\circ\mathrm{id}_*=!_{\mathcal{C}}(g)\circ !_{\mathcal{C}}(f)
+\]
+so $!_{\mathcal{C}}$ is a functor $\mathcal{C}\to 1$.
 
-\end{note}
+\item Uniqueness: If $F:\mathcal{C}\to 1$ is any functor, then for each object $X\in\mathcal{C}$ the object $F(X)$ must be an object of $1$, hence $F(X)=*$. For each morphism $f:X\to Y$ in $\mathcal{C}$ the morphism $F(f):*\to *$ must be a morphism of $1$, and the only such morphism is $\mathrm{id}_*$, so $F(f)=\mathrm{id}_*$. Thus $F$ coincides with the above $!_{\mathcal{C}}$, proving uniqueness.
+\end{itemize}
+Therefore for every small category $\mathcal{C}$ there is a unique functor $\mathcal{C}\to 1$, i.e. $1$ is a terminal object in $\mathbf{Cat}$.
+\end{proof}
+
+\begin{example}
+  Let $\mathcal{C}$ be a category and let $F : 1 \to \mathcal{C}$ be the unique functor from the point category $1$. 
+  For any object $C \in \mathcal{C}$, a terminal object $T$ with the unique morphism 
+  $u : C \to T$ forms a universal arrow from $C$ to $F$, because for any other morphism 
+  $f : C \to T$ (there is only one, by definition of terminal object), the identity 
+  morphism $\operatorname{id}_T : T \to T$ is the unique morphism making the diagram commute:
+  \(
+    \operatorname{id}_T \circ u = f
+  \).
+  This shows that terminal objects are precisely universal arrows from the identity functor on $1$ to $\mathcal{C}$.
+\end{example}
+
+\end{definition}
+\begin{example} The following Haskell snippet provides a feasible definition for terminal object, where arguments of a given type \texttt{a}, are all collapsed to \texttt{()}.
+\begin{minted}{Haskell}  
+  terminate :: a -> ()
+  terminate _ = ()
+\end{minted}
+\begin{minted}{shell-session}
+  ghci> terminate "I'm on death row :'("
+  ()
+\end{minted}
+\end{example}
+
+\begin{proposition}
+Let $\mathcal{C}$ be a category. Any two terminal objects of $\mathcal{C}$ are isomorphic.
+More precisely, if $T$ and $T'$ are terminal objects then there exists a unique isomorphism
+$\;i:T\to T'\;$, whose inverse is the unique map $T'\to T$.
+\end{proposition}
+
+\begin{proof}
+  Let $T$ and $T'$ be terminal objects of $\mathcal{C}$. By terminality of $T'$ there is a unique morphism
+  \(
+  i : T \to T'
+  \),
+  and by terminality of $T$ there is a unique morphism
+  \(
+  j : T' \to T.
+  \)
+  Consider the composite $j\circ i : T \to T$. Since $T$ is terminal, the identity $\mathrm{id}_T$ is the unique morphism $T\to T$, hence
+  \(
+    j\circ i = \mathrm{id}_T.
+  \)
+  Similarly, the composite $i\circ j : T' \to T'$ must equal $\mathrm{id}_{T'}$ because $T'$ is terminal. Therefore $i$ and $j$ are mutual inverses, so $i$ is an isomorphism with inverse $j$. Uniqueness: if $i':T\to T'$ were any isomorphism, then by terminality of $T'$ we must have $i'=i$, so the isomorphism is unique.
+\end{proof}
+
 
 
 \begin{definition}
-Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
-A product of $A$ and $B$ is an object $A \times B$ together with morphisms
-\( \pi_1 : A \times B \to A, \pi_2 : A \times B \to B \) such that for every
-object $X$ with morphisms $f : X \to A$ and $g : X \to B$, there exists a
-unique morphism $\langle f,g \rangle : X \to A \times B$ making the diagram commute:
-\[
-\begin{tikzcd}
-  & X \arrow[dl, "f"'] \arrow[dr, "g"] \arrow[d, dashrightarrow, "{\langle f,g \rangle}"] & \\
-A & A \times B \arrow[l, "\pi_1"] \arrow[r, "\pi_2"'] & B
-\end{tikzcd}
-\]
-\[
-  \pi_1 \circ \langle f,g \rangle = f
-  \quad
-  \pi_2 \circ \langle f,g \rangle = g
-\]
+  By duality, initial objects are dual to terminal objects.
+  An object $I$ in a category $\mathcal{C}$ is initial if for every object 
+  $X \in \text{Ob}(\mathcal{C})$, there exists a unique morphism
+  \(
+    !_X : I \to X
+  \)
+  Dually, the point category $1$ serves as an initial object in the opposite category
+  $\mathbf{Cat}^{\mathrm{op}}$. Concretely, in $\mathbf{Cat}$ itself,
+  there is also a unique functor
+  \(
+    1 \to \mathcal{C}
+  \)
+  for any small category $\mathcal{C}$, sending $*$ to any chosen object of $\mathcal{C}$
+  and $\operatorname{id}_*$ to the identity morphism on that object.
+\end{definition}
+\subsubsection{\centering Products and Coproducts}
+
+When we hear the word product, it is natural to think of the Cartesian product of sets: ordered pairs $\langle a,b \rangle$ with corresponding projections $\pi_1, \pi_2$. That is fine intuition in the category \textbf{Set}, but category theory is not about carrying over constructions element-by-element. Instead, it asks us to step back and characterize objects purely in terms of how morphisms interact with them.
+
+So, when we speak of products, and later coproducts, in a category, we are not importing the set-theoretic construction. 
+We are giving a new definition that says: the product is whatever object plays the right role with respect to morphisms. 
+This shift in perspective is crucial: it frees us from thinking in terms of elements and lets the same idea apply in categories where ``elements'' do not make sense at all.
+
+\begin{definition}
+  Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
+  A product of $A$ and $B$ is an object $A \times B$ together with morphisms
+  \( \pi_1 : A \times B \to A, \pi_2 : A \times B \to B \) such that for every
+  object $X$ with morphisms $f : X \to A$ and $g : X \to B$, there exists a
+  unique morphism $\langle f,g \rangle : X \to A \times B$ making the diagram commute:
+  \[
+    \begin{tikzcd}
+      & X \arrow[dl, "f"'] \arrow[dr, "g"] \arrow[d, dashrightarrow, "{\langle f,g \rangle}"] & \\
+      A & A \times B \arrow[l, "\pi_1"] \arrow[r, "\pi_2"'] & B
+    \end{tikzcd}
+  \]
+  \[
+    \pi_1 \circ \langle f,g \rangle = f
+    \quad
+    \pi_2 \circ \langle f,g \rangle = g
+  \]
 \end{definition}
 
 \begin{note}
   In these diagrams, the dashed arrow indicates a unique morphism guaranteed by the universal property of the product or coproduct. That is, for any mediating maps as in the diagram, there exists exactly one morphism making the diagram commute.
 \end{note}
 
-\begin{definition}
-Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.  
-A coproduct of $A$ and $B$ is an object $A + B$ together with morphisms
-\( \iota_1 : A \to A + B, \iota_2 : B \to A + B \) such that for every object
-$X$ with morphisms $f : A \to X$ and $g : B \to X$, there exists a unique
-morphism $[f,g] : A + B \to X$ making the diagram commute:
+
+\begin{proposition} From \cite{imada2019equivalence}: In the category \textbf{Set}, the product of objects $A$ and $B$ is their Cartesian product $A \times B$.
+\end{proposition}
+
+\begin{proof}
+  Let $X$ be a set and let $x_1 : X \to A$ and $x_2 : X \to B$. Consider the function
+  \[  
+    \begin{aligned}
+      \langle x_1, x_2 \rangle : X &\to A \times B \\
+      x &\mapsto (x_1(x), x_2(x)) \\
+    \end{aligned}
+  \]
+By definition, we have
+\(
+x_1 = \pi_1 \circ \langle x_1, x_2 \rangle \text{ and }
+x_2 = \pi_2 \circ \langle x_1, x_2 \rangle.
+\)
+To show uniqueness of $\langle x_1, x_2 \rangle$, suppose there is a morphism $f : X \to A \times B$ such that
+\(
+x_1 = \pi_1 \circ f
+\text{ and }
+x_2 = \pi_2 \circ f.
+\)
+Take $x \in X$ and denote
 \[
-\begin{tikzcd}
-A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g]}"] & B \arrow[l, "\iota_2"'] \arrow[dl, "g"] \\
-& X &
-\end{tikzcd}
+\langle x_1, x_2 \rangle(x) = (a,b), 
+\qquad f(x) = (a',b').
 \]
-\[
-[f,g] \circ \iota_1 = f
-\quad
-[f,g] \circ \iota_2 = g
-\]
+Then
+\(
+a = \pi_1((a,b)) 
+   = \pi_1(f(x)) 
+   = x_1(x) 
+   = \pi_1(\langle x_1, x_2 \rangle(x)) 
+   = \pi_1((a',b')) 
+   = a',
+\)
+and similarly $b = b'$. Hence $(a,b) = (a',b')$, so $f = \langle x_1, x_2 \rangle$. Since $(X, x_1, x_2)$ was arbitrary, it follows that $(A \times B, \pi_1, \pi_2)$ is the product of $A$ and $B$ in \textbf{Set}.
+\end{proof}
+\begin{remark} From \cite{imada2019equivalence}: Products are not unique. For example, in \textbf{Set} both 
+\(
+(A \times B, \pi_1, \pi_2)
+\text{ and }
+(B \times A, \pi_2, \pi_1)
+\)
+are products of $A$ and $B$. However, there is a bijection $A \times B \to B \times A$, given by $(a,b) \mapsto (b,a)$.  
+This means that products are unique up to isomorphism. In fact, in any category, every product of two objects is unique up to a unique isomorphism.
+\end{remark}
+\begin{definition} Let $\mathcal{C}$ be a category and let $A,B \in \mathrm{Ob}(\mathcal{C})$.
+  A coproduct of $A$ and $B$ is an object $A + B$ together with morphisms
+  \( \iota_1 : A \to A + B, \iota_2 : B \to A + B \) such that for every object
+  $X$ with morphisms $f : A \to X$ and $g : B \to X$, there exists a unique
+  morphism $[f,g] : A + B \to X$ making the diagram commute:
+  \[
+    \begin{tikzcd}
+      A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g]}"] & B \arrow[l, "\iota_2"'] \arrow[dl, "g"] \\
+      & X &
+    \end{tikzcd}
+  \]
+  \[
+    [f,g] \circ \iota_1 = f
+    \quad
+    [f,g] \circ \iota_2 = g
+  \]
 \end{definition}
-
-
-\subsubsection{\centering Adjunctions}
-
-\begin{definition}
-
-  Let $\mathcal{C}$ and $\mathcal{D}$ be categories. An adjunction between them consists of two functors
+\begin{remark}
+  Coproducts are dual to products.
+\end{remark}
+\begin{definition} Let $\mathcal{C}$ be a category with finite products. For objects $A, B \in \mathcal{C}$, an exponential object $B^{A}$ is an object together with an evaluation morphism
 \[
-F : \mathcal{C} \to \mathcal{D}, \qquad G : \mathcal{D} \to \mathcal{C}
-\]
-and a natural family of bijections
-\[
-\Phi_{C,D} : \mathrm{Hom}_{\mathcal{D}}\bigl(F(C), D\bigr)
-\;\cong\;
-\mathrm{Hom}_{\mathcal{C}}\bigl(C, G(D)\bigr)
-\]
-that is natural in both $C \in \mathcal{C}$ and $D \in \mathcal{D}$.
-
-This is denoted by
-\[
-F \dashv G,
-\]
-where $F$ is the \emph{left adjoint} and $G$ is the \emph{right adjoint}.
-
-Equivalently, an adjunction can be described by a pair of natural transformations:
-\[
-\eta : \mathrm{Id}_{\mathcal{C}} \Rightarrow G F,
-\qquad
-\varepsilon : F G \Rightarrow \mathrm{Id}_{\mathcal{D}}
-\]
-called the \emph{unit} and \emph{counit}, satisfying the \emph{triangle identities}
-\[
-G \xrightarrow{G \varepsilon} G F G \xrightarrow{\eta G} G
-= \mathrm{Id}_{G},
-\qquad
-F \xrightarrow{\varepsilon F} F G F \xrightarrow{F \eta} F
-= \mathrm{Id}_{F}.
-\]
-
-\end{definition}
-
-Let $\mathcal{C}$ be a category with finite products. For objects $A,B \in \mathcal{C}$,
-an \emph{exponential object} $B^{A}$ is defined together with an \emph{evaluation morphism}
-\[
-\mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
+  \mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
 \]
 such that for every object $C \in \mathcal{C}$ and every morphism
-\[
-f : C \times A \longrightarrow B
-\]
+\(
+  f : C \times A \longrightarrow B
+\)
 there exists a unique morphism
-\[
-\lambda f : C \longrightarrow B^{A}
-\]
+\(
+  \lambda f : C \longrightarrow B^{A}
+\)
 making the following diagram commute:
 \[
-\begin{array}{c}
-C \times A \xrightarrow{\ \lambda f \times 1_{A}\ } B^{A} \times A \xrightarrow{\ \mathrm{ev}_{A,B}\ } B
-\end{array}
+\begin{tikzcd}
+C \times A \ar[rr, dashed, "\lambda f \times 1_A"] \ar[dr, "f"'] & & B^{A} \times A \ar[dl, "\mathrm{ev}_{A,B}"] \\
+& B &
+\end{tikzcd}
 \]
-that is,
-\[
-\mathrm{ev}_{A,B} \circ (\lambda f \times 1_{A}) = f.
-\]
+That is,
+\(
+  \mathrm{ev}_{A,B} \circ (\lambda f \times 1_A) = f.
+\)
+\end{definition}
 
-The object $B^{A}$, if it exists, is unique up to unique isomorphism. A category
-in which such exponentials exist for all pairs of objects is called a
-\emph{cartesian closed category (CCC)}.
-
+\begin{proposition}
+The exponential object $B^{A}$, if it exists, is unique up to unique isomorphism.
+\end{proposition}
 
 \section{\centering Closed Cartesian Categories}
 
-Let $\mathcal{C}$ be a category with finite products. For objects $A,B \in \mathcal{C}$,
-an \emph{exponential object} $B^{A}$ is defined together with an \emph{evaluation morphism}
-\[
-\mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
-\]
-such that for every object $C \in \mathcal{C}$ and every morphism
-\[
-f : C \times A \longrightarrow B
-\]
-there exists a unique morphism
-\[
-\lambda f : C \longrightarrow B^{A}
-\]
-making the following diagram commute:
-\[
-\begin{array}{c}
-C \times A \xrightarrow{\ \lambda f \times 1_{A}\ } B^{A} \times A \xrightarrow{\ \mathrm{ev}_{A,B}\ } B
-\end{array}
-\]
-that is,
-\[
-\mathrm{ev}_{A,B} \circ (\lambda f \times 1_{A}) = f.
-\]
-
-The object $B^{A}$, if it exists, is unique up to unique isomorphism. A category
-in which such exponentials exist for all pairs of objects is called a
-\emph{cartesian closed category (CCC)}.
 
 
-\paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science.
+
+
+
+
+
+
+\paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science. Content related to Lambek is also influenced by \cite{Jacobs1999categorical}.
 }
 
 

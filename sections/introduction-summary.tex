@@ -1,0 +1,70 @@
+
+\subsubsection{\centering Summary}
+
+Categorical semantics provides a formal, structural interpretation of type systems using the language of category theory. The simply typed $\lambda$-calculus is a core formalism for defining functions with explicitly assigned types. Its syntax is inductively defined by types and terms. 
+
+\begin{definition}[Types]
+Types are defined recursively as follows:
+\begin{enumerate}
+    \item Base types: $\alpha, \beta, \dots$
+    \item Function types: If $A$ and $B$ are types, then $A \to B$ is a type.
+\end{enumerate}
+\end{definition}
+\begin{definition}[Terms]
+Terms are defined recursively as follows:
+\begin{enumerate}
+    \item Variables $x:A$
+    \item Constants
+    \item Function application $M\,N$ (if $M : A \to B$ and $N : A$, then $M\,N : B$)
+    \item Function abstraction $\lambda x.M : A \to B$ (if $M : B$ under assumption $x : A$)
+\end{enumerate}
+\end{definition}
+\begin{example}[Simple Function]
+Let $\text{Nat}$ and $\text{Bool}$ be base types. Then
+\[
+\lambda x:\text{Nat}.\, \text{isEven}(x) : \text{Nat} \to \text{Bool}
+\]
+defines a function that maps natural numbers to booleans.
+\end{example}
+The simply typed $\lambda$-calculus can be interpreted as a **deduction system**. Types correspond to propositions, and terms correspond to proofs. Identity terms $\lambda x.x : A \to A$ represent trivial or reflexive proofs, while composition of terms models chaining of derivations. If $f : A \to B$ and $g : B \to C$, then
+\[
+g \circ f := \lambda x.\, g(f\,x) : A \to C
+\]
+represents the derived proof of $C$ from $A$. This compositional structure mirrors the behavior of formal derivations in a logical system.
+\begin{definition}[Curry--Howard Correspondence]
+The Curry--Howard correspondence establishes a structural analogy between typed $\lambda$-calculus and intuitionistic logic:
+\begin{enumerate}
+    \item Function types $A \to B$ correspond to logical implication $A \Rightarrow B$
+    \item Terms correspond to constructive proofs
+\end{enumerate}
+\end{definition}
+\begin{example}[Identity Proof]
+The identity term $\lambda x.x : A \to A$ corresponds to a trivial proof that $A$ implies $A$.
+\end{example}
+Categories generalize this notion of deduction.  
+\begin{definition}[Category]
+A category $\mathcal{C}$ consists of:
+\begin{enumerate}
+    \item Objects
+    \item Morphisms between objects
+    \item Identity morphisms
+    \item Composition of morphisms satisfying associativity and unit laws
+\end{enumerate}
+\end{definition}
+\begin{definition}[Categories as Deduction Systems]
+Objects represent propositions or types, morphisms represent proofs, identity morphisms represent reflexive derivations, and composition represents chaining of proofs.
+\end{definition}
+Exponentials in a category capture the notion of function types: for objects $A$ and $B$, the exponential $B^A$ represents morphisms from $A$ to $B$. A morphism $f : X \to B^A$ is equivalent to a morphism $g : X \times A \to B$, encoding currying and abstraction.  
+\begin{definition}[Curry--Howard--Lambek Correspondence]
+Simply typed $\lambda$-calculi can be interpreted in Cartesian Closed Categories (CCCs), where:
+\begin{enumerate}
+    \item Objects model types or propositions
+    \item Morphisms model proofs or terms
+    \item Composition mirrors sequential derivation
+\end{enumerate}
+\end{definition}
+This correspondence provides a **compositional, structural semantics** for type systems, connecting logic, computation, and category theory. It allows reasoning about entire type systems through categorical structure without reference to specific terms, emphasizing the role of composition and abstraction in both logic and computation.
+
+
+
+

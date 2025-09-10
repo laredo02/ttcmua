@@ -343,7 +343,7 @@ Every legal term \( M \) in $\lambda^\to$ is strongly normalising.
 
 
 
-\section{\centering Extended Typing}
+\section{\centering Extended Typing--Products}
 As discussed, minimal typing is the simplest form of typing. It follows from this statement that it can be extended. Here we introduce products that can be thought of as records or structs:
 
 \begin{definition} Extended types $ \Tset^\times $ is defined inductively as:
@@ -605,6 +605,175 @@ where: \( n = d(t) \text{ and  } m = \text{number of redexes of degree } n. \)
 \begin{theorem}
 \label{thm:weak-normalisation} By iteratively applying Lemma~\ref{lem:max-degree-conversion} to reduce the measure $\mu(t)$ in lexicographic order, every term $t$ eventually reaches a normal form. Hence, weak normalization holds.
 \end{theorem}
+
+\section{\centering Extended Typing--Sums}
+Sum types can be thought of as disjoint unions, they are the dual to product types, see \ref{def:coproduct}. Whereas a product type $A \times B$ contains both an $A$ and a $B$, a sum type $A + B$ contains either an $A$ or a $B$, together with a tag indicating which side it came from. This makes sum types a natural way to represent alternatives or branching data. As done in \cite{selinger2008:lambdanotes} we only present the extension in the effort avoid being repetitive.
+\begin{definition} 
+Extended types $ \Tset^+ $ is defined inductively as:
+\[
+  \Tset^+ ::= \Bset \mid \Tset^+ \to \Tset^+ \mid \Tset^+ + \Tset^+ \mid 0
+\]
+where $\Bset$ is the set of base types.
+\end{definition}
+
+\begin{definition}
+The set of raw terms \( \La^+ \) is defined by:
+\[
+  \La^+ ::= x 
+    \mid \lambda x : \Tset.\ \La^+ 
+    \mid \La^+\,\La^+ 
+    \mid \iota_1 \La^+ 
+    \mid \iota_2 \La^+ 
+    \mid \mathsf{case}\; \La^+\; \mathsf{of}\;\iota_1 x \Rightarrow \La^+ \mid \iota_2 y \Rightarrow \La^+
+    \mid \square_A\,\La^+
+\]
+Here:
+\begin{itemize}
+  \item \( x \in \Vset \), a countable set of variables
+  \item \( \iota_1 M \) injects a term of type $A$ into the left summand of $A+B$
+  \item \( \iota_2 M \) injects a term of type $B$ into the right summand of $A+B$
+  \item \( \mathsf{case}\;M\;\mathsf{of}\;\iota_1 x \Rightarrow N \mid \iota_2 y \Rightarrow P \) performs case analysis on a sum
+  \item \( \square_A M \) eliminates an impossible term of type $0$, producing a term of type $A$
+\end{itemize}
+\end{definition}
+
+\begin{definition}
+Given $t \in \La^+$, typing judgments are of the form \( \Gamma \vdash t : \Tset \), where \( \Gamma \) is a context \( x_1 : T_1, \dots, x_n : T_n \). The typing rules for \( \La^+ \) are:
+
+\[
+  \inferrule*[right=Inl]
+  { \Gamma \vdash M : A }
+  { \Gamma \vdash \iota_1 M : A + B }
+  \quad
+  \inferrule*[right=Inr]
+  { \Gamma \vdash M : B }
+  { \Gamma \vdash \iota_2 M : A + B }
+\]
+\[
+  \inferrule*[right=Case]
+  { \Gamma \vdash M : A + B \\ \Gamma, x:A \vdash N : C \\ \Gamma, y:B \vdash P : C }
+  { \Gamma \vdash \mathsf{case}\;M\;\mathsf{of}\;\iota_1 x \Rightarrow N \mid \iota_2 y \Rightarrow P : C }
+  \quad
+  \inferrule*[right=Abort]
+  { \Gamma \vdash M : 0 }
+  { \Gamma \vdash \square_A M : A }
+\]
+
+\end{definition}
+
+\subsubsection{\centering Reduction Rules}
+The operational semantics for sum types naturally extend $\beta$-reduction with case distinction and the empty type.
+
+\subsubsection{\centering $\beta$-reduction}
+
+The core $\beta$-reduction rules for simply typed $\lambda$-calculus with sums and empty type are:
+
+\[
+  \mathsf{case}\;(\iota_1 M)\;\mathsf{of}\;\iota_1 x \Rightarrow N \mid \iota_2 y \Rightarrow P \;\curly\; N[x := M]
+\]
+\[
+  \mathsf{case}\;(\iota_2 M)\;\mathsf{of}\;\iota_1 x \Rightarrow N \mid \iota_2 y \Rightarrow P \;\curly\; P[y := M]
+\]
+\[
+  \square_A M \;\curly\; \text{(no rule, $M:0$ cannot reduce)}
+\]
+
+\subsubsection{\centering $\eta$-laws}
+
+The $\eta$-laws for sums capture the universal property of coproducts:
+
+\[
+  \mathsf{case}\;M\;\mathsf{of}\;\iota_1 x \Rightarrow \iota_1 x \mid \iota_2 y \Rightarrow \iota_2 y \;\equiv_\eta\; M
+\]
+\[
+  \square_A M \;\equiv_\eta\; M \quad (M:0)
+\]
+
+\noindent
+\textbf{Closure:}  
+As with products, $\eta$ is treated as an equational principle, closed under all contexts.
+
+\subsubsection{\centering $\beta\eta$-conversion}
+
+The combined theory, called $\beta\eta$-conversion, is the smallest congruence $\equiv_{\beta\eta}$ satisfying:
+
+\[
+  M \curly N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
+  \qquad
+  M \equiv_\eta N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
+\]
+
+Thus, $\beta\eta$-conversion identifies terms up to computation and extensionality, closed under sums and the empty type.
+
+
+\begin{remark}
+  The term constructors for sums have the following interpretation:
+  \begin{itemize}
+    \item $\iota_1$ and $\iota_2$ are the canonical injections, marking whether a value belongs to the left or right summand of $A + B$.
+    \item The $\mathsf{case}$ construct corresponds to case analysis on a coproduct, analogous to pattern matching in functional programming.
+    \item The term $\mathsf{abort}_A$ expresses the unique morphism $0 \to A$, capturing the fact that from an impossible value one may derive a term of any type.
+  \end{itemize}
+\end{remark}
+
+
+
+
+
+\section{\centering Extended Typing--Sums and Products}
+The systems $\La^\times$ and $\La^+$ may be combined into a single calculus
+$\La^{\times+}$ with corresponding type system $\Tset^{\times+}$. In this setting
+the formation rules for types, raw terms, typing rules, and reduction rules are
+the union of those previously introduced for sums and for products. 
+Thus,
+
+\begin{definition}
+  Extended types with products and sums, denoted \( \Tset^{\times+} \), are defined inductively as:
+  \[
+    \Tset^{\times+} ::= \Bset 
+      \mid \Tset^{\times+} \to \Tset^{\times+} 
+      \mid \Tset^{\times+} \times \Tset^{\times+} 
+      \mid \Tset^{\times+} + \Tset^{\times+} 
+      \mid 1 
+      \mid 0
+  \]
+  where \( \Bset \) is the set of base types.
+\end{definition}
+
+\begin{definition}
+  The set of raw terms with products and sums, denoted \( \La^{\times+} \), is given by
+  \[
+    \La^{\times+} ::= \La^\times \cup \La^+ .
+  \]
+\end{definition}
+
+\begin{remark}
+By uniting sums and products we obtain the full simply typed $\lambda$-calculus
+with finite types. Every finite type can be expressed from $1$, $0$, sums, and
+products. The typing and operational rules are exactly those already given,
+taken together without modification.
+\end{remark}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \subsubsection{\centering Kinds of problem in Type Theory}

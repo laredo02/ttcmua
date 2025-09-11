@@ -14,16 +14,16 @@ Just as \( f : \mathbf{?} \to \mathbf{?} \) is refined to \( f : A \to B \) by s
 
 Since the \(\lambda\)-calculus treats all terms as first-class citizens, attempting to impose  
 restrictions directly on arguments is not effective. Instead, we define restrictions  
-on all terms by pairing each term with additional information called a \emph{type}.  
+on all terms by pairing each term with additional information called type.  
 This tells us about the nature of a given term, which may be of two kinds: a simple  
 type or arrow type \(\to\). Introducing a typing system into the \(\lambda\)-calculus splits \(\Lambda\) into two categories:
 Typable and Non-typable terms. These sets are disjoint. This simple type system classifies expressions such as  
 \( x (\lambda y.y) \) or \( Y \) as untypable, while \( \lambda x.x \) has type  
 \(\alpha \to \alpha\). To summarize, non-normalizing terms and terms that lack meaning are not typable.
 
-Out of the many type systems developed for the λ-calculus, we focus on a small but expressive core. We begin with minimal typing, which corresponds to the simply typed λ-calculus with only function types. This system captures the essence of typed functional computation: terms are either variables, abstractions, or applications, and their types are built solely from base types and arrows.
+Out of the many type systems developed for the $\la$-calculus, we focus on a small but expressive core. We begin with minimal typing, which corresponds to the simply typed $\la$-calculus with only function types. This system captures the essence of typed functional computation: terms are either variables, abstractions, or applications, and their types are built solely from base types and arrows.
 
-We then extend this core with product types and sum types, which allow richer data structures. Product types model tuples or pairs, supporting construction and projection, while sum types model alternatives, supporting case analysis. These extensions move the type system closer to what is found in practical programming languages, while preserving the foundational simplicity of the λ-calculus.
+We then extend this core with product types and sum types, which allow richer data structures. Product types model tuples or pairs, supporting construction and projection, while sum types model alternatives, supporting case analysis. These extensions move the type system closer to what is found in practical programming languages, while preserving the foundational simplicity of the $\la$-calculus.
 
 \section{\centering Minimal Typing}
 The untyped version of the \lcalc \ relies on abstraction and application. Minimal typing captures this simply by using base types and arrow types.
@@ -50,9 +50,9 @@ In abstract syntax:
 \end{notation}
 \begin{example}
 Examples of simple types include:
-\[
-\gamma \quad (\beta \to \gamma) \quad ((\gamma \to \alpha) \to (\alpha \to (\beta \to \gamma)))
-\]
+\(
+\qquad \gamma, \quad (\beta \to \gamma), \quad ((\gamma \to \alpha) \to (\alpha \to (\beta \to \gamma)))
+\)
 \end{example}
 %\begin{definition} Notation for the Simply Typed \lcalc. We explicitly leave \texttt{<type>} unspecified.
 %\begin{align*}
@@ -99,7 +99,7 @@ With this in mind we distinguish two alternative methods for typing. Typing à l
     \vdash \lambda x . x : \sigma \to \sigma
   \).
 \end{itemize}
-Note how Curry's style allows us to assign different valid types to terms. For example, $(\alpha \to \beta) \to (\alpha \to \beta)$ could be a valid type assignment for $\la x . \, x$, do not confuse this polymorphism.
+Note how Curry's style allows us to assign different valid types to terms. For example, $(\alpha \to \beta) \to (\alpha \to \beta)$ could be a valid type assignment for $\la x . \, x$, do not confuse this with  polymorphism.
 
 \begin{remark}
 The distinction between Church-style and Curry-style typing has practical consequences for implementation. 
@@ -116,6 +116,7 @@ Church-style typing embeds type annotations directly in terms, making typing syn
 
 
 \begin{definition} We define the following typing relation:
+  \label{def:church-types}
   \[
     \inferrule*[right=Var]{x \not\in \mathrm{dom}(\Gamma)}
     {\Gamma, x : \tau \vdash x : \tau}
@@ -181,7 +182,7 @@ is a valid term of type \(\alpha \to \alpha\) using Church-style typing.
 
 Church-style annotations allow type inference to be straightforward because every abstraction carries its parameter type explicitly, this comes at the cost of requiring annotations on all binders, making the language more verbose.
 
-\begin{example} The following implementation of inference on annotated types is witness of the previous statements. We first introduce type annotations on abstractions and define types according to \ref{}:
+\begin{example} The following, is an implementation of types   \ref{def:church-types}. Then we implement type annotations on abstractions:
 \begin{minted}{Haskell}
   data Type
       = Base Natural
@@ -462,39 +463,34 @@ That is, $\beta\eta$-conversion identifies terms up to both computation and exte
 
 \section{\centering Church Rosser Revisited}
 One important theorem that fails for $\beta\eta$-reduction in the simply-typed 
-$\lambda^{\to,\times,1}$-calculus is the Church–Rosser property. The culprit is the 
+$\la$-calculus with product types is the Church–Rosser property. The culprit is the 
 $\eta_1$-rule. For example, let $x$ be a variable of type $A \times 1$, and consider 
 the term 
 \[
 M = \langle \pi_1 x, \pi_2 x \rangle.
 \] 
-By the $(\eta_\times)$-rule, $M$ reduces to $x$, whereas by the $(\eta_1)$-rule, 
+By the $  \langle \pi_1 M, \pi_2 M \rangle \;\equiv_\eta\; M $ rule, $M$ reduces to $x$, whereas by the $1 \equiv_\eta$ rule, 
 $M$ reduces to $\langle \pi_1 x, *\rangle$. Both resulting terms are normal forms, 
 so there is no common reduct. Hence, the Church–Rosser property fails:
-
 \[
 \langle \pi_1 x, \pi_2 x \rangle 
-\;\overset{\eta_1}{\longrightarrow}\; \langle \pi_1 x, * \rangle, \quad
+\;\overset{\eta}{\longrightarrow}\; \langle \pi_1 x, * \rangle \qquad
 \langle \pi_1 x, \pi_2 x \rangle 
-\;\overset{\eta_\times}{\longrightarrow}\; x.
+\;\overset{\eta}{\longrightarrow}\; x.
 \]
-
-There are two natural ways to restore the Church–Rosser property:
-
-\begin{enumerate}
+As stated in \cite{selinger2008:lambdanotes}, there are two natural ways to restore the Church–Rosser property:
+\begin{itemize}
+  \label{items:restorech}
   \item If we consider only $\beta$-reductions and omit all $\eta$-rules, 
   confluence holds. Computationally, this is sufficient: $\beta$-reductions 
   drive all actual computation, while $\eta$-reductions merely simplify terms. 
   Moreover, $\eta$-reductions never block $\beta$-redexes and always reduce 
   term size. Hence, any $\beta$-normal form can be further reduced to a 
-  $\beta\eta$-normal form (though not necessarily uniquely).
+  $\beta\eta$-normal form, though not necessarily uniquely.
 
   \item Alternatively, if we remove the type $1$ and the constant $*$ from the 
   calculus, the Church–Rosser property holds even for $\beta\eta$-reduction.
-\end{enumerate}
-
-
-We don't cover the proofs, but this note was necessary given the emphasis given to the notions of normalization and confluence throughout the document.
+\end{itemize}
 
 \section{\centering Normalization Revisited}
 \label{sec:typed-normalization}
@@ -510,23 +506,15 @@ The same way we added types and products to the \lcalc, we now update our previo
 since otherwise it would be reducible.
 \end{definition}
 
-\begin{definition}
-Let $\to$ be a reduction relation on terms.
-\begin{itemize}
-    \item A term $M$ is weakly normalizing if there exists a finite reduction sequence starting from $M$ that terminates in a normal form:
-    \item A term $M$ is strongly normalizing if there are no infinite reduction paths from $M$:
-\end{itemize}
-\noindent
 \begin{remark}
-  Strong normalization implies weak normalization.
+  Definitions for non-normalizing, weakly normalizing and strongly normalizing terms are kept the same, only now we attend to \ref{def:prod-normal} as definiton of normal form.
 \end{remark}
-\end{definition}
 
 \begin{theorem}
 \label{thm:sn-stlc-products}
 Every well-typed term in the simply typed $\lambda$-calculus with product types and unit type is strongly normalizing. Formally, if $\Gamma \vdash M : A$, then there is no infinite sequence of reductions starting from $M$:
 \[
-M \;\to\; M_1 \;\to\; M_2 \;\to\; \dots
+M \;\curly\; M_1 \;\curly\; M_2 \;\curly\; \dots
 \]
 \end{theorem}
 \begin{proof}
@@ -542,8 +530,18 @@ The proofs are lengthy and well known. They are covered in full detail by \cite{
 \subsubsection{\centering Proof Sketch of the Weak Normalization Theorem}
 
 To prove the weak normalization theorem, we assign a numerical measure of complexity to terms based on the degrees of their redexes. By carefully analyzing how these degrees behave under substitution and reduction, we construct an inductive argument showing that every term can be reduced, step by step, to a normal form
-
 \begin{definition}
+\begin{definition}
+Let $\to$ be a reduction relation on terms.
+\begin{itemize}
+    \item A term $M$ is weakly normalizing if there exists a finite reduction sequence starting from $M$ that terminates in a normal form:
+    \item A term $M$ is strongly normalizing if there are no infinite reduction paths from $M$:
+\end{itemize}
+\noindent
+\begin{remark}
+  Strong normalization implies weak normalization.
+\end{remark}
+\end{definition}
 The degree $\partial(T)$ of a type $T$ is defined as:
 \begin{itemize}
 \item $\partial(T_i) = 1$ if $T_i$ is atomic
@@ -557,19 +555,17 @@ The degree $\partial(r)$ of a redex \ref{def:prod-normal} $r$ is defined by:
     \item $\partial((\lambda x. v)\, u) = \partial(U \to V)$, where $U \to V$ is the type of $(\lambda x. v)$
 \end{itemize}
 \end{definition}
-
 \begin{definition}
 \label{def:term-degree}
 The degree $d(t)$ of a term $t$ is the supremum of the degrees of the redexes it contains. For any redex $r$, we have
 \[
 \partial(r) \le d(r)
 \]
-since \( d(r) = \sup\bigl(\partial(r),\, \{\partial(r') \mid r' \subset r\}\bigr) \)
+since \( d(r) = \sup\bigl(\partial(r),\, \{\partial(r') \mid r' \subset r\}\bigr) \).
 \end{definition}
 
 \paragraph{Key Lemmas}{We cover the necessary lemmas to give the reader an intuition of how the proof develops. We omit the proofs since they are already covered in detail by \cite{girard1989:proofs-and-types}
 }
-
 \begin{lemma} Degree and Substitution:
 \label{lem:degree-substitution}
 If $x$ is of type $U$, then
@@ -578,23 +574,19 @@ If $x$ is of type $U$, then
 \]
 The effect substitution has on degree does not blow up and has a limited upper bound. Not only that, we also know the upper bound.
 \end{lemma}
-
 \begin{lemma} Degree and Conversion:
 \label{lem:degree-conversion}
 If $t \to u$, then
-\[
+\(
 d(u) \le d(t)
-\]
-Reduction only decreases degree.
+\).
+Reduction only decreases or maintains degree.
 \end{lemma}
-
 \begin{lemma} Conversion of Maximal Degree:
 \label{lem:max-degree-conversion}
 Let $r$ be a redex of maximal degree $n$ in $t$, and suppose all redexes strictly contained in $r$ have degree less than $n$. If $u$ is obtained by converting $r$ to $c$, then $u$ has strictly fewer redexes of degree $n$. Meaning that the a term of maximal degree reduces to a term of smaller degree.
 \end{lemma}
-
 Putting the lemmas together, we use the notion of measure to finalize the proof sketch:
-
 \begin{definition} The Measure of a term
 \label{def:term-measure}
 $t$, is defined as
@@ -603,11 +595,9 @@ $t$, is defined as
 \]
 where: \( n = d(t) \text{ and  } m = \text{number of redexes of degree } n. \)
 \end{definition}
-
 \begin{theorem}
 \label{thm:weak-normalisation} By iteratively applying Lemma~\ref{lem:max-degree-conversion} to reduce the measure $\mu(t)$ in lexicographic order, every term $t$ eventually reaches a normal form. Hence, weak normalization holds.
 \end{theorem}
-
 \section{\centering Extended Typing--Sums}
 Sum types can be thought of as disjoint unions, they are the dual to product types, see \ref{def:coproduct}. Whereas a product type $A \times B$ contains both an $A$ and a $B$, a sum type $A + B$ contains either an $A$ or a $B$, together with a tag indicating which side it came from. This makes sum types a natural way to represent alternatives or branching data. As done in \cite{selinger2008:lambdanotes} we only present the extension in the effort avoid being repetitive.
 \begin{definition} 
@@ -638,10 +628,8 @@ Here:
   \item \( \square_A M \) eliminates an impossible term of type $0$, producing a term of type $A$
 \end{itemize}
 \end{definition}
-
 \begin{definition}
 Given $t \in \La^+$, typing judgments are of the form \( \Gamma \vdash t : \Tset \), where \( \Gamma \) is a context \( x_1 : T_1, \dots, x_n : T_n \). The typing rules for \( \La^+ \) are:
-
 \[
   \inferrule*[right=Inl]
   { \Gamma \vdash M : A }
@@ -662,14 +650,10 @@ Given $t \in \La^+$, typing judgments are of the form \( \Gamma \vdash t : \Tset
 \]
 
 \end{definition}
-
 \subsubsection{\centering Reduction Rules}
 The operational semantics for sum types naturally extend $\beta$-reduction with case distinction and the empty type.
-
 \subsubsection{\centering $\beta$-reduction}
-
 The core $\beta$-reduction rules for simply typed $\lambda$-calculus with sums and empty type are:
-
 \[
   \mathsf{case}\;(\iota_1 M)\;\mathsf{of}\;\iota_1 x \Rightarrow N \mid \iota_2 y \Rightarrow P \;\curly\; N[x := M]
 \]
@@ -679,9 +663,7 @@ The core $\beta$-reduction rules for simply typed $\lambda$-calculus with sums a
 \[
   \square_A M \;\curly\; \text{(no rule, $M:0$ cannot reduce)}
 \]
-
 \subsubsection{\centering $\eta$-laws}
-
 The $\eta$-laws for sums capture the universal property of coproducts:
 
 \[
@@ -690,94 +672,56 @@ The $\eta$-laws for sums capture the universal property of coproducts:
 \[
   \square_A M \;\equiv_\eta\; M \quad (M:0)
 \]
-
-\noindent
-\textbf{Closure:}  
 As with products, $\eta$ is treated as an equational principle, closed under all contexts.
-
 \subsubsection{\centering $\beta\eta$-conversion}
-
 The combined theory, called $\beta\eta$-conversion, is the smallest congruence $\equiv_{\beta\eta}$ satisfying:
-
 \[
   M \curly N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
   \qquad
   M \equiv_\eta N \;\;\Rightarrow\;\; M \equiv_{\beta\eta} N
 \]
-
 Thus, $\beta\eta$-conversion identifies terms up to computation and extensionality, closed under sums and the empty type.
-
-
 \begin{remark}
   The term constructors for sums have the following interpretation:
   \begin{itemize}
-    \item $\iota_1$ and $\iota_2$ are the canonical injections, marking whether a value belongs to the left or right summand of $A + B$.
-    \item The $\mathsf{case}$ construct corresponds to case analysis on a coproduct, analogous to pattern matching in functional programming.
-    \item The term $\mathsf{abort}_A$ expresses the unique morphism $0 \to A$, capturing the fact that from an impossible value one may derive a term of any type.
+  \item $\iota_1$ and $\iota_2$ are the canonical injections, marking whether a value belongs to the left or right summand of $A + B$.
+  \item The $\mathsf{case}$ construct corresponds to case analysis on a coproduct, analogous to pattern matching in functional programming.
+  \item The term $\mathsf{\square}_A$ expresses the unique morphism $0 \to A$, capturing the fact that from an impossible value one may derive a term of any type.
   \end{itemize}
 \end{remark}
-
-
-
-
-
 \section{\centering Extended Typing--Sums and Products}
 The systems $\La^\times$ and $\La^+$ may be combined into a single calculus
 $\La^{\times+}$ with corresponding type system $\Tset^{\times+}$. In this setting
 the formation rules for types, raw terms, typing rules, and reduction rules are
 the union of those previously introduced for sums and for products. 
 Thus,
-
 \begin{definition}
   Extended types with products and sums, denoted \( \Tset^{\times+} \), are defined inductively as:
   \[
     \Tset^{\times+} ::= \Bset 
-      \mid \Tset^{\times+} \to \Tset^{\times+} 
-      \mid \Tset^{\times+} \times \Tset^{\times+} 
-      \mid \Tset^{\times+} + \Tset^{\times+} 
-      \mid 1 
-      \mid 0
+    \mid \Tset^{\times+} \to \Tset^{\times+} 
+    \mid \Tset^{\times+} \times \Tset^{\times+} 
+    \mid \Tset^{\times+} + \Tset^{\times+} 
+    \mid 1 
+    \mid 0
   \]
   where \( \Bset \) is the set of base types.
 \end{definition}
-
 \begin{definition}
   The set of raw terms with products and sums, denoted \( \La^{\times+} \), is given by
   \[
     \La^{\times+} ::= \La^\times \cup \La^+ .
   \]
 \end{definition}
-
 \begin{remark}
-By uniting sums and products we obtain the full simply typed $\lambda$-calculus
-with finite types. Every finite type can be expressed from $1$, $0$, sums, and
-products. The typing and operational rules are exactly those already given,
-taken together without modification.
+  By uniting sums and products we obtain the full simply typed $\lambda$-calculus
+  with finite types. Every finite type can be expressed from $1$, $0$, sums, and
+  products. The typing and operational rules are exactly those already given,
+  taken together without modification.
 \end{remark}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\begin{remark}
+  Again, $\eta$-reduction breaks Church-Rosser. Fixes for this were given in \ref{items:restorech}.
+\end{remark}
 \subsubsection{\centering Kinds of problem in Type Theory}
 These are the usual problems type theorists face. A programmer should be at least familiar with typability, and even more so with Type Checking, the one responsible for the daily headaches of bug finding in typed languages:
 \begin{itemize}
@@ -790,19 +734,13 @@ These are the usual problems type theorists face. A programmer should be at leas
 \item \textbf{Inhabitation}: 
   Given a context and a type, determine whether there exists a term with that type: \( \Gamma \;\vdash\; ? : \texttt{type}  \)
 \end{itemize}
-
 \begin{remark}
   In programming languages and theorem provers, these type problems have concrete meanings. Well-typedness asks whether a term or program is valid under the typing rules, ensuring correctness of proofs or programs. Type Checking verifies that a given term has a specified type, allowing compilers or proof assistants to confirm correctness. Term Finding constructs a term of a given type, corresponding to automatic proof generation in theorem provers or program synthesis in programming languages.
 \end{remark}
-
 \begin{note}
   In our specific case, the implementations given show an increasing level of type inference. The simplest kind is capable of type checking and relies on annotations for every term, the second implements Church--style typing, and the third implements proper inference on monomorphic types given no annotations. The point of this note is to relate type checking and typability through annotations vs. inference, meaning the more type annotations we add, the more typability reduces to checking.
 \end{note}
-
-
-
 \paragraph{References \& Resources}{Notions that are ubiquitous to Type Theory have been outsourced from either \cite{nederpelt2014:type-theory}, \cite{selinger2008:lambdanotes} or \cite{sorensen2006:curry-howard}. The subsection on normalization is a synthesis of what can be found in \cite{girard1989:proofs-and-types}. Other texts that might have influenced the development of this section have been cited accordingly. In regard to implementation details, similar implementations to ours have been examined, namely \cite{NazarethNipkow1996AlgorithmW}, seen before, and \cite{Ahmed2012TypeInference}. The latter covers formal verification of ``Algorithm W'' and type inference in the \textbf{ML} Language.
-
 }
 
 

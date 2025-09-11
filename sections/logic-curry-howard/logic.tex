@@ -89,7 +89,7 @@ follows:
   Generally speaking, $\neg\varphi$ means a construction of $\varphi$ is impossible.
 \end{remark}
 
-\subsubsection{\centering Natural Deduction}
+\section{\centering Natural Deduction}
 
 The syntax that to create formulas is not sufficient, we need to pair it with a system that enables the deduction of other formulas from a set of given ones.
 
@@ -126,16 +126,10 @@ if there exists a derivation of $\varphi$ from $\Gamma$ in the deductive system 
 Natural deduction is a deduction system within intuitionistic logic that uses constructive reasoning to derive conclusions. This structured proofs emphasize the existence of explicit constructions rather than abstract truth values.
 
 The rules of natural deduction for intuitionistic propositional logic (without~$\bot C$) can be presented as follows:
-
 \subsubsection{\centering Introduction / Elimination Rules}
-
 \[
   \boxed{
 \begin{array}{@{}l@{\qquad}l@{}}
-
-% =====================
-% Conjunction Introduction & Elimination
-% =====================
 \inferrule*[right=\textsc{IntroConj}]
   { \phi \\ \psi }
   { \phi \land \psi }
@@ -148,10 +142,6 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \phi \land \psi }
   { \psi }
 \\[4ex]
-
-% =====================
-% Disjunction Introduction & Elimination
-% =====================
 \inferrule*[right=\textsc{IntroDisj}]
   { \phi }
   { \phi \lor \psi }
@@ -164,10 +154,6 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \phi \lor \psi \\ [\phi]^n \cdots \chi \\ [\psi]^n \cdots \chi }
   { \chi }
 \\[4ex]
-
-% =====================
-% Implication Introduction & Elimination
-% =====================
 \inferrule*[right=\textsc{IntroImpl}]
   { [\phi] \cdots \psi }
   { \phi \to \psi }
@@ -176,10 +162,6 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \phi \\ \phi \to \psi }
   { \psi }
 \\[4ex]
-
-% =====================
-% Negation Introduction & Elimination
-% =====================
 \inferrule*[right=\textsc{IntroNeg}]
   { [\phi]^n \cdots \bot }
   { \neg \phi }
@@ -188,24 +170,129 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \phi \\ \neg \phi }
   { \bot }
 \\[4ex]
-
-% =====================
-% Bottom / Absurdity
-% =====================
 &
 \inferrule*[right=\textsc{ElimBot}]
   { \bot }
   { \phi }
-
 \end{array}
 }
 \]
-
-\begin{example}
-  \orange{some deduction example}
-  
-\end{example}
-
+\subsection*{\centering Alternative Presentation of Natural Deduction}
+In the standard presentation of natural deduction, assumptions are introduced as 
+leaves of a proof tree and later discharged dynamically. This makes it somewhat 
+unclear when and where each assumption is canceled in the finished derivation. 
+An alternative approach is to present derivations in terms of \emph{judgments}, 
+which are of the form
+\[
+x_1 : A_1, \dots, x_n : A_n \;\;\vdash\;\; B.
+\]
+Such a judgment expresses that the formula $B$ can be derived from the 
+assumptions $A_1, \dots, A_n$, where each assumption is labeled by a distinct 
+variable. Every line in a derivation explicitly carries the full set of 
+assumptions used to obtain it. This makes derivations more verbose, but 
+assumption management becomes fully transparent. 
+\subsection*{Inference Rules}
+Let $\Gamma$ denote a context of labeled assumptions. The rules of natural 
+deduction can be reformulated as follows:
+\[
+  \boxed{%
+    \begin{array}{@{}l@{\qquad}l@{}}
+      \inferrule*[right=\textsc{Ax}]
+      { }
+      { \Gamma, x:A \vdash A }
+      &
+        \inferrule*[right=\textsc{IntroTop}]
+        { }
+        { \Gamma \vdash \top }
+      \\[4ex]
+      \inferrule*[right=\textsc{ElimConj}_1]
+      { \Gamma \vdash A \land B }
+      { \Gamma \vdash A }
+      \quad
+      \inferrule*[right=\textsc{ElimConj}_2]
+      { \Gamma \vdash A \land B }
+      { \Gamma \vdash B }
+      &
+        \inferrule*[right=\textsc{IntroConj}]
+        { \Gamma \vdash A \\ \Gamma \vdash B }
+      { \Gamma \vdash A \land B }
+      \\[4ex]
+      \inferrule*[right=\textsc{IntroDisj}_1]
+      { \Gamma \vdash A }
+      { \Gamma \vdash A \lor B }
+      \quad
+      \inferrule*[right=\textsc{IntroDisj}_2]
+      { \Gamma \vdash B }
+      { \Gamma \vdash A \lor B }
+      &
+        \inferrule*[right=\textsc{ElimDisj}]
+        { \Gamma \vdash A \lor B \\ \Gamma, x:A \vdash \chi \\ \Gamma, y:B \vdash \chi }
+      { \Gamma \vdash \chi }
+      \\[4ex]
+      \inferrule*[right=\textsc{IntroImpl}_x]
+      { \Gamma, x:A \vdash B }
+      { \Gamma \vdash A \to B }
+      &
+        \inferrule*[right=\textsc{ElimImpl}]
+        { \Gamma \vdash A \to B \\ \Gamma \vdash A }
+      { \Gamma \vdash B }
+      \\[4ex]
+      \inferrule*[right=\textsc{IntroNeg}_x]
+      { \Gamma, x:A \vdash \bot }
+      { \Gamma \vdash \neg A }
+      &
+        \inferrule*[right=\textsc{ElimNeg}]
+        { \Gamma \vdash A \\ \Gamma \vdash \neg A }
+      { \Gamma \vdash \bot }
+      \\[4ex]
+      &
+        \inferrule*[right=\textsc{ExFalso}]
+        { \Gamma \vdash \bot }
+        { \Gamma \vdash \chi }
+    \end{array}%
+  }
+\]
+\textbf{Comparison of Two Styles of Natural Deduction}
+\medskip
+\emph{Traditional style:}
+\[
+\infer[(\to I)]
+  {\vdash (A \land B) \to A}
+  {
+    \infer[(\land E_1)]
+      {A \land B \;\vdash\; A}
+      {
+        [A \land B] \;\;\;\;\;\;\;\;\; (\text{assumption})
+      }
+  }
+\]
+Here, we begin with the assumption $A \land B$, derive $A$, and then discharge 
+the assumption by $\to I$ to conclude $(A \land B) \to A$. Notice that the 
+assumption $A \land B$ is written at the leaf and canceled only at the end.
+\medskip
+\emph{Alternative style (with explicit contexts):}
+\[
+\infer[(\to I_x)]
+  {\vdash (A \land B) \to A}
+  {
+    \infer[(\land E_1)]
+      {x:A \land B \;\vdash\; A}
+      {
+        \infer[($\mathsf{Ax}$)]
+          {x:A \land B \;\vdash\; A \land B}{}
+      }
+  }
+\]
+In this style, each line explicitly carries its full context. The axiom rule 
+already produces the judgment $x:A \land B \vdash A \land B$, which then allows 
+$\land E_1$ to yield $x:A \land B \vdash A$. Finally, the $\to I_x$ rule 
+discharges the assumption by removing $x:A \land B$ from the context.
+\begin{note}
+In the traditional style, assumptions appear only at the leaves and are canceled 
+dynamically. In the alternative style, contexts are explicitly tracked in every 
+judgment, making assumption management fully transparent at the cost of greater 
+verbosity.
+\end{note}
 \section{\centering The Curry-Howard Isomorphism}
 The $\lambda$-calculus, as introduced in the first section, provides a minimal but expressive framework for modeling computation. Independently, intuitionistic logic offers a formal system for constructive reasoning that requires the existence of witnesses for propositions. The Curry-Howard correspondence reveals a structural equivalence between them, providing a unifying perspective that connects proofs with programs. The Curry--Howard correspondence establishes the following associations:
 \begin{itemize}
@@ -271,5 +358,10 @@ f\, x
 \]
 
 \end{example}
+
+\paragraph{References \& Resources.}{
+  An accessible entry point to intuitionistic logic and natural deduction is given in the lecture notes by \cite{selinger2008:lambdanotes}, it is rigorous yet pedagogical. A more modular and systematically updated resource is the Open Logic Project~\cite{openlogicprojectintuitionisticlogic2025}.
+  Girard's \emph{Proofs and Types}~\cite{girard1989:proofs-and-types} has also influenced this chapter, as well as Sørensen and Urzyczyn’s \emph{Lectures on the Curry--Howard Isomorphism}~\cite{sorensen2006:curry-howard}, that presents the foundational connections between intuitionistic logic, proof theory, and type theory.
+
 
 

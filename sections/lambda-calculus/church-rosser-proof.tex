@@ -2,88 +2,96 @@
 
 In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction as done in \cite{selinger2008:lambdanotes}, even though proof is due to Tait and Martin-L\"of. We begin by defining a new relation $M \psred M'$ on terms, called parallel one-step reduction. It is the smallest relation satisfying the following rules:
 \begin{mathpar}
-\inferrule{P \psred P' \\ N \psred N'}{P N \psred P' N'} \quad {\textsc{ParApp}(1)}
+\inferrule{P \psred P' \\ N \psred N'}{P N \psred P' N'} \quad {\textsc{ParApp}}
 
 
-\inferrule{N \psred N'}{\lambda x.N \psred \lambda x.N'} \quad {\textsc{ParAbs}(2)}
+\inferrule{N \psred N'}{\lambda x.N \psred \lambda x.N'} \quad {\textsc{ParAbs}}
 
 
-\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[x := N']} \quad \textsc{ParBeta}(3)
+\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[x := N']} \quad \textsc{ParBeta}
 
 
-\inferrule{P \psred P' \\ x \notin \FV {P}}{\lambda x.(P\,x) \psred P'} \quad \textsc{ParEta}(4)
+\inferrule{P \psred P' \\ x \notin \FV {P}}{\lambda x.(P\,x) \psred P'} \quad \textsc{ParEta}
 \end{mathpar}
 
 \noindent The relation $\psred$ \ is also reflexive, $x \psred x$ for every $x$.
 
+\begin{remark}
+  In this section, we will not provide explicit proofs of the lemmas. Most are straightforward, follow from induction on terms, and their statements are sensible enough to be understood without detailed derivations.
+\end{remark}
 
-
-\begin{lemma} For all $M, M'$, if $M \betared M'$ then $M \psred M'$.
-\end{lemma}
-
-\begin{lemma} For all $M, M'$, if $M \psred M'$ then $M \betareds M'$.
-\end{lemma}
-
-\begin{lemma} $\betareds$ is the reflexive, transitive closure of $\psred$.
-\end{lemma}
-
-\begin{theorem} The Church-Rosser Theorem states that if $M \curly^* N_1$ and $M \curly^* N_2$, then there exists $P$ such that
-\[
-N_1 \curly^* N_3 \quad \text{and} \quad N_2 \curly^* N_3.
-\]
-
-\end{theorem}
-
-\begin{proof}
-Any $\beta$-reduction can be simulated by parallel reduction. Suppose $M \Longrightarrow_\beta N_1$ and $M \Longrightarrow_\beta N_2$. By lemma \ref{lemma:parallel-reduction},
-\[
-N_1 \Longrightarrow_\beta M^*_\beta \quad \text{and} \quad N_2 \Longrightarrow_\beta M^*_\beta.
-\]
-Parallel reduction implies ordinary multi-step $\beta$-reduction: $N_1 \curly^* M^*_\beta$ and $N_2 \curly^* M^*_\beta$. Hence $M^*_\beta$ is a common reduct.
-\end{proof}
-
-\subsubsection{\centering  Proof Sketch of the Church-Rosser for $\beta\eta$-Reduction}
-In this section, we prove the Church--Rosser Theorem for $\beta\eta$-reduction as done in \cite{selinger2008:lambdanotes}, even though the proof is due to Tait and Martin-L\"of. We begin by defining a new relation $M \psred M'$ on terms, called parallel one-step reduction. It is the smallest relation satisfying the following rules:
-\begin{mathpar}
-\inferrule{P \psred P' \\ N \psred N'}{P N \psred P' N'} \quad {\textsc{ParApp}(1)}
-
-\inferrule{N \psred N'}{\lambda x.N \psred \lambda x.N'} \quad {\textsc{ParAbs}(2)}
-
-\inferrule{Q \psred Q' \\ N \psred N'}{(\lambda x.Q)N \psred Q'[x := N']} \quad \textsc{ParBeta}(3)
-
-\inferrule{P \psred P' \\ x \notin \FV {P}}{\lambda x.(P\,x) \psred P'} \quad \textsc{ParEta}(4)
-\end{mathpar}
-
-\noindent The relation $\psred$ is also reflexive: $x \psred x$ for every variable $x$.
-
-\begin{lemma}\label{lemma:beta-implies-parallel}
-For all $M, M'$, if $M \to_\beta M'$ then $M \psred M'$.
+\begin{lemma}
+  \label{lem:a}
+  For all $M, M'$, if $M \betared M'$ then $M \psred M'$.
 \end{lemma}
 
 \begin{lemma}
-For all $M, M'$, if $M \psred M'$ then $M \to_\beta^* M'$.
+  \label{lem:b}
+  For all $M, M'$, if $M \psred M'$ then $M \betareds M'$.
 \end{lemma}
 
 \begin{lemma}
-The relation $\to_\beta^*$ is the reflexive, transitive closure of $\psred$.
+  \label{lem:c}
+  $\betareds$ is the reflexive, transitive closure of $\psred$.
 \end{lemma}
 
-\begin{theorem}[Church--Rosser Theorem]\label{thm:church-rosser}
-If $M \to_\beta^* N_1$ and $M \to_\beta^* N_2$, then there exists a term $P$ such that
-\[
-N_1 \to_\beta^* P
-\quad \text{and} \quad
-N_2 \to_\beta^* P.
-\]
+\begin{proof}
+  Section 4.4 from \cite{selinger2008:lambdanotes} proves \ref{lem:a}, \ref{lem:b}, \ref{lem:c} in full detail.
+\end{proof}
+
+The next goal now is to prove that $\psred$ satisfies the diamond property, since together with lemma \ref{lem:c}, implies the Church--Rosser Property. To this end, we first define the maximal parallel one-step reduct $M^*$ of a term $M$ as follows:
+\begin{itemize}
+  \item $x^* = x$, for a variable.
+  \item $(P\,N)^* = P^*\,N^*$, if $P\,N$ is not a $\beta$-redex.
+  \item $((\lambda x.Q)\,N)^* = Q^*[N^*/x]$.
+  \item $(\lambda x.N)^* = \lambda x.N^*$, if $\lambda x.N$ is not an $\eta$-redex.
+  \item $(\lambda x.(P\,x))^* = P^*$, if $x \notin \FV{P}$.
+\end{itemize}
+  
+\noindent Note that $M^*$ depends only on $M$.
+
+\begin{lemma}
+\label{lemma:maximal-parallel}
+Whenever $M \psred M'$, then $M' \psred M^*$.
+\end{lemma}
+
+\begin{proof}
+  Section 4.4 from \cite{selinger2008:lambdanotes}.
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:diamond}
+If $M \psred N$ and $M \psred P$, then there exists $Z$ such that $N \psred Z$ and $P \psred Z$.
+\end{lemma}
+
+\begin{proof}
+Take $Z = M^*$.
+\end{proof}
+
+\begin{theorem}
+  $\betared$ \ is Church--Rosser.
 \end{theorem}
 
 \begin{proof}
-Any $\beta$-reduction can be simulated by parallel reduction. Suppose $M \psred N_1$ and $M \psred N_2$. By Lemma~\ref{lemma:beta-implies-parallel}, each parallel reduction step corresponds to a $\beta$-reduction step. The parallel reduction has the diamond property, so there exists a term $P$ such that
-\[
-N_1 \psred P
-\quad \text{and} \quad
-N_2 \psred P.
-\]
-By the previous lemma, parallel reduction implies ordinary multi-step $\beta$-reduction: $N_1 \to_\beta^* P$ and $N_2 \to_\beta^* P$. Hence $P$ is a common reduct.
+  Since $\psred$ satisfies the diamond property (Lemma~\ref{lemma:diamond}),
+  its reflexive--transitive closure $\psred^*$ also satisfies the diamond property.
+  By Lemma~\ref{lem:c}, $\psred^*$ coincides with $\betareds$.
+  Hence $\betareds$ satisfies the diamond property,
+  which is exactly the Church--Rosser property for $\betared$.
 \end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -7,6 +7,9 @@ This section presents a number of conventional constructions that represent key 
 \end{note}
 
 \subsubsection{\centering Natural Numbers}
+We briefly recall the axiomatic characterization of the natural numbers due to Peano. The Peano axioms provide a minimal foundation for arithmetic, based on a constant $0$, a successor function $S$, and induction.
+
+The connection with the $\lambda$-calculus arises from the fact that the same structure can be represented purely functionally. By encoding $0$, successor, we recover the essential properties of natural numbers without referring to any external notion of arithmetic. This construction, known as Church encoding, illustrates the expressive power of the $\lambda$-calculus and provides the groundwork for representing data and computation purely in terms of functions.
 
 \begin{definition} Peano Axioms, the set of natural numbers $\mathbb{N}$
 \begin{itemize}
@@ -38,30 +41,26 @@ The first four axioms can be summarized using a graph:
 \end{definition}
 \begin{definition} Representation of the set of all naturals in the \lcalc, usually referred to as Church numerals:
   \label{def:church-naturals}
-  \begin{align*}
-    \overline{\texttt{0}} &\equiv \la f.\la x. x \\
-    \texttt{SUCC} &\equiv \la n. \la f. \la x . f ( n f x )
-  \end{align*}
+\[
+    \overline{\texttt{0}} \equiv \la f.\la x. x \qquad \texttt{SUCC} \equiv \la n. \la f. \la x . f ( n f x )
+\]
   Using our Haskell program, $\overline{\texttt{0}}$ is represented like follows:
   \begin{minted}{Haskell}
-    zero  = l "f" (l "x" (v "x"))
+  zero  = l "f" (l "x" (v "x"))
   \end{minted}
 \end{definition}
 \begin{example}
   The church numerals have been defined similarly to the peano axioms, that is, by bringing into existance an initial element and using the succesor function to define the rest of them. Let us apply \texttt{SUCC} a few times to illustrate:
-  \begin{align*}
-    \overline{\texttt{0}} &\equiv \la f.\la x. x \\
-    \overline{\texttt{1}} &\equiv \la f.\la x. f x \\
-    \overline{\texttt{2}} &\equiv \la f.\la x. f (f x) \\
-    \overline{\texttt{3}} &\equiv \la f.\la x. f (f (f x)) \\
-    \overline{\texttt{n}} &\equiv \la f.\la x. f ^ n x
-  \end{align*}
+\[
+    \overline{\texttt{0}} \equiv \la f.\la x. x \qquad
+    \overline{\texttt{1}} \equiv \la f.\la x. f x \qquad
+    \overline{\texttt{2}} \equiv \la f.\la x. f (f x) \qquad
+    \overline{\texttt{n}} \equiv \la f.\la x. f ^ n x
+\]
   where $ n $ denotes the number of times we append $ f $.
 \end{example}
 \begin{notation}
-  We use $\overline{\text{number}}$ to denote a number is church encoded.
-\end{notation}
-In our Haskell program we use \texttt{nat} to convert from Haskell's prelude type \texttt{Natural} to type our custom type \texttt{Term}.
+  We use $\overline{\text{number}}$ to denote a number is church encoded. In our Haskell program we use \texttt{nat} to convert from Haskell's prelude type \texttt{Natural} to type our custom type \texttt{Term}.
 \begin{minted}{haskell}
   nat :: Natural :: Term
   nat n = normalize (nat_ n)
@@ -69,17 +68,22 @@ In our Haskell program we use \texttt{nat} to convert from Haskell's prelude typ
           nat_ 0 = zero
           nat_ n = a succ_ (nat_ (n - 1))
 \end{minted}
+\end{notation}
+
 \begin{remark}
   Since \lterms \ are first-class citizens, and $f$ and $x$ are abstracted away, the reality is that numbers are a quite general construct that has many distinct applications. Recall Example \ref{ex:high-order-by-example} where $A \equiv_\alpha \overline{\texttt{2}}$.
 \end{remark}
 \subsubsection{\centering Basic Arithmetic}
 \begin{definition} Now that we have a construction for the naturals, we can define some arithmetic operations:
-\begin{align*}
-  \texttt{ADD} &\equiv \la m.\la n. \la f. \la x. m f ( n f x) \\
-  \texttt{MUL} &\equiv \la f.\la x. \la f. \la x. m (n f) x \\
-  \texttt{ISZERO} &\equiv \lambda n. n\,(\lambda x.\texttt{FALSE})\,\texttt{TRUE}\\
-  \texttt{PRED} &\equiv \la n.\,\la f.\,\la x.\, \bigl(((n \; (\la g.\,\la h.\, h\,(g\,f))) \; (\la u.\,x)) \; (\la u.\,u))\bigr)
-\end{align*}
+\[
+  \texttt{ADD} \equiv \la m.\la n. \la f. \la x. m f ( n f x) \qquad
+  \texttt{MUL} \equiv \la f.\la x. \la f. \la x. m (n f) x
+  \]
+  \[
+    \texttt{ISZERO} \equiv \lambda n. n\,(\lambda x.\texttt{FALSE})\,\texttt{TRUE} \qquad
+    \texttt{PRED} \equiv \la n.\,\la f.\,\la x.\, \bigl(((n \; (\la g.\,\la h.\, h\,(g\,f))) \; (\la u.\,x)) \;
+    (\la u.\,u))\bigr)
+  \]
 \texttt{PRED} computes the predecessor of a church encoded natural. $\texttt{PRED} \, \overline{0} = \overline{0}$. We omit further Haskell implementation of constructions from now on since they are just literal translations to our programs representation of \lterms.
 \end{definition}
 \begin{example} Now we illustrate how addition works by performing $2 + 3$ with the system we defined.
@@ -102,7 +106,7 @@ This unequivocally yields \texttt{(\lambda f.(\lambda x.f(f(f(f(f(fx)))))))}.
   Multiplication works similarly to addition. As for \texttt{ISZERO}, the intuition behind it is that if the number is zero, then \(\lambda x.\, \texttt{FALSE}\) is dropped, and the result is \texttt{TRUE}; otherwise, it is applied at least once, which immediately yields \texttt{FALSE}.
   \end{remark}
 \begin{remark}
-  This proves that the \lcalc \ is capable of arithmetic.
+  The \lcalc \ is at least capable of arithmetic.
 \end{remark}
 \subsubsection{\centering Booleans \& Branching}
 The next constructions in line are the truth values of boolean logic, ``\textit{true}'' and ``\textit{false}'' for short.
@@ -142,10 +146,10 @@ The next constructions in line are the truth values of boolean logic, ``\textit{
 \end{example}
 \begin{remark}
   Using the \IF \ we can implement an universal set of logic gates:
-  \begin{align*}
-    \NOT &\equiv \IF \, b \, \FALSE \, \TRUE \\
-    \AND &\equiv \IF \, a \, (\IF \, b \, \TRUE \, \FALSE) \, \FALSE
-  \end{align*}
+\[
+    \NOT \equiv \IF \, b \, \FALSE \, \TRUE \qquad
+    \AND \equiv \IF \, a \, (\IF \, b \, \TRUE \, \FALSE) \, \FALSE
+\]
   This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic.
 \end{remark}
 
@@ -155,61 +159,61 @@ A fundamental construct for building data structures is the notion of pairs.
 They allow us to bind two values together and query them independently.
 
 \begin{definition}
-  \( \PAIR \equiv \la x.\la y.\la f. f\,x\,y \)
+  \( \PAIR \equiv \la x.\la y.\la f. f\,x\,y \).
 \end{definition}
 
 \begin{remark}
   This definition is convenient since 
-  \[
+  \(
     \PAIR \, M \, N \curly^* \la f . f \, M \, N
-  \] 
-  which means we can retrieve the first component via 
+  \).
+  Now, we can retrieve the first component via 
   \( (\la f . f \, M \, N) \, \TRUE \) 
   and the second via 
   \( (\la f . f \, M \, N) \, \FALSE \). 
-  This motivates the following projection operators:
+  This motivates the following projection operators.
 \end{remark}
 
 \begin{definition}
   A \PAIR \ is nothing but an ordered relation $\langle A, B \rangle \in A \times B$.  
   The projections $\pi_1, \pi_2$ are defined as:
-  \[
-    \begin{aligned}
-      \FST &\equiv \la p. p\,(\la x.\la y. x) \\
-      \SND &\equiv \la p. p\,(\la x.\la y. y)
-    \end{aligned}
-  \]
+  \(
+    \FST \equiv \la p. p\,(\la x.\la y. x) \text{ and }
+    \SND \equiv \la p. p\,(\la x.\la y. y)
+  \).
 \end{definition}
 
 \begin{proposition}
   A key property of $ \PAIR $ is:
-  \[
+  \(
     \PAIR \, A \, B \equiv_\beta 
     \PAIR \, (\FST \, (\PAIR \, A \, B)) \, (\SND \, (\PAIR \, A \, B))
-  \]
+  \).
 \end{proposition}
 
 \subsubsection{\centering Lists}
-We move on to how we can now define linear lists.
+Similarly to natural church encoding, lists are treated as a function where: \texttt{NIL} selects the base case, and \texttt{CONS} builds a new list by applying a function to the head and recursing on the tail. This way, operations on lists can be defined using functions alone.
 
 \begin{definition}
   We define the empty list in the same spirit as \texttt{0} and \FALSE:
-  \[
+  \(
     \NIL \equiv \la f.\la z. z
-  \]
-  It represents the terminating element of the inductive definition of lists. To build non-empty lists we use the constructor:
-  \[
+  \)
+  It represents the terminating element of the inductive definition of lists. To build non-empty lists we use:
+  \(
     \texttt{CONS} \equiv \la h.\la t.\la f.\la z. f\,h\,(t\,f\,z)
-  \]
+  \)
   which binds a new element $h$ to a pre-existing list $t$ or to \NIL.
 \end{definition}
 \begin{definition}
   Some other relevant list operators are:
-  \begin{align*}
-    \texttt{ISNIL} &\equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE \\
-    \texttt{HEAD} &\equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL}) \\
-    \texttt{TAIL} &\equiv \la l.\la c.\la n.l\ (\la h.\la r.\la g.g\ h\ (r\ c))\ (\la c.n)\ (\la h.\la t.t)
-  \end{align*}
+  \[
+    \texttt{ISNIL} \equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE
+  \]
+  \[
+    \texttt{HEAD} \equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL})
+    \texttt{TAIL} \equiv \la l.\la c.\la n.l\ (\la h.\la r.\la g.g\ h\ (r\ c))\ (\la c.n)\ (\la h.\la t.t)
+  \]
 \end{definition}
 
 

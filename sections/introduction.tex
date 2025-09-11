@@ -1,16 +1,38 @@
 \chapter*{Introduction}
 
-This work means to provide an introduction to functional programming and categorical reasoning about programs, using the \lcalc \ as its foundational formalism for the study of computation. With this in mind, we cover confluence and normalization properties to an acceptable level of detail, as to provide the reader with enough evidence that this system is solid enough. In its untyped form, the \lcalc \ lacks the structure necessary to guarantee properties such as safeness and termination.
+This work means to provide an introduction to functional programming and categorical reasoning about programs, using the \lcalc \ as its foundational formalism for the study of computation. With this in mind, we cover confluence and normalization properties to an acceptable level of detail, as to provide the reader with enough evidence that this system is solid enough.
 
-This lack of structure, naturally leads into Typing. We cover monomorphic type systems and the notion of \textit{``programs as proofs''} as introduced by \cite{Howard1980}. Typing disciplines enrich the \lcalc\ by imposing constraints on expressions, ensuring that only well-formed programs can be constructed, guaranteeing termination and safety. Type systems also give compositional structure to programs, such that given
+In its untyped form, the \lcalc \ lacks the structure necessary to guarantee properties such as safeness and termination. This lack of structure, naturally leads into typing. We cover monomorphic type systems and the notion of \textit{``programs as proofs''} as introduced by \cite{Howard1980}. Typing disciplines enrich the \lcalc\ by imposing constraints on expressions, ensuring that only well-formed programs can be constructed, guaranteeing termination and safety. Type systems also give compositional structure to programs, such that given
 \(
 g : A \to B, f : B \to C
 \) we can construct \(
 f \circ g : A \to C.
 \)  
-The meaning of this composition is entirely determined by the meanings of \(f\) and \(g\) and the rule of composition. Compositionality shifts the focus from specific objects to the morphisms between them and is arguably the core idea behind functional programming.
+The meaning of this composition is entirely determined by the meanings of \(f\) and \(g\) and the rule of composition. Compositionality shifts the focus from specific objects to the morphisms between them, and is arguably the core idea behind functional programming.
 
-This principle---where the whole is defined by its parts and their composition---extends beyond functions between sets. Category theory abstracts this idea: it generalizes functions to morphisms and provides a unified language for compositional structure. The work by \cite{Lambek1980} motivates the final chapters of this document, presenting Closed Cartesian Categories, and how they extend the Curry--Howard Isomorphism, giving a categorical interpretation of the work by Curry and Howard.
+This principle---where the whole is defined by its parts and their composition---extends beyond functions between sets. Category theory abstracts this idea: it generalizes functions to morphisms and provides a unified language for compositional structure. The work by \cite{Lambek1980} motivates the final chapters of this work, presenting Closed Cartesian Categories, and how they extend the Curry--Howard Isomorphism, giving a categorical interpretation of the work by Curry and Howard.
+
+\orange{
+\input{sections/introduction-summary}
+}
+
+\paragraph{Contents.}
+{
+As already discussed, this work explores the untyped and typed lambda calculus and the Curry--Howard Isomorphism. We then expand the correspondence by adding categorical semantics to build what is referred to as the Curry--Howard--Lambek Correspondence.
+}
+
+\begin{itemize}
+\item The first chapter is an introduction to the \lcalc. It emphasizes confluence as a pillar for computation, it also introduces normalization as a desirable property.
+
+\item In the second chapter, typing is introduced, together with its so desired normalization properties. Also, differences with the untyped \lcalc \ are discussed.
+
+\item The third chapter glances over intuitionistic logic and natural deduction. It introduces the Curry--Howard correspondence.
+
+\item The fifth chapter is about category theory and its constructions. We cover functors, natural transformations and adjunctions. We also cover the necessary universal constructions to build Closed Cartesian Categories, namely, terminal objects, products and exponentials.
+
+\item The last chapter extends the Curry--Howard correspondence, establishing a relation between \lcalc \ and Closed Cartesian Categories.
+\end{itemize}
+
 
 \paragraph{Target Audience.}{
 This text is intended for computer scientists who may be unfamiliar with category theory but are interested in understanding the theoretical foundations of functional programming. It aims to provide readers with enough background on typing so that they can better understand the relation functional programming languages have with category theory, compositionality, type systems and other concepts inside of Category Theory that drive the development of sate-of-the-art programming.
@@ -22,47 +44,23 @@ This text assumes basic knowledge of mathematics, familiarity with programming, 
   This text occupies a middle ground between works like \cite{Milewski2019} and \cite{maclane1971categories}. The former emphasizes intuitiveness, and while it serves as a powerful toolkit for programmers, it gives little insight into the formalisms of categorical reasoning. The latter, presents category theory in full generality, making it inaccessible to non-mathematicians. Our approach introduces the fundamental notions in a somewhat mathematically precise manner first to then develop programmer-friendly examples, applications, and intuitions. This text is of course not in the same league as the aforementioned, it is a short and concise introduction and should be read as such.
 }
 
-\magenta{
-\input{sections/introduction-summary}
-}
-
-\paragraph{Contents.}
-{
-As already discussed, this work explores the untyped and typed lambda calculus, intuitionistic logic, and the Curry--Howard Isomorphism. It then expands the correspondence adding categorical semantics into what is referred to as the Curry--Howard--Lambek Correspondence.
-}
-
-\begin{itemize}
-\item The first chapter is an introduction to the \lcalc. It emphasizes confluence as a pillar for computation, it also introduces normalization as a desirable property. It is packed with examples that make it easy to read.
-
-\item As for the second, it is the natural continuation of the first. Typing is introduced, together with its so desired normalization properties. Differences with the untyped \lcalc \ are discussed.
-
-\item The third chapter glances over intuitionistic logic and natural deduction. It introduces the Curry--Howard correspondence without going into the different philosophical interpretations for intuitionistic deduction systems and their meaning.
-
-\item We continue with introductory topics to category theory, like functors and natural transformations. From there we cover the necessary universal constructions to build Closed Cartesian Categories, namely, terminal objects, products and exponentials.
-
-\item The last chapter extends the Curry--Howard correspondence, establishing a relation between \lcalc \ and Closed Cartesian Categories.
-\end{itemize}
-
-The approach we adopted is to make the document accessible people can learn and refer to it if they are interested. 
-
 \paragraph{External Resources.}
 {
-The code is meant more as a learning aid than as a practical implementation of the concepts covered. Similarity to the formal definitions is the driving design principle behind most of the code, as well as ease of use. Nevertheless, it does work and can be given purpose. We use the various programs to simplify some of the examples and avoid including unnecessarily large reductions.
+The code is meant as a learning aid, nevertheless, it can be given purpose. Similarity to the formal definitions is the driving design principle behind most of the code, as well as ease of use. We use the various programs to simplify some of the examples and avoid including unnecessarily large reduction procedures.
 \begin{itemize}
 \item To clone the code used to implement the \lcalc:
 \begin{minted}{shell-session}
   $ git clone https://github.com/laredo02/lcalc.git
 \end{minted}
 
-Note how there are a few different files, each of which encapsulates a different approach to typing.
+There are a few different files in the directory, each of which encapsulates a different approach to typing:
 \begin{itemize}
 \item Untyped
 \item Fully annotated typing
 \item Typed with annotations only on abstractions i.e. Typing à la Church
 \item Typed with monomorphic type inference i.e. Typing à la Curry
 \end{itemize}
-
-Implementations are kept short and to the point, they are supposed to especially help programmers to digest some of the contents of this work. To use the provided tools, we recommend running them on \texttt{ghci}, Haskell's interactive shell.
+Files with miscellaneous examples related to categories are also included, in particular those about functors, natural transformations and their composition may be of interest. Implementations are supposed to especially help programmers to digest some of the contents of this work. To use the provided tools, we recommend running them on \texttt{ghci}, Haskell's interactive shell.
 
 \item To clone the \LaTeX \ source used to generate this document:
 \begin{minted}{shell-session}
@@ -71,7 +69,6 @@ Implementations are kept short and to the point, they are supposed to especially
 
 \end{itemize}
 }
-
 
 \paragraph{Disclosure.}
 {

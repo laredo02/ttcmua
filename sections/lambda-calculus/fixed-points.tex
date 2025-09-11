@@ -1,9 +1,7 @@
 \section{\centering Fixed Point Combinators and Recursion}
 \label{sec:recursion-fixed-points}
 
-The Church Rosser Property labels the untyped \lcalc \ as a confluent system, therefore we know that whenever a term has a normal form it must be unique. We still have not given an answer to whether all \lterms \ have a normal form.
-
-The most straight forward way to test this, is to check whether there exists some term that reduces to itself, effectively creating a loop in the $\beta$-reduction chain so to speak. In more formal terms this means there exists some $M$ such that \( M \curly^n M \) with $ n > 0 $. It turns out \( \Omega \equiv (\la x . \, x \, x) (\la x . \, x \, x) \) fullfills this requirement. Let us inspect what goes on while $\beta$-reducing this term:
+We have seen that not all terms are normalizing. The most straight forward way to test this, is to check whether there exists some term that reduces to itself, effectively creating a loop in the $\beta$-reduction chain so to speak. In more formal terms this means there exists some $M$ such that \( M \curly^n M \) with $ n > 0 $. As already seen, \( \Omega \equiv (\la x . \, x \, x) (\la x . \, x \, x) \) fullfills this requirement. Let us recall what goes on while $\beta$-reducing this term:
 \[
   \Omega \equiv (\la x . \, x \, x) (\la x . \, x \, x) \curly (\la x . \, x \, x) (\la x . \, x \, x) \curly^* (\la x . \, x \, x) (\la x . \, x \, x) \equiv \Omega
 \]
@@ -48,11 +46,11 @@ No surprises here, the definition is close to a one-to-one mapping of its functi
 \begin{theorem}
   For every \( L \in \La \), there exists \( M \in \La \) such that $ M $ is a fixed point for $ M $ i.e. $ M =_\beta L M $. Referred to as the Fixed Point Theorem in the literature.
 \end{theorem}
-\begin{proof} Given $L \in \La$, define $M$ as below:
-  \[
+\begin{proof} Given $L \in \La$, define
+  \(
     M := (\la x . \, L \, (x \, x))(\la x . \, L \, (x \, x))
-  \]
-  $M$ is a reducible expression:
+  \),
+  since $M$ is reducible:
   \begin{align*}
     M 
     &\equiv (\la x . \, L \, (x \, x))(\la x . \, L \, (x \, x)) \\
@@ -101,7 +99,7 @@ To work around this issue, several other combinators exist, the $Z$ and the Turi
   \]
 \end{example}
 \begin{remark}
-  The extra $\lambda v.\,\cdot$ in the final form of $Z\,F$ is essential to delay evaluation in a strict environment. Without it, the recursive call would be applied immediately, and cause non-termination in a call-by-value setting.
+  The extra $\lambda v$ in the final form of $Z\,F$ is essential to delay evaluation in a strict environment. Without it, the recursive call would be applied immediately, and cause non-termination in a call-by-value setting.
 \end{remark}
 \begin{definition} Turing combinator \( \Theta \triangleq (\lambda x.\, \lambda y.\, y\, (x\, x\, y))\, (\lambda x.\, \lambda y.\, y\, (x\, x\, y)) \)
 \end{definition}
@@ -136,7 +134,7 @@ We can solve it up to $\beta$-equivalence by letting \( \texttt{fact} = \Theta F
 \end{minted}
 \noindent That of course yields $ \lambda f.\,\lambda x.\, f(f(f(f(f(f\,x))))) \;\equiv\; \overline{\texttt{6}}$ as result.
 \begin{note}
-  The latter implementation exhibits a striking syntactic resemblance to that of the \textbf{LISP} family of languages.
+  The latter implementation exhibits a striking syntactic resemblance to that of the Lisp family of languages.
 \end{note}
 
 \subsubsection*{\centering Conclusions}

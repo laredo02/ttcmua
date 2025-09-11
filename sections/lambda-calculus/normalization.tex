@@ -42,8 +42,17 @@ where $x, y, z, w \in A$. In a diagram:
   \end{center}
 \end{definition}
 
+\begin{definition}Let $\to$ be a binary relation on a set $A$. Its reflexive--transitive closure is denoted by $\to^*$. 
+We say that $\to$ has the diamond property if
+\[
+    x \to y \;\wedge\; x \to z \;\;\Rightarrow\;\; \exists w \in A,\; y \to w \;\wedge\; z \to w,
+\]
+for all $x, y, z, w \in A$.
+\end{definition}
+
+
 The following section covers the proof of this property for the untyped \lcalc. We deemed it necessary to include the proof since it provides evidence that the \lcalc is a viable system to perform computation with, since it ensures that no matter what reduction path we choose first the reduction can always converge into a unique term. See \ref{cor:unique-normal-form}. This notion of confluence is strengthened when we introduce typing \ref{sec:typed-normalization}.
-\begin{remark} If you have no time to waste, \cite{nagele2016mechanized} is a mechanized proof of the Church-Rosser Theorem using the $Z$-property written in Nominal Isabelle, which enables you to swiftly glance over the following section.
+\begin{remark} If you have no time to spare, \cite{nagele2016mechanized} is a mechanized proof of the Church-Rosser Theorem using the $Z$-property written in Nominal Isabelle, which enables you to swiftly glance over the following section.
 \end{remark}
 
 \input{sections/lambda-calculus/church-rosser-proof}
@@ -67,6 +76,7 @@ Thus, the only possible \( P \) is \( N_1 =_\alpha N_2 \).
 
 
 \subsubsection{\centering Normalization}
+
 \label{sec:normalization}
 Normalization properties essentially summarize the termination properties of terms in the context of $\beta$-reduction. So, while The Church-Rosser property ensures confluence, normalization focuses on termination i.e. whether reduction eventually terminates.
 
@@ -82,14 +92,14 @@ Normalization properties essentially summarize the termination properties of ter
 \]
 We classify \(M\) as follows:
 \begin{itemize}
-    \item \(M\) is strongly normalizing if every such reduction sequence terminates in a normal form. Equivalently, there is no infinite reduction sequence.
-    \[
+    \item \(M\) is strongly normalizing if every such reduction sequence terminates in a normal form. Equivalently, there is no infinite reduction sequence:
+    \(
     M \equiv M_0 \curly M_1 \curly M_2 \curly \cdots
-    \]
-    \item \(M\) is weakly normalizing if there exists at least one finite reduction sequence     that terminates in a normal form.
-    \[
+    \)
+    \item \(M\) is weakly normalizing if there exists at least one finite reduction sequence     that terminates in a normal form:
+    \(
     M \equiv M_0 \curly \cdots \curly M_n
-    \]
+    \)
     \item \(M\) is non-normalizing if no reduction sequence starting from \(M\) ever reaches a normal form. In this case, every reduction path is either infinite or loops without producing a normal form.
 \end{itemize}
 \end{definition}

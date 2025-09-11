@@ -7,7 +7,7 @@ In 1936, Church used lambda calculus to address Hilbert’s Entscheidungsproblem
 One of the nuances formalized by the \lcalc \ is the distinction between extensional and intensional equality. The extensional approach to equivalence states that two functions are equivalent if they share input output pairs for every possible input. Its intensional counterpart extends this notion of equality by requiring that the procedures that compute these pairs share complexity i.e. they take the same steps toward yielding a result.\footnote{
   Let \( p \) be a sufficiently large prime, and let \( f, g : \mathbb{Z}_p \to \mathbb{Z}_p \) be defined by \( f(x) = x^2 \) and \( g(x) = \log_a(a^{x+2}) \), where \( a \in \mathbb{Z}_p^\times \) is a fixed primitive root. Although \( f \) and \( g \) are extensionally equal, i.e., they yield the same output for all inputs in \( \mathbb{Z}_p \), they are intensionally distinct. The function \( f \) performs a simple squaring operation, while \( g \) requires evaluating a discrete logarithm, intractable in general \cite{bonilla2021}.}
 
-The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like LISP, Haskell and Erlang to name a few. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
+The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like ML or the more recent Haskell. By itself, the untyped \lcalc \ modeled the first versions of Lisp. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
 
 \subsubsection{\centering The Intuitive Notion}
 
@@ -56,12 +56,7 @@ The key takeaway of this definition is that abstraction and application when pai
   \end{minted}
 \end{example}
 As a convention to avoid notational cluttering, the outermost parenthesis can be omitted e.g. $\la x.x $ is read as $ ( \la x.x ) $. Also, application is left-associative  and binds tighter than abstraction, so $M N P$ is parsed as $(M N) P$ and $\la x . M N$ means $\la x . (M N)$, not $(\la x . M) N$. Likewise, abstraction is right-associative e.g. $\la x . \la y . M$ is $\la x . (\la y . M)$ and binds more weakly than application. Haskell Curry introduced what we now refer to as currying, its main purpose is to avoid unnecessary lambdas. Below is a summary of common notational conventions used throughout the text:
-\begin{itemize}
-\item \( \la x . \, x \iff ( \la x . \, x ) \)
-\item \( M \, N \, P \iff (M \, N) \, P \)
-\item \( \la x. M \, N \iff \la x. (M \, N) \)
-\item \( \la x. \la y. f(x,y) \iff \la xy. f(x,y) \)
-\end{itemize}
+\[ \la x . \, x \iff ( \la x . \, x ) \qquad \la x. M \, N \iff \la x. (M \, N) \qquad  M \, N \, P \iff (M \, N) \, P \qquad \la x. \la y. f(x,y) \iff \la xy. f(x,y) \]
 All these are just to keep notation straight-forward, since the formal definition does not leave precedence under-specified thanks to parenthesis. Those interested in the implementation need not worry, as Haskell enforces an explicit order on constructors.
 \section{\centering Reduction of terms}
 Now that the \lcalc \ language has been introduced, it is time we move on to the mechanics of computation, manifested through $\beta$-equivalence. $\alpha$ and $\eta$ equivalence will also be introduced. These two are more difficult to grasp. Informally, it could be said that $\alpha$-equivalence is equivalence programs up to renaming of local variables. In this same scenario, $\eta$-equivalence would singnify equivalence of programs up to wrapping or unwrapping them with an identity function.
@@ -85,9 +80,9 @@ From the ground up, we define what a subterm is, since the definition of the lan
 \end{definition}
 \begin{remark}
   Let \( \preceq \) be the subterm relation on \lterms, defined by
-  \[
+  \(
     M \preceq N \iff M \in \Sub{ N }
-  \]
+  \).
   \( \preceq \) is a partial order relation. This statement is follows intuitively from the definition, it can be proven using induction on the derivation tree.
 \end{remark}
 \begin{definition} A term $ S \in \Sub M, \ M \in \La$ is said to be proper if $S \neq M$. $\Sub{M} \setminus \{M\}$ would be the set of proper subterms.
@@ -206,14 +201,14 @@ assuming bound variables $x,y,N,P$ are fresh.
 \item Base case: Direct from the definition of substitution; check $z = x$,
 $z = y$, and $z$ distinct from both.
 \item Inductive step on applications, where substitution distributes:
-\[
+\(
 (M_1M_2)[x:=N] = M_1[x:=N]\,M_2[x:=N],
-\]
+\)
 so both statements follow immediately from the induction hypothesis on $M_1$ and $M_2$.
 \item Inductive step on abstractions with $z$ fresh,
-\[
+\(
 (\lambda z.M_0)[x:=N] = \lambda z.(M_0[x:=N]),
-\]
+\)
 and the induction hypothesis applies to $M_0$.
 \end{itemize}
 \end{proof}
@@ -268,7 +263,7 @@ In the previous example a bound variable is renamed to avoid a naming collision 
   \[
     \la x. \la y. \, x \not=_\alpha \la x. \la y. \, y \quad \la x. \, x \, y \not=_\alpha \la x. \, x \, z 
   \]
-  Remember terms are $\alpha$-equivalent \ only when bounded names are properly substituted.
+  Remember that terms are $\alpha$-equivalent \ only when bounded names are properly substituted.
 \end{example}
 \begin{remark}
   \aequiv \ comes naturally once substitution is defined, since the names of bound variables are just placeholders that will eventually hold an argument.

@@ -19,9 +19,11 @@ This tells us about the nature of a given term, which may be of two kinds: a sim
 type or arrow type \(\to\). Introducing a typing system into the \(\lambda\)-calculus splits \(\Lambda\) into two categories:
 Typable and Non-typable terms. These sets are disjoint. This simple type system classifies expressions such as  
 \( x (\lambda y.y) \) or \( Y \) as untypable, while \( \lambda x.x \) has type  
-\(\alpha \to \alpha\).
+\(\alpha \to \alpha\). To summarize, non-normalizing terms and terms that lack meaning are not typable.
 
-In the following we present minimal and extended simple types as well as the different i.e. Church and Curry style.
+Out of the many type systems developed for the λ-calculus, we focus on a small but expressive core. We begin with minimal typing, which corresponds to the simply typed λ-calculus with only function types. This system captures the essence of typed functional computation: terms are either variables, abstractions, or applications, and their types are built solely from base types and arrows.
+
+We then extend this core with product types and sum types, which allow richer data structures. Product types model tuples or pairs, supporting construction and projection, while sum types model alternatives, supporting case analysis. These extensions move the type system closer to what is found in practical programming languages, while preserving the foundational simplicity of the λ-calculus.
 
 \section{\centering Minimal Typing}
 The untyped version of the \lcalc \ relies on abstraction and application. Minimal typing captures this simply by using base types and arrow types.
@@ -85,19 +87,28 @@ with all $x_i$ distinct.
 With this in mind we distinguish two alternative methods for typing. Typing à la Church, where types are annotated alongside $\lambda$-terms. And Typing a la Curry, where typing judgements are provided externally through some inference algorithm. Church's style of typing adds syntax on top of the already defined \lcalc. It can be said that while Church's typing introduces rules to generate well-typed terms, Curry's approach infers types from untyped expressions.
 \begin{itemize}
 \item Church-style:
-  \[
+  \(
+  \quad
     \lambda x : \sigma . x
-    \quad\text{with}\quad
     \vdash \lambda x : \sigma . x : \sigma \to \sigma
-  \]
+  \).
 \item Curry-style:
-  \[
+  \(
+    \quad
     \lambda x . x
-    \quad\text{with}\quad
     \vdash \lambda x . x : \sigma \to \sigma
-  \]
+  \).
 \end{itemize}
 Note how Curry's style allows us to assign different valid types to terms. For example, $(\alpha \to \beta) \to (\alpha \to \beta)$ could be a valid type assignment for $\la x . \, x$, do not confuse this polymorphism.
+
+\begin{remark}
+The distinction between Church-style and Curry-style typing has practical consequences for implementation. 
+In Church-style, every abstraction carries its type annotation explicitly, so type checking is straightforward. 
+In Curry-style, terms are written without annotations, and type information must be reconstructed by solving constraints generated during typing. 
+This requires the introduction of type variables and unification algorithms in order to infer consistent typings.
+Hence Curry-style systems motivate the development of type inference mechanisms, while Church-style systems rely on explicit annotations.
+\end{remark}
+
 
 \subsubsection{\centering Typing à la Church}
 
@@ -289,38 +300,27 @@ In \ref{sec:normalization-and-cr} we analyzed the untyped \lcalc \ as a computat
 \label{def:one-step-beta}
 \leavevmode
 The one-step $\beta$-reduction relation $\curly$ on terms of $\Lambda^\to$ is the smallest relation satisfying:
-\begin{enumerate}
+\begin{itemize}
 \item (Basis)
   \(
     (\lambda x : \sigma.\, M)\,N \;\curly\; M[x := N]
   \)
   \item (Compatibility) If \(M \curly M'\) then
-  \[
-    M\,N \curly M'\,N,\qquad
-    N\,M \curly N\,M',\qquad
+  \(
+    M\,N \curly M'\,N,
+    N\,M \curly N\,M',
     \lambda x : \sigma.\,M \curly \lambda x : \sigma.\,M'
-  \]
-  and similarly for all subterms.
-\end{enumerate}
+  \)
+\end{itemize}
+and similarly for all subterms.
 \end{definition}
 
-
-\begin{theorem}[Church–Rosser Theorem]
+\begin{theorem}
 \label{thm:church-rosser}
-The Church–Rosser property holds for $\lambda^\to$.
+The Church–Rosser property holds for minimal typing.
 \end{theorem}
 
-\begin{corollary}
-\label{cor:church-rosser}
-Suppose \( M =_\beta N \). Then there exists \( L \) such that
-\[
-  M \twoheadrightarrow_\beta L
-  \quad\text{and}\quad
-  N \twoheadrightarrow_\beta L.
-\]
-\end{corollary}
-
-\begin{lemma}[Subject Reduction]
+\begin{lemma}
 \label{lem:subject-reduction}
 If \(\Gamma \vdash L : \rho\) and \(L \to_\beta L'\), then
 \[
@@ -328,12 +328,14 @@ If \(\Gamma \vdash L : \rho\) and \(L \to_\beta L'\), then
 \]
 \end{lemma}
 
-\begin{theorem}[Strong Normalisation Theorem (Termination)]
+\begin{theorem}
 \label{thm:strong-normalisation}
-Every legal term \( M \) in $\lambda^\to$ is strongly normalising.
+Every legal term \( M \) in minimally typed \lcalc is strongly normalising.
 \end{theorem}
 
-
+\begin{remark}
+  Proofs to these statements are common-ground among most of the \lcalc \ resources cited. A proof to the normalization theorem is given for the product extension.
+\end{remark}
 
 
 
@@ -414,7 +416,7 @@ The following presents the core operational semantics for the extended types wit
 The core $\beta$-reduction rules for simply typed $\lambda$-calculus with products and unit are:
 
 \[
-  (\lambda x : A.\ M)\ N \;\curly\; M[x:=M]
+  (\lambda x : A.\ M)\ N \;\curly\; M[x:=N]
 \]
 \[
   \pi_1 \langle M, N \rangle \;\curly\; M
@@ -425,7 +427,7 @@ The core $\beta$-reduction rules for simply typed $\lambda$-calculus with produc
   \langle \pi_1 M,\, \pi_2 M\rangle = M
 \]
 \[
-  \lambda x : U.\, (M\,x) = t \quad (x \not\in \mathrm{FV}(M))
+  \lambda x : U.\, (M\,x) = M \quad (x \not\in \mathrm{FV}(M))
 \]
 
 \subsubsection{\centering $\eta$-laws}

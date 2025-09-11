@@ -1064,7 +1064,6 @@ A cartesian closed category is a category with three key pieces of structure. Fi
   \]  
 \end{itemize}
 \end{definition}
-
 Thus, a CCC is a setting where not only objects and morphisms exist, but also the very process of mapping between objects is itself represented as an object of the category. In this way, CCCs resemble deduction systems: every morphism can be systematically built from basic constructions, just as every proof is assembled step by step from simpler proofs.
 
 
@@ -1114,9 +1113,77 @@ and the uniqueness part of the universal property ensures $\lambda(\operatorname
 
 \subsubsection{\centering Adjunctions}
 
+All the universal constructions we have seen --products, coproducts, exponentials-- are just different faces of the same idea: adjointness. You can think of an adjunction as a ``best possible solution'' to a certain problem: a product is the best way to combine things, a coproduct is the best way to branch, and exponentials are the best way to internalize functions. So instead of memorizing each universal property separately, you can see them all as special cases of this one guiding principle—one functor ``undoes'' or ``complements'' another in the most universal way possible.
+
+Notice how this notion of ``best possible solution'', closely resembles the idea of 
+
 The universal constructions we covered all fall under the umbrella of adjoint functors.
 
-\begin{definition}[Adjunction]
+
+
+
+
+
+\begin{definition}
+An \emph{adjunction} between two categories $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of functors
+\[
+F : \mathcal{C} \to \mathcal{D}, \quad G : \mathcal{D} \to \mathcal{C},
+\]
+together with a natural isomorphism between hom-sets
+\[
+\hom_{\mathcal{D}}(F(C), D) \cong \hom_{\mathcal{C}}(C, G(D))
+\]
+for all $C \in \mathcal{C}$ and $D \in \mathcal{D}$.
+
+We say that $F$ is \emph{left adjoint} to $G$, and $G$ is \emph{right adjoint} to $F$.
+\end{definition}
+
+
+
+\begin{remark}
+Universal arrows and adjunctions are closely related: a universal arrow from an object $C \in \mathcal{C}$ to a functor $G : \mathcal{D} \to \mathcal{C}$ can be thought of as a “best possible” arrow from $C$ into the image of $G$. If $G$ admits a universal arrow for every object $C \in \mathcal{C}$, then these universal arrows assemble into a left adjoint $F$ to $G$, giving the adjunction $F \dashv G$. Conversely, given an adjunction $F \dashv G$, the components of its unit $\eta_C : C \to G(F(C))$ are precisely universal arrows. In this sense, universal arrows are the local building blocks of adjunctions.
+\end{remark}
+
+\begin{example}
+Consider the free/forgetful adjunction between sets and groups:
+\[
+F : \mathbf{Set} \leftrightarrows \mathbf{Grp} : U
+\]
+where $U$ forgets the group structure and $F$ sends a set $X$ to the free group on $X$.  
+For each set $X$, the canonical inclusion $X \to U(F(X))$ is a universal arrow from $X$ to $U$. Collecting these universal arrows for all sets gives the adjunction $F \dashv U$.
+\end{example}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{definition}
 Let $\mathcal{C}$ and $\mathcal{D}$ be categories.  
 An \emph{adjunction} between $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of (covariant) functors
 \[

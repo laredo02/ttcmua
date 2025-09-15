@@ -43,7 +43,7 @@ Intuitively, a term of type $A \to B$ is a function which, given an input of typ
   \qquad
   (\lambda x.\,x+1)\;2 \;\leadsto\; 3
 \]
-so the domain is $\mathbb{N}$ and the result is a $\mathbb{N}$. In short: annotating terms with arrow types restricts how functions can be combined and yields a safer, more predictable calculus. This idea of types can be further extended. The extensions we cover in depth are:
+so the domain is $\mathbb{N}$ and the codomain $\mathbb{N}$. In short: annotating terms with arrow types restricts how functions can be combined and yields a safer, more predictable calculus. This idea of types can be further extended. The extensions we cover in depth are:
 
 \begin{itemize}
 \item A product type $A \times B$ in the simply typed $\lambda$-calculus means ``having both an $A$ and a $B$ at the same time''. If $a : A$ and $b : B$, then $\langle a,b\rangle : A \times B$. A product is equipped with projections $\pi_{1}\langle a,b \rangle = a$, $\pi_{2}\langle a,b\rangle = b$. In Haskell:

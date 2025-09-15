@@ -9,11 +9,9 @@ One of the nuances formalized by the \lcalc \ is the distinction between extensi
 
 The Lambda Calculus together with Type Theory lay the theoretical groundwork that shaped the design of languages like ML or the more recent Haskell. By itself, the untyped \lcalc \ modeled the first versions of Lisp. More advanced type systems than those present in general purpose programming languages enable computers to verify mathematical statements and produce rigorous proofs.
 
-\subsubsection{\centering The Intuitive Notion}
 
-In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \mathrel{\leadsto} (2 + 1) \mathrel{\leadsto} 3$. This process of reducing a $\la$-expression is referred to as \bred, it will be covered formally later in the chapter.
 
-\section{\centering The Language of \lCalc}
+\section{\centering The Language}
 
 \begin{definition} The set of all lambda terms \( \La \) is defined inductively as follows:
   \label{def:lambda-terms-1}
@@ -112,7 +110,7 @@ The set of Free Variables $\functionfont{FV}$, those that will not get replaced 
   \begin{minted}[fontsize=\small]{haskell}
     freeVars :: Term -> Set.Set String
     freeVars (Var x) = Set.singleton x
-    freeVars (App m n) = Set.union (freeVars m) (freeVars m)
+    freeVars (App m n) = Set.union (freeVars m) (freeVars n)
     freeVars (Abs x m) = Set.delete x (freeVars m)
   \end{minted}  
 \end{definition}
@@ -270,7 +268,7 @@ In the previous example a bound variable is renamed to avoid a naming collision 
 \end{remark}
 
 \begin{note}
-  Variable naming is a nightmare. De Bruijn indexing is a way of methodically assigning numbers to variable names, indicating how many binders away a variables binder is. This system eliminates the need for $\alpha$ equivalence to exist.
+  Variable naming is a nightmare. De Bruijn indexing is a way of methodically assigning numbers to variable names, indicating how many binders away a variables binder is. This system eliminates the need for $\alpha$ equivalence to exist. See \cite{deBruijn1972}.
   \[
     \la x.\, x \Rightarrow \la.\, 0 \quad \la x. \la y.\, x \Rightarrow \la. \la.\, 1 \quad \la x. \la y.\, y \Rightarrow \la. \la. \, 0\,
   \]

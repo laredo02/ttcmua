@@ -1,5 +1,5 @@
 
-\chapter{Intuitionistic Logic \& Curry--Howard}
+\chapter{Intuitionistic Logic and The Curry--Howard Isomorphism}
 
 Unlike classical logic, which is often extended through modal operators or second-order quantifiers, intuitionistic logic takes a different path, not because it adds power, but because it restricts classical reasoning. Classical logic freely allows non-constructive arguments, proofs that assert the existence of an object without providing a way to explicitly construct it. Intuitionistic logic, in contrast, is designed to formalize constructive reasoning, where existence is meaningful only if a specific example can be provided.
 
@@ -58,7 +58,7 @@ In addition to the connectives introduced above, the following symbols define th
 
 \subsubsection{\centering The Brouwer--Heyting--Kolmogorov Interpretation}
 
-The Brouwer--Heyting--Kolmogorov Interpretation interpretation provides an informal, constructive understanding of intuitionistic connectives. It is based on the notion of a construction, which can be regarded as a constructive proof. The BHK interpretation assigns meanings to the intuitionistic connectives as
+The Brouwer--Heyting--Kolmogorov interpretation provides an informal, constructive understanding of intuitionistic connectives. It is based on the notion of a construction, which can be regarded as a constructive proof. The BHK interpretation assigns meanings to the intuitionistic connectives as
 follows:
 
 \begin{itemize}
@@ -86,7 +86,9 @@ follows:
 \end{itemize}
 
 \begin{remark}
-  Generally speaking, $\neg\varphi$ means a construction of $\varphi$ is impossible.
+  Generally speaking, $\neg\varphi$
+  means any hypothetical construction $\varphi$ is impossible of $\varphi$ yields absurdity $\bot$.
+  
 \end{remark}
 
 \section{\centering Natural Deduction}
@@ -113,9 +115,8 @@ A derivation or proof in $\mathcal{D}$ from a set of premises $\Gamma \subseteq 
 \)
 such that each $\varphi_i$ is either:
 \begin{itemize}
-    \item an axiom ($\varphi_i \in \Axioms$),
-    \item a member of $\Gamma$, or
-    \item obtained from previous formulas in the sequence by an inference rule in $\Rules$.
+    \item an axiom ($\varphi_i \in \Axioms$).
+    \item a member of $\Gamma$, or obtained from previous formulas in the sequence by an inference rule in $\Rules$.
 \end{itemize}
 We write
 \(
@@ -125,37 +126,39 @@ if there exists a derivation of $\varphi$ from $\Gamma$ in the deductive system 
 \end{definition}
 Natural deduction is a deduction system within intuitionistic logic that uses constructive reasoning to derive conclusions. This structured proofs emphasize the existence of explicit constructions rather than abstract truth values.
 
-The rules of natural deduction for intuitionistic propositional logic (without~$\bot C$) can be presented as follows:
+The rules of natural deduction for intuitionistic propositional logic can be presented as follows:
 \subsubsection{\centering Introduction / Elimination Rules}
+
+\medskip
+
 \[
-  \boxed{
 \begin{array}{@{}l@{\qquad}l@{}}
 \inferrule*[right=\textsc{IntroConj}]
   { \phi \\ \psi }
   { \phi \land \psi }
 &
-\inferrule*[right=\textsc{ElimConj}]
+\inferrule*[right=\textsc{ElimConj-L}]
   { \phi \land \psi }
   { \phi }
 \quad
-\inferrule*[right=\textsc{ElimConj}]
+\inferrule*[right=\textsc{ElimConj-R}]
   { \phi \land \psi }
   { \psi }
 \\[4ex]
-\inferrule*[right=\textsc{IntroDisj}]
+\inferrule*[right=\textsc{IntroDisj-L}]
   { \phi }
   { \phi \lor \psi }
 \quad
-\inferrule*[right=\textsc{IntroDisj}]
+\inferrule*[right=\textsc{IntroDisj-R}]
   { \psi }
   { \phi \lor \psi }
 &
 \inferrule*[right=\textsc{ElimDisj}]
-  { \phi \lor \psi \\ [\phi]^n \cdots \chi \\ [\psi]^n \cdots \chi }
+  { \phi \lor \psi \\ [\phi]^n \;\; \, \cdots \, \;\; \chi \\ [\psi]^m \;\; \, \cdots \, \;\; \chi }
   { \chi }
 \\[4ex]
 \inferrule*[right=\textsc{IntroImpl}]
-  { [\phi] \cdots \psi }
+  { [\phi]^n \;\; \, \cdots \, \;\; \psi }
   { \phi \to \psi }
 &
 \inferrule*[right=\textsc{ElimImpl}]
@@ -163,7 +166,7 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \psi }
 \\[4ex]
 \inferrule*[right=\textsc{IntroNeg}]
-  { [\phi]^n \cdots \bot }
+  { [\phi]^n \;\; \, \cdots \, \;\; \bot }
   { \neg \phi }
 &
 \inferrule*[right=\textsc{ElimNeg}]
@@ -171,17 +174,17 @@ The rules of natural deduction for intuitionistic propositional logic (without~$
   { \bot }
 \\[4ex]
 &
-\inferrule*[right=\textsc{ElimBot}]
+\inferrule*[right=\textsc{ExFalso}]
   { \bot }
   { \phi }
 \end{array}
-}
 \]
+
 \section{\centering Alternative Presentation of Natural Deduction}
 In the standard presentation of natural deduction, assumptions are introduced as 
 leaves of a proof tree and later discharged dynamically. This makes it somewhat 
 unclear when and where each assumption is canceled in the finished derivation. 
-An alternative approach is to present derivations in terms of \emph{judgments},
+An alternative approach is to present derivations in terms of judgments,
 which are of the form
 \[
 x_1 : A_1, \dots, x_n : A_n \;\;\vdash\;\; B.
@@ -190,83 +193,83 @@ Such a judgment expresses that the formula $B$ can be derived from the
 assumptions $A_1, \dots, A_n$, where each assumption is labeled by a distinct 
 variable. Every line in a derivation explicitly carries the full set of 
 assumptions used to obtain it. This makes derivations more verbose, but 
-assumption management becomes fully transparent. 
+assumption management becomes fully transparent.
 \subsubsection{\centering New style of Introduction / Elimination Rules}
 Let $\Gamma$ denote a context of labeled assumptions. The rules of natural 
 deduction can be reformulated as follows:
+
 \[
-  \boxed{%
-    \begin{array}{@{}l@{\qquad}l@{}}
-      \inferrule*[right=\textsc{Ax}]
-      { }
-      { \Gamma, x:A \vdash A }
-      &
-        \inferrule*[right=\textsc{IntroTop}]
-        { }
-        { \Gamma \vdash \top }
-      \\[4ex]
-      \inferrule*[right=\textsc{ElimConj}_1]
-      { \Gamma \vdash A \land B }
-      { \Gamma \vdash A }
-      \quad
-      \inferrule*[right=\textsc{ElimConj}_2]
-      { \Gamma \vdash A \land B }
-      { \Gamma \vdash B }
-      &
-        \inferrule*[right=\textsc{IntroConj}]
-        { \Gamma \vdash A \\ \Gamma \vdash B }
-      { \Gamma \vdash A \land B }
-      \\[4ex]
-      \inferrule*[right=\textsc{IntroDisj}_1]
-      { \Gamma \vdash A }
-      { \Gamma \vdash A \lor B }
-      \quad
-      \inferrule*[right=\textsc{IntroDisj}_2]
-      { \Gamma \vdash B }
-      { \Gamma \vdash A \lor B }
-      &
-        \inferrule*[right=\textsc{ElimDisj}]
-        { \Gamma \vdash A \lor B \\ \Gamma, x:A \vdash \chi \\ \Gamma, y:B \vdash \chi }
-      { \Gamma \vdash \chi }
-      \\[4ex]
-      \inferrule*[right=\textsc{IntroImpl}_x]
-      { \Gamma, x:A \vdash B }
-      { \Gamma \vdash A \to B }
-      &
-        \inferrule*[right=\textsc{ElimImpl}]
-        { \Gamma \vdash A \to B \\ \Gamma \vdash A }
-      { \Gamma \vdash B }
-      \\[4ex]
-      \inferrule*[right=\textsc{IntroNeg}_x]
-      { \Gamma, x:A \vdash \bot }
-      { \Gamma \vdash \neg A }
-      &
-        \inferrule*[right=\textsc{ElimNeg}]
-        { \Gamma \vdash A \\ \Gamma \vdash \neg A }
-      { \Gamma \vdash \bot }
-      \\[4ex]
-      &
-        \inferrule*[right=\textsc{ExFalso}]
-        { \Gamma \vdash \bot }
-        { \Gamma \vdash \chi }
-    \end{array}%
-  }
+\begin{array}{@{}l@{\qquad}l@{}}
+\inferrule*[right=\textsc{Assume-X}]
+  { }
+  { \Gamma, x:A \vdash A }
+&
+\inferrule*[right=\textsc{IntroTop}]
+  { }
+  { \Gamma \vdash \top }
+\\[4ex]
+\inferrule*[right=\textsc{ElimConj-L}]
+  { \Gamma \vdash A \land B }
+  { \Gamma \vdash A }
+\quad
+\inferrule*[right=\textsc{ElimConj-R}]
+  { \Gamma \vdash A \land B }
+  { \Gamma \vdash B }
+&
+\inferrule*[right=\textsc{IntroConj}]
+  { \Gamma \vdash A \\ \Gamma \vdash B }
+  { \Gamma \vdash A \land B }
+\\[4ex]
+\inferrule*[right=\textsc{IntroDisj-L}]
+  { \Gamma \vdash A }
+  { \Gamma \vdash A \lor B }
+\quad
+\inferrule*[right=\textsc{IntroDisj-R}]
+  { \Gamma \vdash B }
+  { \Gamma \vdash A \lor B }
+&
+\inferrule*[right=\textsc{ElimDisj}]
+  { \Gamma \vdash A \lor B \\ \Gamma, x:A \vdash \chi \\ \Gamma, y:B \vdash \chi }
+  { \Gamma \vdash \chi }
+\\[4ex]
+\inferrule*[right=\textsc{IntroImpl}]
+  { \Gamma, x:A \vdash B }
+  { \Gamma \vdash A \to B }
+&
+\inferrule*[right=\textsc{ElimImpl}]
+  { \Gamma \vdash A \to B \\ \Gamma \vdash A }
+  { \Gamma \vdash B }
+\\[4ex]
+\inferrule*[right=\textsc{IntroNeg}]
+  { \Gamma, x:A \vdash \bot }
+  { \Gamma \vdash \neg A }
+&
+\inferrule*[right=\textsc{ElimNeg}]
+  { \Gamma \vdash A \\ \Gamma \vdash \neg A }
+  { \Gamma \vdash \bot }
+\\[4ex]
+&
+\inferrule*[right=\textsc{ExFalso}]
+  { \Gamma \vdash \bot }
+  { \Gamma \vdash \chi }
+\end{array}%
 \]
-\begin{example} Comparing the two alternative styles:
+\begin{example} Comparing the two alternative styles
+  \label{ex:traditionalvsalternative}
 \[
 \begin{array}{@{}c@{\qquad}c@{}}
-\textbf{Traditional style} &
-\textbf{Alternative style with Explicit Contexts}
+\text{Traditional} &
+\text{Explicit Contexts}
 \\[2ex]
-\inferrule*[right=\textsc{IntroImpl}_x]
-  { \inferrule*[right=\textsc{ElimConj}_1]
+\inferrule*[right=\textsc{IntroImpl}]
+  { \inferrule*[right=\textsc{ElimConj-L}]
       { [A \land B] }
-      { A \land B \;\vdash\; A }
+      { A }
   }
   { \vdash (A \land B) \to A }
 &
-\inferrule*[right=\textsc{IntroImpl}_x]
-  { \inferrule*[right=\textsc{ElimConj}_1]
+\inferrule*[right=\textsc{IntroImpl}]
+  { \inferrule*[right=\textsc{ElimConj-L}]
       { \inferrule*[right=\textsc{Ax}]
           { }
           { x:A \land B \;\vdash\; A \land B }
@@ -277,10 +280,11 @@ deduction can be reformulated as follows:
 \end{array}
 \]
 \end{example}
-\begin{note}
+
+\begin{note} Going over Example~\ref{ex:traditionalvsalternative}, we observe:
 \begin{itemize}
-  \item In the \emph{traditional} style, we assume $A \land B$ at the leaf, apply \textsc{ElimConj}_1 to obtain $A$, and then discharge the assumption with \textsc{IntroImpl}_x.
-  \item In the \emph{alternative} style, each judgment carries its context explicitly. The axiom \textsc{Ax} gives $x:A \land B \vdash A \land B$, then \textsc{ElimConj}_1 gives $x:A \land B \vdash A$, and finally \textsc{IntroImpl}_x discharges the labeled assumption $x:A \land B$.
+  \item In the traditional style, we assume $A \land B$ at the leaf, apply \textsc{ElimConj-L} to obtain $A$, and then discharge the assumption with \textsc{IntroImpl}.
+  \item In the explicit-context style, each judgment carries its assumptions. The axiom \textsc{Ax} gives $x:A \land B \vdash A \land B$, then \textsc{ElimConj-L} gives $x:A \land B \vdash A$, and finally \textsc{IntroImpl} discharges the labeled assumption $x:A \land B$.
 \end{itemize}
 \end{note}
   
@@ -290,14 +294,14 @@ dynamically. In the alternative style, contexts are explicitly tracked in every
 judgment, making assumption management fully transparent at the cost of greater 
 verbosity.
 \end{note}
-\section{\centering The Curry-Howard Isomorphism}
+\section{\centering The Curry--Howard Isomorphism}
 The $\lambda$-calculus, as introduced in the first section, provides a minimal but expressive framework for modeling computation. Independently, intuitionistic logic offers a formal system for constructive reasoning that requires the existence of witnesses for propositions. The Curry-Howard correspondence reveals a structural equivalence between them, providing a unifying perspective that connects proofs with programs. The Curry--Howard correspondence establishes the following associations:
 \begin{itemize}
 \item \textbf{Propositions $\leftrightarrow$ Types}: Proposition in intuitionistic logic can be interpreted as a type in a typed $\lambda$-calculus.
 \item \textbf{Proofs $\leftrightarrow$ Programs}: Constructive proofs of a proposition correspond to a $\lambda$-term inhabiting the associated type.
 \item \textbf{Proof normalization $\leftrightarrow$ Program evaluation}: The process of simplifying proofs  corresponds to the process of evaluating a term through $\beta$-reduction.
 \end{itemize}
-\subsection{\centering \textit{``Proofs as Programs''}}
+\subsubsection{\centering \textit{``Proofs as Programs''}}
 Given a proposition $P$ in intuitionistic logic, constructing a proof of $P$ is equivalent to constructing a term $t$ such that $t : T$, where $T$ is the type corresponding to $P$. This yields the principle often summarized as \emph{``proofs-as-programs''} or \emph{``propositions-as-types''}. The specifics of this relation are summarized in table \ref{tab:curry-howard}.
 
 \begin{table}[h!]
@@ -329,7 +333,7 @@ Consider the implication $A \rightarrow B$ in intuitionistic logic. A proof of $
   {P \to Q \quad P}
   {Q}
 \]
-Walking our way back through table \ref{tab:curry-howard}, the $\la$--term should be of type $(P \to Q) \to P \to Q$, since it takes a proof of $P \to Q$ and a proof of $P$ and produces a proof of $Q$. Also, we can inhabitate the type using the fact that applying a term of type $P$ to a term of type $(P \to Q)$ yields a term of type $Q$ by \textsc{App} in the typed \lcalc. The rule \textsc{MP} corresponds to the following typed term:
+Walking our way back through table \ref{tab:curry-howard}, the $\la$--term should be of type $(P \to Q) \to P \to Q$, since it takes a proof of $P \to Q$ and a proof of $P$ and produces a proof of $Q$. Also, we can inhabitate the type using the fact that applying a term of type $(P \to Q)$ to a term of type $P$ yields a term of type $Q$ by \textsc{App} in the typed \lcalc. The rule \textsc{MP} corresponds to the following typed term:
 \[
   \vdash \la f.\, \la x.\, f\, x : (P \to Q) \to P \to Q
 \]

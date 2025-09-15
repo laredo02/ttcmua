@@ -12,9 +12,146 @@ The meaning of this composition is entirely determined by the meanings of \(f\) 
 
 This principle---where the whole is defined by its parts and their composition---extends beyond functions between sets. Category theory abstracts this idea: it generalizes functions to morphisms and provides a unified language for compositional structure. The work by \cite{Lambek1980} motivates the final chapters of this work, presenting Closed Cartesian Categories, and how they extend the Curry--Howard Isomorphism, giving a categorical interpretation of the work by Curry and Howard.
 
+The following is informal but approachable summary to this work.
+This summary is intended as an overview of the landscape connecting type theory 
+and category theory. This is because
+while we cover the core computational properties of the $\lambda$-calculus, the final goal of the document
+is to make some higher-level connections. To this end, this work emphasizes computation first, 
+and then gradually abstracts toward categorical perspectives as the exposition 
+develops. To do justice to the title, the summary presents the
+higher-level abstractions that connect the $\lambda$-calculus to type theory and category 
+theory. So that the reader understands the discussion going on behind the concrete notions
+of computation and have an overview of the increasingly abstract perspectives.
+
+\begin{comment}
 \orange{
 \input{sections/introduction-summary}
 }
+\end{comment}
+
+\subsubsection*{\centering Summary}
+
+In order to get acquainted with the \lcalc, let us develop a simple example to familiarize ourselves before we begin with a more formal approach to this discipline. Consider the function $f(x) = x + 1$, the most straightforward way to express this using \lcalc \ would be $(\la x . x + 1 )$, where the lambda denotes that $x$ is being captured and used as a parameter to perform some computation. Evaluating $f(2)$ using this newly created lambda term would look like this: $(\la x . x + 1)(2) \mathrel{\leadsto} (2 + 1) \mathrel{\leadsto} 3$. This process of reducing a $\la$-expression is referred to as \bred.
+
+The untyped $\lambda$-calculus is extremely expressive but gives no static guarantees about program behaviour --- in particular, divergent terms exist, like the $\Omega$ combinator \ref{ex:omega}. To regain discipline we annotate terms with types and move to the simply typed $\lambda$-calculus. We start from a collection of basic types $A,B,C,\dots$. From these we form arrow types:
+\[
+  \text{if }A\text{ and }B\text{ are types, then }A \to B \text{ is a type}
+\]
+Intuitively, a term of type $A \to B$ is a function which, given an input of type $A$, returns an output of type $B$. Because reduction is only performed on well-typed applications, types enforce that compositions are safe: if $M : A \to B$ and $N : A$, then $M\,N$ has type $B$. For example,
+\[
+  \lambda x.\,x+1 : \mathbb{N} \to \mathbb{N}
+  \qquad
+  (\lambda x.\,x+1)\;2 \;\leadsto\; 3
+\]
+so the domain is $\mathbb{N}$ and the result is a $\mathbb{N}$. In short: annotating terms with arrow types restricts how functions can be combined and yields a safer, more predictable calculus. This idea of types can be further extended. The extensions we cover in depth are:
+
+\begin{itemize}
+\item A product type $A \times B$ in the simply typed $\lambda$-calculus means ``having both an $A$ and a $B$ at the same time''. If $a : A$ and $b : B$, then $\langle a,b\rangle : A \times B$. A product is equipped with projections $\pi_{1}\langle a,b \rangle = a$, $\pi_{2}\langle a,b\rangle = b$. In Haskell:
+\begin{minted}{Haskell}
+  data Pair a b = Pair a b -- Product Type: A x B
+  
+  pi1 :: Pair a b -> a -- Projections
+  pi1 (Pair x _) = x
+  pi2 :: Pair a b -> b
+  pi2 (Pair _ y) = y
+\end{minted}
+
+Intuitively, this is just like a tuple where $\pi_{1}$ picks the first component and $\pi_{2}$ picks the second.
+
+\item In contrast, a sum type $A + B$ in the simply typed $\lambda$-calculus means ``having either an $A$ or a $B$, and knowing which one it is''.
+Introduction: if $a : A$ then $\iota_{1} a : A + B$; if $b : B$ then $\iota_{2} b : A + B$. A case analysis that handles both possibilities:  
+\[
+  \text{case } s \text{ of } 
+    \iota_{1}(a) \mapsto M \;\;|\;\;
+    \iota_{2}(b) \mapsto N
+  \]
+  
+Intuitively, this is a tagged union: a value carries a label and a payload. In Haskell:
+\begin{minted}{Haskell}
+  data Sum a b = InL a | InR b -- Sum type: A + B
+
+  inl :: a -> Sum a b -- Injections
+  inl = InL
+  inr :: b -> Sum a b
+  inr = InR
+\end{minted}
+
+\end{itemize}
+
+This extensions allow similar behavior to algebraic types in Haskell, the key difference is that Haskell also allows type definitions, where a type can be defined in terms of itself. The simply typed $\lambda$-calculus with sums and products does not have this. For example, lists in Haskell are recursive:  
+\begin{minted}{haskell}
+  data List a = Nil | Cons a (List a)
+\end{minted}
+
+This says a list is either empty or a pair of an element and another list.  
+Such recursive types go beyond what can be expressed with just sums and products in the simply typed $\lambda$-calculus and what we will cover.
+
+\medskip
+
+The simply typed $\lambda$-calculus with products and sums has a direct logical correspondence where types correspond to propositions, and terms correspond to proofs. This interpretation is called the Curry--Howard isomorphism. The product type $A \times B$ behaves like logical conjunction $A \land B$, and the sum type $A + B$ behaves like logical disjunction $A \lor B$. Establishing that programming with functions and data is formally the same as reasoning in propositional logic.
+
+\medskip
+
+Up until now we have summarized the role behind the type theoretic grounds that this work covers and how it connects to logic, but this work is intended as a ``Unified Approach'' to type and category theory. We follow up by informally presenting what categories are and some high level notions of how they relate to types.
+
+\medskip
+
+Category theory studies objects indirectly, rather than probing the internal nature of an object, one examines how it relates to others, what arrows it admits, and how these compose. In spirit this is not far from the proverb \emph{``dime de quiénes te rodeas y te diré quién eres''}.
+
+Just as types discipline how terms can be combined in the simply typed $\lambda$-calculus, 
+categories discipline how objects can be related through arrows also called morphisms.
+A category consists of: a collection of objects, a collection of arrows or morphisms between objects and a few important rules about composition. A familiar example is the category \textbf{Set}, where objects are sets, arrows are total functions between sets, composition is ordinary function composition.
+
+To begin shifting the readers focus from objects to morphisms, it is helpful to see how familiar notions like injectivity can be re-expressed without referring to elements at all. In the category \textbf{Set}, one usually defines a function as injective by saying that distinct elements of the domain are always mapped to distinct elements of the codomain. Category theory instead abstracts this idea: an arrow $f : A \to B$ is called a monomorphism if for any pair of arrows
+$g_1, g_2 : C \to A$
+\[
+   f \circ g_1 = f \circ g_2 \quad \Longrightarrow \quad g_1 = g_2
+ \]
+ 
+In other words, once composed with $f$, different arrows into $A$ remain distinguishable. 
+This captures exactly the behavior of injective functions in \textbf{Set}, 
+but it does so purely in terms of morphisms and composition. 
+The advantage of this perspective is that it applies uniformly to any category, 
+even in contexts where it makes no sense to speak about individual elements of objects.
+
+In the same way that injectivity can be reformulated in terms of morphisms, 
+constructions like pairs and disjoint unions are captured categorically 
+by the notions of product and coproduct, which embody the behavior of 
+tuples and sums purely through their universal properties of arrows. Beyond sums and products, categories also support exponentials, which capture the idea of 
+function spaces. Intuitively, an exponential $B^A$ represents ``the object of arrows'' from $A$ to $B$. 
+It comes equipped with an evaluation morphism
+\[
+   \mathsf{eval} : B^A \times A \to B,
+\]
+expressing the idea that a pair of a function and an argument produces a result. 
+This abstractly mirrors how function application works in the $\lambda$-calculus.
+
+Putting these ideas together, we arrive at the notion of a 
+Cartesian Closed Category: a category equipped with products, a terminal object, 
+and exponentials. Such categories provide the natural semantics of the simply typed 
+$\lambda$-calculus, where types correspond to objects, terms correspond to morphisms, 
+and function application is captured by the evaluation morphism.
+
+This ongoing interaction between type theory and category theory has inspired the design 
+of entirely new calculi and semantic frameworks. A notable example is the work of 
+Cockett and Gallagher (2019), who developed \emph{Categorical models of the differential 
+$\lambda$-calculus} within the setting of differential categories. Their results show how 
+categorical structure can guide the extension of the $\lambda$-calculus with new operations 
+such as differentiation, providing both a sound semantics and fresh perspectives on 
+computation. This illustrates how category theory is not merely a language for 
+describing existing systems, but also a tool for discovering and shaping new ones.
+
+Today, the influence of categorical semantics on programming languages is unmistakable. 
+Functional languages such as Haskell, OCaml, and Coq are designed on principles that arise 
+directly from type theory and categorical reasoning, including higher-order functions, 
+algebraic data types, and polymorphism. Monads, for instance, originated as a categorical 
+concept and have become central for structuring effects in modern programming. 
+More recent advances such as dependent types, homotopy type theory, and effect systems 
+show that the dialogue between category theory and type theory continues to inform both 
+the foundations of logic and the design of real programming languages. 
+This ongoing exchange ensures that the state of the art in programming is firmly connected 
+to deep mathematical ideas, with categorical semantics providing both the language and 
+the tools to innovate further.
 
 \paragraph{Contents.}
 {
@@ -48,6 +185,12 @@ This text assumes basic knowledge of mathematics, familiarity with programming, 
 {
 The code is meant as a learning aid, nevertheless, it can be given purpose. Similarity to the formal definitions is the driving design principle behind most of the code, as well as ease of use. We use the various programs to simplify some of the examples and avoid including unnecessarily large reduction procedures.
 \begin{itemize}
+  
+\item To clone the \LaTeX \ source used to generate this document:
+\begin{minted}{shell-session}
+  $ git clone https://github.com/laredo02/ttcmua.git
+\end{minted}
+
 \item To clone the code used to implement the \lcalc:
 \begin{minted}{shell-session}
   $ git clone https://github.com/laredo02/lcalc.git
@@ -62,10 +205,6 @@ There are a few different files in the directory, each of which encapsulates a d
 \end{itemize}
 Files with miscellaneous examples related to categories are also included, in particular those about functors, natural transformations and their composition may be of interest. Implementations are supposed to especially help programmers to digest some of the contents of this work. To use the provided tools, we recommend running them on \texttt{ghci}, Haskell's interactive shell.
 
-\item To clone the \LaTeX \ source used to generate this document:
-\begin{minted}{shell-session}
-  $ git clone https://github.com/laredo02/ttcmua.git
-\end{minted}
 
 \end{itemize}
 }

@@ -6,7 +6,7 @@ It also offers extreme generality and has great power to unify seemingly unrelat
 
 One field that benefits from practical applications of categorical reasoning is computer science. In particular, categories and type theory are closely intertwined through the notion of compositionality: in category theory, composition is a fundamental structural principle, whereas in type theory, compositionality ensures that complex terms and proofs are constructed in a manner that preserves their meaning.
 
-\section{\centering What are Categories?}
+\section{\centering Categories: An Overview}
 
 For our purposes, categories arise as a tool to study compositionality, which is why its subject of study are morphisms and not objects. From this point of view, defining what a category is should not result unfamiliar:
 
@@ -58,15 +58,12 @@ Take any category $\mathcal{C}$, note how from any given objects $a, b \in \math
 \begin{example} Let $\mathcal{C}$ denote a category, consisting of a set of objects, $\mathrm{Ob}(\mathcal{C})$, and a set of arrows, $\mathrm{Hom}(\mathcal{C})$, satisfying the category axioms.
   \label{ex:012-categories}
   \begin{itemize}
-  \item
-    \textbf{empty category}, denoted by $0$, is the category with no objects and no morphisms.
+  \item The empty category, denoted by $0$, is the category with no objects and no morphisms.
     \[\text{Ob}(0) = \emptyset, \quad \text{Hom}(0) = \emptyset \]
-  \item
-    \textbf{point category}, denoted by $1$, is the category with a single object and a single morphism, which must be the identity morphism on that object.
+  \item The point category, denoted by $1$, is the category with a single object and a single morphism, which must be the identity morphism on that object.
     \[ \text{Ob}(1) = \{*\}, \quad \text{Hom}(1) = \{\operatorname{id}_*\} \]
     where $\operatorname{id}_*: * \to *$ is the identity morphism on $*$.
-  \item
-    \textbf{category \(\mathbf{2}\)}, often representing the poset $A \le B$, is a category with two objects and three morphisms. Formally,
+  \item Category \(2\), often representing the poset $A \le B$, is a category with two objects and three morphisms. Formally,
     \[ \text{Ob}(2) = \{A, B\}, \quad \text{Hom}(2) = \{\operatorname{id}_A, \operatorname{id}_B, f\} \]
     where $\operatorname{id}_A: A \to A$ and $\operatorname{id}_B: B \to B$ are identity morphisms, and $f: A \to B$ is a unique non-identity morphism. The compositions are defined as $f \circ \operatorname{id}_A = f$ and $\operatorname{id}_B \circ f = f$.
   \end{itemize}
@@ -115,11 +112,27 @@ Take any category $\mathcal{C}$, note how from any given objects $a, b \in \math
 \end{example}
 
 \begin{example}
-  $\mathbf{Hask}$ is a category where the objects are Haskell types such as \small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. The morphisms are total Haskell functions between those types such as  \small{\(\texttt{f::Int->Bool}\)}. For every type \small{\(\texttt{a}\)}, there is an identity morphism \small{\(\texttt{id::a->a}\)} that maps each value to itself.
-  Morphisms can be composed using \small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)},
-  meaning the output of one function becomes the input of another.
-  This composition is associative, and the identity morphisms act as neutral elements for composition.
-  These properties — types as objects, functions as morphisms, \small{\(\texttt{id}\)} as identity, and \texttt{\(\texttt{(.)}\)} as composition — make Hask a category.
+  $\mathbf{Hask}$ is often described as a category where the objects are Haskell types such as 
+\small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. 
+The morphisms are Haskell functions between those types such as 
+\small{\(\texttt{f::Int->Bool}\)}. 
+For every type \small{\(\texttt{a}\)}, there is an identity morphism 
+\small{\(\texttt{id::a->a}\)} that maps each value to itself. 
+Morphisms can be composed using 
+\small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)}, 
+meaning the output of one function becomes the input of another. 
+This composition is associative, and the identity morphisms act as neutral elements for composition.
+
+Strictly speaking, Haskell types admit bottom values denoting non-termination or runtime errors, which means that most ordinary Haskell functions are not truly total. This can shows up in definitions like:
+
+\begin{minted}{haskell}
+loop :: Int
+loop = loop
+\end{minted}
+
+Because of this, \(\mathbf{Hask}\) is not a category in the strict mathematical sense.
+Nonetheless, treating types as objects, functions as morphisms, \small{\(\texttt{id}\)} as identity, and \small{\(\texttt{(.)}\)} as composition provides a useful and widely accepted categorical model, at least as a first approximation.
+
 \end{example}
 
 \begin{table*}[h!]
@@ -187,7 +200,7 @@ The categories we have built up until now, have been built by matching structure
   This reversal allows any property or construction to be mirrored.
 \end{definition}
 
-\section{\centering Monos \& Epis \& Isos}
+\section{\centering Monos, Epis and Isos}
 
 Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstract counterparts to injective, surjective, and bijective maps, but their definitions rely on morphisms instead of on elements.
 
@@ -198,7 +211,7 @@ Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstra
   \[
     f \circ g_1 = f \circ g_2 \implies g_1 = g_2
     \qquad
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=large, column sep=large]
       X \arrow[r, shift left=0.5ex, "g_1"] 
       \arrow[r, shift right=0.5ex, swap, "g_2"] 
       & A \arrow[r, "f"] & B
@@ -215,8 +228,8 @@ Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstra
   \[
     h_1 \circ f = h_2 \circ f \implies h_1 = h_2
     \qquad
-    \begin{tikzcd}
-      A \arrow[r, "f"] & B \arrow[r, shift left=0.5ex, "h_1"] 
+      \begin{tikzcd}[row sep=large, column sep=large]
+            A \arrow[r, "f"] & B \arrow[r, shift left=0.5ex, "h_1"] 
       \arrow[r, shift right=0.5ex, swap, "h_2"] & Y
     \end{tikzcd}
   \]
@@ -292,7 +305,7 @@ Category Theory takes itself very seriously. Hence, it is natural to consider fu
         X &\longmapsto F(X)
       \end{aligned}
     \]
-  \item A function that maps arroes in $\mathcal{C}$ to $\mathcal{D}$:
+  \item A function that maps arrows in $\mathcal{C}$ to $\mathcal{D}$:
     \[
       \begin{aligned}
         F : \mathrm{Hom}_{\mathcal{C}}(X,Y) &\longrightarrow \mathrm{Hom}_{\mathcal{D}}(F(X),F(Y)) \\
@@ -311,7 +324,7 @@ Category Theory takes itself very seriously. Hence, it is natural to consider fu
 
   The following diagram elegantly summarizes the latter definition:
   \[
-    \begin{tikzcd}[row sep=2em, column sep=3em]
+    \begin{tikzcd}[row sep=large, column sep=large]
       X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
       F(X) \arrow[r, "F(f)"'] & F(Y)
     \end{tikzcd}
@@ -389,7 +402,7 @@ We have so far used directed graphs to informally represent categories, now, we 
   \]
   The following diagram illustrates these morphisms:
   \[
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=large, column sep=large]
       W \arrow[r, "f"] \arrow[d, "g"'] \arrow[dr, "m", dashed] & X \arrow[d, "h"] \\
       Y \arrow[r, "k"'] & Z
     \end{tikzcd}
@@ -409,9 +422,9 @@ We define the functor \( U : \mathbf{Grp} \longrightarrow \mathbf{Set} \):
 \end{itemize}
 This mapping preserves identities and composition. Diagrammatically, we can represent the action of $U$ on a morphism $f : G \to H$ as:
 \[
-\begin{tikzcd}[row sep=2em, column sep=3em]
-G \arrow[r, "f"] \arrow[d, mapsto, "U"'] & H \arrow[d, mapsto, "U"] \\
-U(G) \arrow[r, "U(f)"'] & U(H)
+        \begin{tikzcd}[row sep=large, column sep=large]
+          G \arrow[r, "f"] \arrow[d, mapsto, "U"'] & H \arrow[d, mapsto, "U"] \\
+          U(G) \arrow[r, "U(f)"'] & U(H)
 \end{tikzcd}
 \]
 Since this functor ``forgets'' the structure its domain category we refer to it as forgetful functor.
@@ -436,7 +449,7 @@ Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A contravariant functor $F : 
 \end{itemize}
 such that identity and composition are preserved, same as \ref{def:functor}. The following diagram summarizes how a contravariant functor reverses arrows:
 \[
-  \begin{tikzcd}[row sep=2em, column sep=3em]
+  \begin{tikzcd}[row sep=large, column sep=large]
     X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
     F(X) & F(Y) \arrow[l, "F(f)"']
   \end{tikzcd}
@@ -480,11 +493,6 @@ $\mathcal{C} \to \mathcal{D}^{\mathrm{op}}$.
 In this sense, the terminology covariant vs. contravariant simply reflects whether the functor sends morphisms into the target category itself or into its dual.
 \end{remark}
 
-
-\orange{
-  \begin{example}
-  \end{example}
-}
 \section{\centering Natural Transformations}
 To define natural transformations we will apply the same reasoning scheme as we did
 with functors. We had categories and we defined functors as morphisms between
@@ -499,21 +507,20 @@ to relate their outputs.
 
   Let $\mathcal{C}$ and $\mathcal{D}$ be categories, and let $F, G : \mathcal{C} \to \mathcal{D}$ be functors. A natural transformation \( \alpha : F \Rightarrow G \) between them:
 \[
-\begin{tikzcd}
-\mathcal{C}
-\arrow[r, bend left=50, "F"{name=U}]
-\arrow[r, bend right=50, "G"'{name=D}]
-& \mathcal{D}
-\arrow[Rightarrow, from=U, to=D, "\alpha" description]
-\end{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
+    \mathcal{C}
+    \arrow[r, bend left=50, "F"{name=U}]
+    \arrow[r, bend right=50, "G"'{name=D}]
+    & \mathcal{D}
+    \arrow[Rightarrow, from=U, to=D, "\alpha" description]
+  \end{tikzcd}
 \]
 is an assignment to every object $X \in \mathrm{Ob}(\mathcal{C})$ of a morphism \( \alpha_X : F(X) \to G(X) \text{ in } \mathcal{D} \) called the component of $\alpha$ at $X$, such that for every morphism $f: X \to Y$ in $\mathcal{C}$, the following diagram commutes:
-
 \[
-\begin{tikzcd}
-F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[d, "G(f)"] \\
-F(Y) \arrow[r, "\alpha_Y"] & G(Y)
-\end{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
+    F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[d, "G(f)"] \\
+    F(Y) \arrow[r, "\alpha_Y"] & G(Y)
+  \end{tikzcd}
 \]
 \end{definition}
 \noindent An example from the \texttt{ghci} prompt that shows \texttt{reverse} is natural and preserves commutativity:
@@ -604,38 +611,42 @@ By structural induction, $\texttt{RP}$ is a natural transformation.
 
 Natural transformations, as well as functors can be composed as well, we study now the two ways there are of composing natural transformations:
 
-\begin{remark}
+\begin{proposition}
 Given functors $F, G, H : \mathcal{C} \to \mathcal{D}$, natural transformations $\alpha: F \Rightarrow G$ and $\beta: G \Rightarrow H$ can be composed vertically:
 \[
 \beta \circ \alpha : F \Rightarrow H
 \]
 \[
-\begin{tikzcd}
-\mathcal{C}
-\arrow[r, bend left=100, "F"{name=U}]
-\arrow[r, "G"'{name=V}]
-\arrow[r, bend right=100, "H"'{name=D}]
-& \mathcal{D}
-\arrow[Rightarrow, from=U, to=V, "\alpha" description]
-\arrow[Rightarrow, from=V, to=D, "\beta" description]
-\end{tikzcd}
-\qquad
-\begin{tikzcd}[row sep=huge, column sep=huge]
-F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[r, "\beta_X"] \arrow[d, "G(f)"'] & H(X) \arrow[d, "H(f)"] \\
-F(Y) \arrow[r, "\alpha_Y"] & G(Y) \arrow[r, "\beta_Y"] & H(Y)
-\end{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
+    \mathcal{C}
+    \arrow[r, bend left=100, "F"{name=U}]
+    \arrow[r, "G"'{name=V}]
+    \arrow[r, bend right=100, "H"'{name=D}]
+    & \mathcal{D}
+    \arrow[Rightarrow, from=U, to=V, "\alpha" description]
+    \arrow[Rightarrow, from=V, to=D, "\beta" description]
+  \end{tikzcd}
+  \qquad
+  \begin{tikzcd}[row sep=huge, column sep=huge]
+    F(X) \arrow[r, "\alpha_X"] \arrow[d, "F(f)"'] & G(X) \arrow[r, "\beta_X"] \arrow[d, "G(f)"'] & H(X) \arrow[d, "H(f)"] \\
+    F(Y) \arrow[r, "\alpha_Y"] & G(Y) \arrow[r, "\beta_Y"] & H(Y)
+  \end{tikzcd}
 \]
 with components \(
 (\beta \circ \alpha)_X = \beta_X \circ \alpha_X
 \) for each object $X \in \mathrm{Ob}(\mathcal{C})$.
-\end{remark}
-\begin{remark}
-Given categories $\mathcal{C}, \mathcal{D}, \mathcal{E}$, functors $F, G : \mathcal{C} \to \mathcal{D}$ and $J, K : \mathcal{D} \to \mathcal{E}$, and natural transformations $\alpha: F \Rightarrow G$ and $\gamma: J \Rightarrow K$, we can define the horizontal composition:
+\end{proposition}
+
+Just as functors can be composed vertically, one after another, they can also be 
+composed horizontally, a perspective that leads naturally to the study of natural 
+transformations and 2-categorical structure.
+\begin{proposition}
+  Given categories $\mathcal{C}, \mathcal{D}, \mathcal{E}$, functors $F, G : \mathcal{C} \to \mathcal{D}$ and $J, K : \mathcal{D} \to \mathcal{E}$, and natural transformations $\alpha: F \Rightarrow G$ and $\gamma: J \Rightarrow K$, we can define the horizontal composition:
 \[
 \gamma \ast \alpha : J \circ F \Rightarrow K \circ G
 \]
 \[
-\begin{tikzcd}
+\begin{tikzcd}[row sep=huge, column sep=huge]
 \mathcal{C}
 \arrow[r, bend left=75, "F"{name=U}]
 \arrow[r, bend right=75, "G"'{name=D}]
@@ -656,7 +667,7 @@ with components
 \(
 (\gamma \ast \alpha)_X = \gamma_{G(X)} \circ J(\alpha_X) = K(\alpha_X) \circ \gamma_{F(X)}
 \) for each $X \in \mathrm{Ob}(\mathcal{C})$.
-\end{remark}
+\end{proposition}
 
 \begin{remark}
 The collection of all functors $F : \mathcal{C} \to \mathcal{D}$ together with natural transformations between them forms the functor category $\mathbf{Fun}(\mathcal{C}, \mathcal{D}) \in \mathrm{Ob}(\mathbf{Cat})$.
@@ -751,7 +762,7 @@ By structural induction, we conclude that $\texttt{RP} = \texttt{RO} \ast \textt
   safeRoot Empty = Nothing
   safeRoot (Node x _ _) = Just (Node x Empty Empty)
 \end{minted}
-Check, that by naturality, \texttt{(safeRoot} $ . $ \texttt{fmap} \texttt{f)} achieves the same as \texttt{(fmap} \texttt{f} $ . $ \texttt{safeRoot)}. So in the case that \texttt{f} is particularly expensive, we can apply \texttt{(f} $.$ \texttt{safeRoot)} instead of \texttt{(f} $.$ \texttt{safeRoot)}. The former more inexpensive because we first get rid of every element other than the root and then perform \texttt{f}, as opposed to performing \texttt{f} on every single node of the tree.
+Check, that by naturality, \texttt{(safeRoot} $ . $ \texttt{(fmap} \texttt{f))} achieves the same as \texttt{((fmap} \texttt{f)} $ . $ \texttt{safeRoot)}. So in the case that \texttt{f} is particularly expensive, we can apply \texttt{((fmap f)} $.$ \texttt{safeRoot)} instead of \texttt{(safeRoot} $.$ \texttt{(fmap f))}. The former more inexpensive because we first get rid of every element other than the root and then perform \texttt{f}, as opposed to performing \texttt{f} on every single node of the tree.
 \end{remark}
 
 
@@ -787,6 +798,7 @@ from an object in one category to a functor into another. Moreover, by their ver
 nature, universal arrows explain why universal properties are unique up to
 isomorphism.
 \begin{definition}
+  \label{def:universalarrow}
   Let $S : \mathcal{D} \to \mathcal{C}$ be a functor and let $X$ be an object
   of $\mathcal{C}$. A universal arrow from $X$ to $S$ is a pair
   $\langle R, u \rangle$ consisting of an object $R$ of $\mathcal{D}$ and a morphism
@@ -801,12 +813,12 @@ S(f') \circ u = f
 \)
 , as shown in the following commutative diagram:
 \[
-  \begin{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
     X \arrow[r, "u"] \arrow[dr, "f"'] & S(R) \arrow[d, dashed, "S(f')"] \\
     & S(Y)
   \end{tikzcd}
   \qquad
-  \begin{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
     R \arrow[d, "f'" ] \\
     Y
   \end{tikzcd}
@@ -920,8 +932,9 @@ This shift in perspective is crucial: it frees us from thinking in terms of elem
   \( \pi_1 : A \times B \to A, \pi_2 : A \times B \to B \) such that for every
   object $X$ with morphisms $f : X \to A$ and $g : X \to B$, there exists a
   unique morphism $\langle f,g \rangle : X \to A \times B$ making the diagram commute:
+  \label{def:categoricalproduct}
   \[
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       & X \arrow[dl, "f"'] \arrow[dr, "g"] \arrow[d, dashrightarrow, "{\langle f,g \rangle}"] & \\
       A & A \times B \arrow[l, "\pi_1"] \arrow[r, "\pi_2"'] & B
     \end{tikzcd}
@@ -992,7 +1005,7 @@ This means that products are unique up to isomorphism. In fact, in any category,
   morphism $[f,g] : A + B \to X$ making the diagram commute:
   \label{def:coproduct}
   \[
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       A \arrow[r, "\iota_1"] \arrow[dr, "f"'] & A + B \arrow[d, dashrightarrow, "{[f,g]}"] & B \arrow[l, "\iota_2"'] \arrow[dl, "g"] \\
       & X &
     \end{tikzcd}
@@ -1009,6 +1022,11 @@ This means that products are unique up to isomorphism. In fact, in any category,
 
 \subsubsection{\centering Exponentials}
 
+Exponential objects model function types inside category theory. Given objects
+$A$ and $B$, the exponential $B^A$ models the type of functions from $A$ to $B$.
+They come with an evaluation map $B^A \times A \to B$, which models function
+application.
+
 \begin{definition} Let $\mathcal{C}$ be a category with finite products. For objects $A, B \in \mathcal{C}$, an exponential object $B^{A}$ is an object together with an evaluation morphism
 \[
   \mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
@@ -1023,7 +1041,7 @@ there exists a unique morphism
 \)
 making the following diagram commute:
 \[
-\begin{tikzcd}
+  \begin{tikzcd}[row sep=huge, column sep=huge]
 C \times A \ar[rr, dashed, "\lambda f \times 1_A"] \ar[dr, "f"'] & & B^{A} \times A \ar[dl, "\mathrm{ev}_{A,B}"] \\
 & B &
 \end{tikzcd}
@@ -1037,6 +1055,58 @@ That is,
 \begin{proposition}
 The exponential object $B^{A}$, if it exists, is unique up to unique isomorphism.
 \end{proposition}
+
+The definition above says that in a category with finite products, an exponential
+object $B^{A}$ behaves like the space of functions $A \to B$.
+The evaluation morphism
+\(
+  \mathrm{ev}_{A,B} : B^{A} \times A \longrightarrow B
+\)
+expresses function application: given a function and an input, one can obtain an
+output in $B$.
+The universal property states that any morphism
+\(
+  f : C \times A \longrightarrow B
+\)
+can be uniquely factored through $B^{A}$ by a morphism
+\(
+  \lambda f : C \longrightarrow B^{A}
+\)
+such that
+\(
+  f \;=\; \mathrm{ev}_{A,B} \circ (\lambda f \times 1_A).
+  \)
+
+\begin{remark}
+This captures the idea of currying: turning a function of two arguments
+into a function that returns a function.
+\[
+  f = \lambda (a,b).\, g(a,b)
+  \quad\leadsto\quad
+  \lambda f = \lambda a.\,\lambda b.\, g(a,b)
+\]
+We can obtain effectively equivalent behavior in Haskell using partial application:
+\begin{minted}{Haskell}
+  mulBy :: Int -> (Int -> Int)
+  mulBy n = \m -> n * m
+  triple :: Int -> Int
+  triple = mulBy 3
+\end{minted}
+\begin{remark}
+The function \texttt{mulBy} takes an integer $n$ and returns a new function that
+multiplies its argument by $n$. Defining \texttt{triple = mulBy 3} is an instance
+of partial application: we supply the first argument, leaving a function
+that still expects the second. Thus \texttt{triple 4} evaluates to $12$.
+\end{remark}
+
+\end{remark}
+\begin{remark}
+From the type-theoretic perspective, $B^{A}$ corresponds to the function type
+$A \to B$. The evaluation morphism is ordinary application, and the universal
+property is precisely the $\lambda$-abstraction rule: if a term of type $B$ can
+be defined assuming a variable of type $A$, then one obtains a function of type
+$A \to B$.
+\end{remark}
 
 The universal constructions we have studied so far---products, coproducts, terminal objects, and exponentials---are by no means the only ones of importance in category theory. Other central constructions include equalizers and coequalizers, pullbacks and pushouts, as well as more general limits and colimits. For a broader treatment of these notions, one can consult standard references in category theory, such as \emph{Categories for the Working Mathematician}~\cite{maclane1971categories}, \emph{Category Theory for Computing Science}~\cite{barr1998category} and \emph{Basic Category Theory for Computer Scientists}~\cite{pierce1991basic}.
 
@@ -1057,144 +1127,87 @@ A cartesian closed category is a category with three key pieces of structure. Fi
   \)
   there is a unique morphism $\lambda f : C \longrightarrow B^{A}$ called the transpose or curried map such that the triangle below commutes:
   \[
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       C\times A \arrow[r,"f"] \arrow[d, dashed, "\lambda f \times \mathrm{id}_A"'] & B \\
       B^{A}\times A \arrow[ur,"\operatorname{ev}_{A,B}"'] &
     \end{tikzcd}
   \]  
 \end{itemize}
 \end{definition}
+
 Thus, a CCC is a setting where not only objects and morphisms exist, but also the very process of mapping between objects is itself represented as an object of the category. In this way, CCCs resemble deduction systems: every morphism can be systematically built from basic constructions, just as every proof is assembled step by step from simpler proofs.
 
+Cartesian closed categories provide a natural framework for viewing categories as deduction systems. They bring together products, exponentials, and the terminal object in a way that mirrors the structure of logic and type theory. In the next
+chapter, we will build further on this connection.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\paragraph{Currying diagram (another view).}
-The curry/uncurry correspondence is usually summarized by the commutative square/triangle above; to illustrate the bijection of hom-sets one often writes the natural isomorphism:
-\[
-  \operatorname{Hom}(C\times A,B) \overset{\cong}{\longrightarrow} \operatorname{Hom}(C,B^{A}),\qquad f\mapsto \lambda f,
-\]
-with inverse given by $g\mapsto \operatorname{ev}\circ(g\times \mathrm{id}_A)$.
-This inverse relation is represented by the commuting diagram
-\[
-\begin{tikzcd}
-C \times A \arrow[r,"{\lambda f \times \mathrm{id}_A}"] \arrow[dr,"f"'] & B^{A}\times A \arrow[d,"\mathrm{ev}"] \\
-& B
-\end{tikzcd}
-\]
-and the uniqueness part of the universal property ensures $\lambda(\operatorname{ev}\circ(g\times\mathrm{id}_A))=g$ and $\operatorname{ev}\circ(\lambda f \times \mathrm{id}_A)=f$.
-
-
-\subsubsection{\centering Adjunctions}
+\section[(Optional) Adjunctions and The Yoneda Lemma]{\centering Adjunctions and The Yoneda Lemma}
 
 All the universal constructions we have seen --products, coproducts, exponentials-- are just different faces of the same idea: adjointness. You can think of an adjunction as a ``best possible solution'' to a certain problem: a product is the best way to combine things, a coproduct is the best way to branch, and exponentials are the best way to internalize functions. So instead of memorizing each universal property separately, you can see them all as special cases of this one guiding principle—one functor ``undoes'' or ``complements'' another in the most universal way possible.
 
-Notice how this notion of ``best possible solution'', closely resembles the idea of 
 
-The universal constructions we covered all fall under the umbrella of adjoint functors.
+\begin{remark}
+  The following section is included to provide additional intuition and insight into category-theoretic concepts, such as adjunctions and universal constructions. It is not the main focus of this work, which is why it is kept short, formal, and does not contain detailed examples or extended explanations. It is meant to show the flexibility of categorical abstractions when it comes to defining new universal constructions. We also include the Yoneda lemma in an effort to show the tools that category theory brings to the table.
+\end{remark}
 
+\subsubsection{\centering Adjunctions}
 
-
-
-
-
+Notice how this notion of ``best possible solution'', closely resembles the idea of universal arrow from \ref{def:universalarrow}. The universal constructions we covered all fall under the umbrella of adjoint functors.
 \begin{definition}
-An \emph{adjunction} between two categories $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of functors
+An adjunction between two categories $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of functors
+\(
+F : \mathcal{C} \to \mathcal{D}, G : \mathcal{D} \to \mathcal{C}
+\)
+together with a natural isomorphism between hom-sets:
 \[
-F : \mathcal{C} \to \mathcal{D}, \quad G : \mathcal{D} \to \mathcal{C},
-\]
-together with a natural isomorphism between hom-sets
-\[
-\hom_{\mathcal{D}}(F(C), D) \cong \hom_{\mathcal{C}}(C, G(D))
+\Hom_{\mathcal{D}}(F(C), D) \cong \Hom_{\mathcal{C}}(C, G(D))
 \]
 for all $C \in \mathcal{C}$ and $D \in \mathcal{D}$.
+We say that $F$ is left adjoint to $G$, and $G$ is right adjoint to $F$.
 
-We say that $F$ is \emph{left adjoint} to $G$, and $G$ is \emph{right adjoint} to $F$.
+\[
+\begin{tikzcd}[row sep=large, column sep=large]
+F(C) \arrow[rr, "f"] & & D \\
+C \arrow[u, "F"'] \arrow[rr, dashed, "g"'] & & G(D) \arrow[u, "G"']
+\end{tikzcd}
+\]
+
 \end{definition}
-
-
-
 \begin{remark}
 Universal arrows and adjunctions are closely related: a universal arrow from an object $C \in \mathcal{C}$ to a functor $G : \mathcal{D} \to \mathcal{C}$ can be thought of as a “best possible” arrow from $C$ into the image of $G$. If $G$ admits a universal arrow for every object $C \in \mathcal{C}$, then these universal arrows assemble into a left adjoint $F$ to $G$, giving the adjunction $F \dashv G$. Conversely, given an adjunction $F \dashv G$, the components of its unit $\eta_C : C \to G(F(C))$ are precisely universal arrows. In this sense, universal arrows are the local building blocks of adjunctions.
 \end{remark}
 
-\begin{example}
-Consider the free/forgetful adjunction between sets and groups:
+\begin{definition}
+Let $\mathcal{C}$ be a category. 
+Define the diagonal functor
+\(
+\Delta : \mathcal{C} \to \mathcal{C} \times \mathcal{C}, X \mapsto (X,X)
+\). Think of a matrix with coordinates $x, y$ to understand why the functor is called ``diagonal''.
+A product in $\mathcal{C}$ is a functor
 \[
-F : \mathbf{Set} \leftrightarrows \mathbf{Grp} : U
+\times : \mathcal{C} \times \mathcal{C} \to \mathcal{C} \qquad (A,B) \mapsto A \times B,
 \]
-where $U$ forgets the group structure and $F$ sends a set $X$ to the free group on $X$.  
-For each set $X$, the canonical inclusion $X \to U(F(X))$ is a universal arrow from $X$ to $U$. Collecting these universal arrows for all sets gives the adjunction $F \dashv U$.
-\end{example}
+which is right adjoint to $\Delta$.  
+That is, there exists a natural bijection
+\[
+\mathrm{Hom}_{\mathcal{C}}(X, A \times B) 
+\;\;\cong\;\; 
+\mathrm{Hom}_{\mathcal{C} \times \mathcal{C}}(\Delta X, (A,B))
+\]
+for all $X \in \mathcal{C}$ and $(A,B) \in \mathcal{C} \times \mathcal{C}$.
+\end{definition}
 
+\begin{remark}
+Unpacking the adjunction shows that giving a morphism 
+$X \to A \times B$ is equivalent to giving a pair of morphisms 
+$X \to A$ and $X \to B$.  
+Thus, the product object $A \times B$ comes equipped with projections 
+$\pi_A : A \times B \to A$ and $\pi_B : A \times B \to B$, 
+which satisfy the universal property of products.
+\end{remark}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+We will not redefine all of the already presented universal constructions, \cite{maclane1971categories} presents other constructions like limits and colimits by means of adjunctions.
 
 \begin{definition}
-Let $\mathcal{C}$ and $\mathcal{D}$ be categories.  
-An \emph{adjunction} between $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of (covariant) functors
-\[
-F : \mathcal{D} \to \mathcal{C}
-\quad \text{and} \quad
-G : \mathcal{C} \to \mathcal{D},
-\]
-together with, for every $c \in \mathrm{Ob}(\mathcal{C})$ and $d \in \mathrm{Ob}(\mathcal{D})$, a natural family of bijections
-\[
-\Phi_{c,d} : \mathrm{Hom}_{\mathcal{C}}(F d, c) \;\;\cong\;\; \mathrm{Hom}_{\mathcal{D}}(d, G c).
-\]
 The naturality condition means that these bijections assemble into natural isomorphisms of functors:
 \begin{itemize}
   \item For fixed $c \in \mathcal{C}$,
@@ -1210,18 +1223,13 @@ The naturality condition means that these bijections assemble into natural isomo
   \mathcal{D}(d,G-) : \mathcal{C} \to \mathbf{Set}.
   \]
 \end{itemize}
-
 The functor $F$ is called the \emph{left adjoint} to $G$, while $G$ is the \emph{right adjoint} to $F$, and we write
 \[
 F \dashv G.
 \]
-
 Adjunctions can be viewed as a “weak form” of equivalence of categories: every equivalence induces an adjunction, although not every adjunction is an equivalence. In many cases, an adjunction can be upgraded to an equivalence by suitable natural modifications of the categories and functors involved.
 \end{definition}
-
 Using adjunctions we can formulate alternative definitions for the universal constructions we already covered. To illustrate, we give a concise definition for closed exponential:
-
-
 \begin{definition} Equivalently, the map $f\mapsto \lambda f$ yields a natural bijection
 \[
   \operatorname{Hom}_{\mathcal{C}}(C\times A,\, B)
@@ -1244,13 +1252,135 @@ Saying $\mathcal{C}$ is cartesian closed is equivalent to saying that for every 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsubsection{\centering The Yoneda Lemma}
+In the 1950s, Yoneda observed a striking fact: one never needs to ``touch'' an
+object of a category directly to know it. All the information about the object
+is already encoded in how other objects map into it. The essence of Yoneda is
+this: an object is its pattern of relationships.  
+
+The Yoneda lemma formalizes this intuition. To understand an object, one
+examines its interactions with all other objects via morphisms. Concretely,
+every object $X$ is associated with a functor of points
+\[
+  \mathrm{Hom}(-,X) \quad \text{or dually} \quad \mathrm{Hom}(X,-),
+\]
+which records how $X$ receives (or sends) morphisms. This functor fully
+characterizes $X$.  
+
+The key technical insight is that natural transformations from a representable
+functor $\mathrm{Hom}(-,X)$ to any other functor $F$ correspond bijectively to
+elements of $F(X)$. Intuitively, a single ``universal element'' encodes the
+entire transformation. This is why the Yoneda lemma is so powerful: it turns
+abstract objects into concrete data about morphisms, and it reduces questions
+about naturality to the behavior of one element.  
+
+In short, the Yoneda lemma builds the bridge between structure
+and behavior. It shows that categories are not defined by what their
+objects ``are,'' but by how they relate.
+
+
+\begin{theorem} The Yoneda Lemma states the following: Let $\mathcal{C}$ be a locally small category, let $X \in \mathrm{Ob}(\mathcal{C})$, 
+  and let $F : \mathcal{C} \to \mathbf{Set}$ be a functor. Then there is a natural bijection
+  \[
+    \mathrm{Nat}\!\big(\mathrm{Hom}_{\mathcal{C}}(-,X), \, F\big) 
+    \;\;\cong\;\; F(X),
+  \]
+  where $\mathrm{Hom}_{\mathcal{C}}(-,X) : \mathcal{C}^{op} \to \mathbf{Set}$ 
+  is the representable functor sending $A \mapsto \mathrm{Hom}_{\mathcal{C}}(A,X)$.
+\end{theorem}
+
+\begin{remark}
+  The bijection is natural in both $X$ and $F$. 
+  Concretely, a natural transformation 
+  $\eta : \mathrm{Hom}_{\mathcal{C}}(-,X) \Rightarrow F$ 
+  is uniquely determined by the element 
+  $\eta_X(\mathrm{id}_X) \in F(X)$.
+  Thus, all of $\eta$'s data is encoded in the image of the identity morphism.
+  This is the ``universal element'' perspective: 
+  knowing how $X$ is represented inside $F$ fixes the entire transformation.
+\end{remark}
+
+\begin{example}
+  Let $\mathcal{C} = \mathbf{Set}$ and fix a set $X$.  
+  Consider the functor of points
+  \[
+    \mathrm{Hom}_{\mathbf{Set}}(-,X) : \mathbf{Set}^{op} \to \mathbf{Set}, 
+    \quad A \mapsto \mathrm{Hom}_{\mathbf{Set}}(A,X).
+  \]
+  Take another functor $F : \mathbf{Set}^{op} \to \mathbf{Set}$, for instance 
+  $F(A) = \mathcal{P}(A)$ (the power set of $A$).  
+
+  By Yoneda, natural transformations 
+  $\mathrm{Hom}_{\mathbf{Set}}(-,X) \Rightarrow \mathcal{P}(-)$ 
+  are in bijection with elements of $\mathcal{P}(X)$, i.e.\ subsets of $X$.  
+  Indeed, given $S \subseteq X$, one defines a natural transformation 
+  by sending each map $f : A \to X$ to the preimage $f^{-1}(S) \subseteq A$.  
+  Different choices of $S$ give different natural transformations.  
+
+  Hence, the Yoneda lemma tells us that the family of all such natural
+  transformations is nothing more than the collection of subsets of $X$.
+\end{example}
+
+The Yoneda lemma tells us that an object in a category is completely determined by the morphisms coming into it. 
+Building on this idea, instead of studying a category $\mathcal{C}$ directly, we can study \emph{all functors} 
+from $\mathcal{C}$ into $\mathbf{Set}$, the category of sets. 
+
+This approach has several advantages:
+
+\begin{itemize}
+    \item $\mathbf{Set}$ is a category we already understand very well.
+    \item Each functor $\mathcal{C} \to \mathbf{Set}$ translates the abstract structure of $\mathcal{C}$ 
+    into something concrete, providing a ``representation'' of $\mathcal{C}$ in terms of sets and functions.
+    \item The original category $\mathcal{C}$ embeds into this functor category via representable functors, 
+    but the functor category also contains \emph{new objects} that did not exist in $\mathcal{C}$. 
+    Treating these new objects like ordinary objects often \emph{unifies and simplifies the theory}.
+\end{itemize}
+
+This perspective is analogous to studying a ring by examining its modules: 
+the ring corresponds to the category $\mathcal{C}$, and the category of modules corresponds 
+to the functor category. Each module (functor) encodes information about the original ring (category), 
+allowing us to study it indirectly via well-understood structures.
+
+In short, studying functors from $\mathcal{C}$ to $\mathbf{Set}$ lets us understand $\mathcal{C}$ 
+indirectly using concrete structures, often revealing hidden relationships and simplifying the theory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science. Content related to Lambek is also influenced by \cite{Jacobs1999categorical}.
 }
-
-
-
-
-
-
-
 

@@ -1,4 +1,4 @@
-\section{\centering Normalization \& The Church-Rosser Theorem}
+\section{\centering Normalization and The Church-Rosser Theorem}
 \label{sec:normalization-and-cr}
 In this section we attempt to give the reader an overview of the properties behind this calculus. We analyze what makes the untyped \lcalc \ a suitable computation model, and provide enough evidence that it is missing some desirable properties that motivate the introduction of typing.
 \subsubsection{\centering  The Church-Rosser in the \lCalc}
@@ -51,7 +51,7 @@ for all $x, y, z, w \in A$.
 \end{definition}
 
 
-The following section covers the proof of this property for the untyped \lcalc. We deemed it necessary to include the proof since it provides evidence that the \lcalc is a viable system to perform computation with, since it ensures that no matter what reduction path we choose first the reduction can always converge into a unique term. See \ref{cor:unique-normal-form}. This notion of confluence is strengthened when we introduce typing \ref{sec:typed-normalization}.
+The following section covers the proof of this property for the untyped \lcalc. We deemed it necessary to include the proof since it provides evidence that the \lcalc is a viable system to perform computation with. Church--Rosser ensures that if a normal form exists, reduction paths can always converge into a unique term. See \ref{cor:unique-normal-form}. This notion of confluence is strengthened when we introduce typing \ref{sec:typed-normalization}.
 \begin{remark} If you have no time to spare, \cite{nagele2016mechanized} is a mechanized proof of the Church-Rosser Theorem using the $Z$-property written in Nominal Isabelle, which enables you to swiftly glance over the following section.
 \end{remark}
 
@@ -110,6 +110,7 @@ We classify \(M\) as follows:
   A term may be either, weakly normalizing, strongly normalizing or non-normalizing.
 \end{proposition}
 \begin{proof} Examples are:
+  \label{ex:omega}
 \begin{itemize}
 \item \(\lambda x. x\) is strongly normalizing since it is already in normal form.
 \item \(\Omega = (\lambda x. x x)(\lambda x. x x)\) reduces to itself forever, hence non-normalizing.

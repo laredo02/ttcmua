@@ -1,4 +1,4 @@
-\section{\centering Encodings \& Constructions in the \lCalc}
+\section{\centering Encodings and Constructions}
 
 This section presents a number of conventional constructions that represent key ideas common to computer science and other fields. We are specifically referring to natural numbers, branching statements, booleans and lists among others, as well as the operations over them. These constructions can be used to prove relevant statements concerning the expressiveness of the $\la$-calculus.
 
@@ -144,14 +144,84 @@ The next constructions in line are the truth values of boolean logic, ``\textit{
   \]
   So the \IF \ just combines $b, t, e$ in such a way that whenever b is a church encoded boolean either $t$ or $e$ is dropped depending on the truth value of $b$. See Remark \ref{rem:true-false}. From this example we extract that $ \la x . x $ is equivalent to \IF \ it terms of behaviour, and thus, we could use $ \IF \equiv \la x . x $ interchangeably.
 \end{example}
-\begin{remark}
+\begin{definition}
   Using the \IF \ we can implement an universal set of logic gates:
 \[
-    \NOT \equiv \IF \, b \, \FALSE \, \TRUE \qquad
-    \AND \equiv \IF \, a \, (\IF \, b \, \TRUE \, \FALSE) \, \FALSE
+    \AND \equiv \IF \, a \, (\IF \, b \, \TRUE \, \FALSE) \, \FALSE \qquad
+    \OR \equiv \IF \, a \, \TRUE \, \TRUE \, (\IF \, b \, \TRUE \, \FALSE) \qquad
+    \NOT \equiv \IF \, b \, \FALSE \, \TRUE
 \]
-  This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic.
-\end{remark}
+This allows us to simulate a nand gate, known to be universal. Thus, the lambda calculus is at least equivalent to propositional logic.
+\end{definition}
+
+\begin{definition} Define the translation $\llbracket\cdot\rrbracket$ that translates a formulas from propositional logic to their Church encoded representation:
+  \label{def:proptocalc}
+  \[
+    \begin{aligned}
+      \llbracket p_i\rrbracket &= P_i \quad(\text{a }\lambda\text{-variable})\\
+      \llbracket \neg\varphi\rrbracket &= \NOT\,\llbracket\varphi\rrbracket\\
+      \llbracket \varphi\wedge\psi\rrbracket &= \AND\,\llbracket\varphi\rrbracket\,\llbracket\psi\rrbracket\\
+      \llbracket \varphi\vee\psi\rrbracket &= \OR\,\llbracket\varphi\rrbracket\,\llbracket\psi\rrbracket
+    \end{aligned}
+  \]
+\end{definition}
+
+\begin{proposition}
+  For every propositional formula $\varphi$, in particular every conjunctive normal form,
+  there is a $\lambda$-term $\llbracket\varphi\rrbracket$ built from the
+  variables and the terms $\AND,\OR,\NOT$ such
+  that for each Boolean assignment $\sigma$, substituting each propositional
+  variable by $\TRUE$ or $\FALSE$ yields:
+  \[
+    \varphi(\sigma)=\mathsf{true}\iff \llbracket\varphi\rrbracket[\sigma]\curly^* \TRUE
+    \qquad
+    \varphi(\sigma)=\mathsf{false}\iff \llbracket\varphi\rrbracket[\sigma]\curly^* \FALSE
+  \]
+  Thus the $\lambda$-calculus with these terms can simulate any conjunctive normal form and
+  hence propositional logic.
+\end{proposition}
+
+\begin{proof} Any conjunctive normal form is a formula built from $\neg,\vee,\wedge$, so we can use the representation \ref{def:proptocalc} that translates from propositional logic in conjunctive normal form into Church encoded terms. We aim to prove the following invariant by structural induction on $\varphi$:
+  \[
+    \llbracket\varphi\rrbracket[\sigma]\curly^*\TRUE
+    \iff \varphi(\sigma)=\mathsf{true}
+  \]
+  and the analogous statement for $\FALSE$. Where $\sigma$ is a Boolean assignment and $\llbracket\varphi\rrbracket[\sigma]$ stands for the substitution that replaces each $P_i$ by $\sigma(p_i)\in\{\TRUE,\FALSE\}$.
+
+  \begin{itemize}
+
+  \item Base case: If $\varphi=p_i$ then $\llbracket p_i\rrbracket[\sigma]=\sigma(p_i)$,
+    so the claim holds by definition of $\sigma$.
+
+  \item Inductive step: Assume the claim for $\varphi$ and $\psi$ for the inductive hypothesis.
+    \begin{itemize}
+    \item For negations we have $\llbracket\neg\varphi\rrbracket[\sigma]=\NOT\,\llbracket\varphi\rrbracket[\sigma]$.
+      By the inductive hypothesis $\llbracket\varphi\rrbracket[\sigma]\curly^*\TRUE$
+      if and only if $\varphi(\sigma)=\mathsf{true}$. Since $\NOT$ inverts Church Booleans
+      i.e. $\NOT\,\TRUE\curly^*\FALSE$ and
+      $\NOT\,\FALSE\curly^*\TRUE$, it follows that
+      $\llbracket\neg\varphi\rrbracket[\sigma]\curly^*\TRUE$ if and only if
+      $\varphi(\sigma)=\mathsf{false}$, i.e. $\neg\varphi(\sigma)=\mathsf{true}$.
+    \item For conjunction, $\llbracket\varphi\wedge\psi\rrbracket[\sigma]
+      =\AND\,\llbracket\varphi\rrbracket[\sigma]\,\llbracket\psi\rrbracket[\sigma]$.
+      By the inductive hypothesis the two subterms reduce to the Church booleans corresponding to
+      $\varphi(\sigma)$ and $\psi(\sigma)$. The definition of $\AND$
+      ensures it reduces to $\TRUE$ exactly when both inputs are
+      $\TRUE$, and to $\FALSE$ otherwise. Hence if and only if $\varphi(\sigma)=\psi(\sigma)=\mathsf{true}$,
+      i.e. $(\varphi\wedge\psi)(\sigma)=\mathsf{true}$.
+    \item We apply similar reasoning on disjunctions using $\OR$ shows
+      $\llbracket\varphi\vee\psi\rrbracket[\sigma]\curly^*\TRUE$
+      iff $\varphi(\sigma)=\mathsf{true}$ or $\psi(\sigma)=\mathsf{true}$.
+    \end{itemize}
+  \end{itemize}
+  Thus the invariant holds for all formulas. In particular it holds for conjunctive normal forms,
+  so the translated $\lambda$-term evaluates to $\TRUE$ exactly when
+  the conjunctive normal form is true under the given assignment. This completes the proof.
+\end{proof}
+
+\begin{corollary}
+  Sice the \lcalc \ can simulate any conjunctive normal form it is equivalent to propositional logic.
+\end{corollary}
 
 \subsubsection{\centering Pairs}
 
@@ -211,7 +281,7 @@ Similarly to natural church encoding, lists are treated as a function where: \te
     \texttt{ISNIL} \equiv \la l. l\,(\la h.\la t. \FALSE)\,\TRUE
   \]
   \[
-    \texttt{HEAD} \equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL})
+    \texttt{HEAD} \equiv \la l.\,((l \; (\la h.\, \la t.\, h))\; \texttt{NIL}) \qquad
     \texttt{TAIL} \equiv \la l.\la c.\la n.l\ (\la h.\la r.\la g.g\ h\ (r\ c))\ (\la c.n)\ (\la h.\la t.t)
   \]
 \end{definition}

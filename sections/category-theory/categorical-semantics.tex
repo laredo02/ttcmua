@@ -1,5 +1,5 @@
 
-\chapter{Curry--Howard--Lambek \& Categorical Semantics}
+\chapter{Curry--Howard--Lambek: Categorical Semantics}
 
 %\section{\centering Categorical Semantics}
 
@@ -7,90 +7,193 @@ Categorical semantics provides a formal, structural interpretation of type syste
 
 Categories provide a natural generalization of this viewpoint. A category can itself be interpreted as an abstract deduction system in which objects represent propositions or types, morphisms represent proofs or derivations, and composition of morphisms corresponds to chaining proofs, while identity morphisms correspond to reflexive or trivial derivations. Categorical constructions naturally mirror logical operations and type constructors: products correspond to conjunctions, coproducts correspond to disjunctions, and exponentials correspond to implication or function types. In this way, a category encodes the structural relationships between types and proofs, providing a compositional framework that abstracts and extends the reasoning we observed in typed $\lambda$-calculus.
 
-This perspective also suggests a natural pathway for further generalization. Just as Curry--Howard relates types and proofs, one can extend the correspondence to Curry--Howard--Lambek (CHL), interpreting typed $\lambda$-calculi fully within categorical structures. This extension allows reasoning not only about individual proofs and terms but about entire type systems and their semantic behavior, opening the door to categorical models of richer logical systems and functional programming languages.
+This perspective also suggests a natural pathway for further generalization. Just as Curry--Howard relates types and proofs, one can extend the correspondence to Curry--Howard--Lambek, interpreting typed $\lambda$-calculi fully within categorical structures. This extension allows reasoning not only about individual proofs and terms but about entire type systems and their semantic behavior, opening the door to categorical models of richer logical systems and functional programming languages.
 
 \section{\centering Categories as Deduction Systems}
 
-Categories can be viewed as abstract deduction systems where:
+Closed Cartesian Categories can be understood as abstract deduction systems: objects correspond to formulas, morphisms to proofs, composition to chaining deductions, and identities to trivial self-deductions. The axioms of category theory then capture the structural rules that govern reasoning itself.
 
 \begin{itemize}
-    \item \textbf{Objects} correspond to propositions or types.
-    \item \textbf{Morphisms} correspond to proofs or derivations: a morphism 
-    $f: A \to B$ can be seen as a proof that $A$ entails $B$.
-    \item \textbf{Composition} of morphisms corresponds to composition of proofs: 
-    if $f: A \to B$ and $g: B \to C$, then $g \circ f: A \to C$ represents the derived proof.
-    \item \textbf{Identity morphisms} correspond to trivial or reflexive proofs ($A$ implies $A$).
+\item Objects correspond to propositions or types.
+\item Morphisms correspond to proofs or derivations: a morphism 
+  $f: A \to B$ can be seen as a proof that $A$ entails $B$.
+\item Composition of morphisms corresponds to composition of proofs: 
+  if $f: A \to B$ and $g: B \to C$, then $g \circ f: A \to C$ represents the derived proof.
+\item Identity morphisms correspond to trivial or reflexive proofs ($A$ implies $A$).
 \end{itemize}
-
-In this view:
-
-\begin{itemize}
-    \item \textbf{Products} model conjunction: $A \times B$ represents $A \wedge B$, with projections corresponding to elimination rules.
-    \item \textbf{Coproducts} model disjunction: $A + B$ represents $A \vee B$, with injections corresponding to introduction rules.
-    \item \textbf{Exponentials} ($B^A$) model implication: a morphism $f: C \times A \to B$ corresponds to a proof of $A \to B$ under context $C$.
-\end{itemize}
-
-This is essentially the \emph{Curry--Howard--Lambek correspondence}:
+Informally:
 \[
-\text{Types} \leftrightarrow \text{Propositions}, \quad
-\text{Terms} \leftrightarrow \text{Proofs}, \quad
-\text{Category structure} \leftrightarrow \text{Deduction system}.
+  \text{Objects} \leftrightarrow \text{Types} \leftrightarrow \text{Propositions}
 \]
+\[
+  \text{Arrows} \leftrightarrow \text{Terms} \leftrightarrow \text{Proofs}
+\]
+\[
+  \text{Category structure} \leftrightarrow \text{Type System} \leftrightarrow \text{Deduction system}
+\]
+referred to as the Curry--Howard--Lambek correspondence. In this view, we can look at the typing extensions presented and come up with the following:
 
-Thus, a category is not just a collection of objects and arrows—it encodes how propositions can be derived from each other in a formal, compositional way.
+\begin{itemize}
+\item Products model conjunction: $A \times B$ represents $A \wedge B$, with projections corresponding to elimination rules.
+\item Coproducts model disjunction: $A + B$ represents $A \vee B$, with injections corresponding to introduction rules.
+\item Exponentials $B^A$ model implication: a morphism $f: C \times A \to B$ corresponds to a proof of $A \to B$ under context $C$.
+\end{itemize}
 
+\subsubsection{\centering Proof that $\mathcal{C}(\lambda)$ is Cartesian Closed}
 
+In this section, we conclude our development by showing that the category $\mathcal{C}(\la)$ is cartesian closed.
+We establish the existence of a terminal object and binary products, ensuring that typed \lcalc \ is cartesian.
+We then prove the existence of exponentials, verifying that function spaces can be represented internally.
+Together, these results show that typed \lcalc \ possesses the full structure of a cartesian closed category.
 
+\begin{definition}
+  $\mathcal{C}(\lambda)$ is defined as:
+  \begin{itemize}
+  \item Objects are types of the simply typed $\lambda$-calculus: $\mathrm{Ob(\mathcal{C}(\lambda))} = \mathcal{T}^\times$.
+  \item For types $A,B$, morphisms $A\to B$ are closed terms $c \vdash A\to B$ modulo $\beta\eta$-equivalence. We can agree that morphisms between types are defined depending on whether terms that inhabit them are $\beta\eta$-equivalent to each other.
+  \item We define identity for every type $A$ as $\mathrm{id}_A := \lambda x : A . x$, such that, for every term $y$ of type $A$ we have $(\la x : A. x) y \betared y \vdash A$.
+  \item Given $b:A\to B$ and $c:B\to C$, we can define composition as:
+    \(
+    c\circ b := \lambda x.\; c(bx)
+    \).
+  \end{itemize}
+\end{definition}
 
 \begin{proposition}
-The category of types in the simply typed $\lambda$-calculus, with objects as types and morphisms as closed terms modulo $\beta\eta$-equivalence, forms a \emph{Cartesian Closed Category}.
+  \label{prop:clambdaiscat}
+  $\mathcal{C}(\lambda)$ is a well-defined category.
+\end{proposition}
+
+\begin{proof}[Proof of well-definedness] To be certain this is a category, compositionality must hold, as well as ssociativity laws and identity laws.
+  \begin{itemize}
+  \item Thanks to typing we can compose functions as long as the output type of the first matches the input type of the second. However, we need to check that no matter what representative we choose for $b$ and $c$ we still get the same result. Suppose $b\equiv_{\beta\eta} b'$ and $c\equiv_{\beta\eta} c'$, then 
+    \(
+    \lambda x.\; c(bx) \equiv_{\beta\eta} \lambda x.\; c'(b'x)
+    \) also holds. This is due to the fact that $\beta\eta$-equivalence is preserved under contexts, in particular abstraction. Hence, composition is well defined.
+    
+  \item To check for associativity: Let $a : C \to D$, $b : B \to C$, and $c : A \to B$:
+    \[
+      \begin{aligned}
+        (a \circ b) \circ c
+        &= \lambda x:A.\; (a \circ b)(c\,x) \\
+        &= \lambda x:A.\; (\lambda y:B.\; a(b\,y))(c\,x) \\
+        &\curly \lambda x:A.\; a(b(c\,x)) \quad \vdash A \to D.
+      \end{aligned}
+      \qquad
+      \begin{aligned}
+        a \circ (b \circ c)
+        &= \lambda x:A.\; a((b \circ c)\,x) \\
+        &= \lambda x:A.\; a((\lambda y:A.\; b(c\,y))\,x) \\
+        &\curly \lambda x:A.\; a(b(c\,x)) \quad \vdash A \to D.
+      \end{aligned}
+    \]
+    We conclude
+    \(
+    (a \circ b) \circ c \;\equiv_{\beta\eta}\; a \circ (b \circ c).
+    \)
+    Thus, composition is associative.
+  \item To check that identity rules are satisfied, let $b : A \to B$.  
+    \[
+      \begin{aligned}
+        \mathrm{id}_B \circ b 
+        &= \lambda x:A.\; (\lambda y:B.\; y)(b\,x) \\
+        &\curly \lambda x:A.\; b\,x \\
+        &\curly b \quad \vdash A \to B.
+      \end{aligned}
+      \qquad
+      \begin{aligned}
+        b \circ \mathrm{id}_A
+        &= \lambda x:A.\; b((\lambda y:A.\; y)\,x) \\
+        &\curly \lambda x:A.\; b\,x \\
+        &\curly b \quad \vdash A \to B.
+      \end{aligned}
+    \]
+    Hence both left and right identity laws hold.
+  \end{itemize}
+  Therefore, $\mathcal{C}(\lambda)$ is a category.
+\end{proof}
+
+\begin{proposition}
+  $\mathcal{C}(\lambda)$ forms a Cartesian Closed Category.
 \end{proposition}
 
 \begin{proof}
-Define the category $\mathcal{C}(\lambda)$ as follows:
-\begin{itemize}
-    \item Objects: Types.
-    \item Morphisms: $A \to B$ are closed terms $c : A \to B$ modulo $\beta\eta$-equivalence.
-    \item Identity: $1_A = \lambda x. x$.
-    \item Composition: $c \circ b = \lambda x.\, c(b\,x)$.
+  We know from \ref{prop:clambdaiscat} that $\mathcal{C}$ is a category. Now, we have to find the representatives for terminal, product and exponential and verify their respective properties.
+
+  \begin{itemize}
+  \item Take the unit type $1$. Define $!_A:A\to 1$ by
+    \(
+    !_A := \lambda x.\; *
+    \) for every type $A$.
+    Where $*:1$. If $f:A\to 1$ is any morphism, then $f a:1$ for each $a$, hence $f a \equiv_{\beta\eta} *$. Thus $f \equiv_{\beta\eta} !_A$. So $1$ is terminal. Note the grammar for types only defines $1$ as terminal type, we know from our categorical background that all terminal objects are isomorphic to each other, so from a categorical perspecitive it would not make sense to add more terminal objects since results would not be altered.
+  \item The type $A \times B$ together with the projections
+    \(
+    \pi_1 \text{ and } \pi_2,
+    \)
+    forms a categorical product. Given $f:C \to A$ and $g:C \to B$, define the pairing like this:
+    \(
+      \langle f,g \rangle := \lambda x:C.\; \langle f x,\; g x \rangle : C \to A \times B.
+    \)
+    \begin{itemize}
+      \item We check that the projection laws hold:
+      \[
+        \pi_1 \circ \langle f,g \rangle 
+        = \lambda x:C.\; \pi_1(\langle f x, g x \rangle) 
+        \;\curly\; \lambda x:C.\; f x 
+        \;\equiv_\eta\; f
+      \]
+      \[
+        \pi_2 \circ \langle f,g \rangle 
+        = \lambda x:C.\; \pi_2(\langle f x, g x \rangle) 
+        \;\curly\; \lambda x:C.\; g x 
+        \;\equiv_\eta\; g.
+      \]
+      \item Then, to check for uniqueness we suppose that $h:C \to A \times B$ satisfies
+      $\pi_1 \circ h \equiv_{\beta\eta} f$ and $\pi_2 \circ h \equiv_{\beta\eta} g$. Such that for each $c:C$ we have
+      \(
+        h c \;\equiv_{\beta\eta}\; \langle \pi_1(h c),\; \pi_2(h c)\rangle
+        \;\equiv_{\beta\eta}\; \langle f c,\; g c\rangle,
+      \)
+      hence $h \equiv_{\beta\eta} \langle f,g \rangle$.
+    \end{itemize}
+    Therefore $A \times B$ together with $\pi_1, \pi_2$ and $\langle f,g \rangle$ 
+    satisfies the universal property of a product and that the the diagram \ref{def:categoricalproduct} commutes in this instance.
+  \item To find the exponential construction structure for $A,B$, take $A\Rightarrow B := A\to B$. We define the evaluation map
+\[
+\mathrm{ev} : (A\to B)\times A \to B \qquad
+\mathrm{ev} := \lambda p.\; (\pi_1 p)(\pi_2 p)
+\]
+Given $h:C\times A\to B$, define its curry
+\(
+\mathrm{curry}(h) := \lambda c.\; \lambda a.\; h\langle c,a\rangle
+\), 
+then
+\(
+(\mathrm{ev}\circ \langle \mathrm{curry}(h),\pi_2\rangle)p
+\;\curly\; h p
+\),
+so $\mathrm{ev}\circ \langle \mathrm{curry}(h),\pi_2\rangle \equiv_{\beta\eta} h$.
+Conversely, if $k:C\to (A\to B)$ satisfies $\mathrm{ev}\circ \langle k,\pi_2\rangle \equiv h$, then for any $c,a$:
+\[
+(k c)\,a \equiv h\langle c,a\rangle
+\]
+so $k c \equiv \lambda a.\; h\langle c,a\rangle$, hence $k \equiv \mathrm{curry}(h)$.
+Thus
+\(
+\mathrm{Hom}(C\times A,B) \cong \mathrm{Hom}(C,A\to B)
+\). Hence $A\to B$ is the exponential.
+    
 \end{itemize}
 
-\paragraph{Well-defined category.}
-Unit laws:
-\[
-c \circ 1_B = \lambda x.\, c((\lambda y.y)x) = \lambda x.\, c(x) = c, \quad
-1_C \circ c = \lambda x.\, (\lambda y.y)(c\,x) = \lambda x.\, c(x) = c
-\]
-Associativity:
-\[
-c \circ (b \circ a) = \lambda x.\, c((b \circ a)\,x) = \lambda x.\, c(b(a\,x)) = (c \circ b) \circ a.
-\]
-
-\paragraph{Binary products.}
-For types $A, B$, define
-\[
-p_1 = \lambda z.\, \mathrm{fst}(z), \quad
-p_2 = \lambda z.\, \mathrm{snd}(z), \quad
-(a,b) = \lambda x.\, (a\,x,\, b\,x).
-\]
-Then
-\[
-p_1 \circ (a,b) = a, \quad p_2 \circ (a,b) = b,
-\]
-and for any $c : X \to A \times B$ with $p_1 \circ c = a$ and $p_2 \circ c = b$, we have
-\[
-c = \lambda x.\, (p_1 \circ c\,x,\, p_2 \circ c\,x) = (a,b),
-\]
-so the product is unique.
-
-
-\paragraph{CCC structure.}
-Function types $A \to B$ and $\lambda$-abstraction provide exponentials, completing the CCC structure.
+We have exhibited a terminal object, binary products, and exponentials satisfying the required universal properties. Therefore, to \ref{prop:clambdaiscat}, we add that $\mathcal{C}(\lambda)$ is Cartesian Closed.
 \end{proof}
+
+The Curry--Howard--Lambek correspondence provides a unifying perspective between intuitionistic logic, typed $\lambda$-calculus, and category theory. Logical connectives, type formers, and categorical constructions relate to each other as summarized in Table~\ref{tab:CHL}.
 
 \begin{table}[h!]
   \centering
   \caption{The Curry--Howard--Lambek Correspondence}
+  \label{tab:CHL}
   \begin{tabular}{|c|c|c|}
     \hline
     \textbf{Intuitionistic Logic} & \textbf{Typed $\lambda$-Calculus} & \textbf{Category Theory / Lambek} \\
@@ -99,27 +202,146 @@ Function types $A \to B$ and $\lambda$-abstraction provide exponentials, complet
     Proof of $A$ & Term of type $A$ & Morphism $f: 1 \to A$ \\
     Implication $A \rightarrow B$ & Function type $A \to B$ & Exponential object $B^A$ \\
     Conjunction $A \land B$ & Product type $A \times B$ & Product $A \times B$ and projections \\
-    Disjunction $A \lor B$ & Sum type $A + B$ & Coproduct $A + B$ and injections\\
     $\top$ & $1$ & Terminal object $1$ \\
-    $\bot$ & $0$ & Initial object $0$ \\
     Proof normalization & $\beta$-reduction & { Commutativity of diagrams } \\
     \hline
   \end{tabular}
   \label{tab:curry-howard-lambek}
 \end{table}
 
+This basic correspondence can be extended further. For instance, when we add sum types to the typed $\lambda$-calculus, they correspond to disjunctions in logic and coproducts in category theory:
+
+\begin{table}[h!]
+  \centering
+  \caption{Extension of the Curry--Howard--Lambek Correspondence with Sum Types}
+  \label{tab:CHL-sum}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Intuitionistic Logic} & \textbf{Typed $\lambda$-Calculus} & \textbf{Category Theory / Lambek} \\
+    \hline
+    Disjunction $A \lor B$ & Sum type $A + B$ & Coproduct $A + B$ and injections \\
+    Falsity $\bot$ & Empty type $0$ & Initial object $0$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Thus, we informally extended the Curry--Howard--Lambek triangle to incorporate additional logical and categorical structure via sum types and coproducts. This is further discussed in \cites{Jacobs1999categorical}{maclane1971categories}{girard1989:proofs-and-types}{pierce1991basic}{barr1998category}.
+
 \section{\centering Closing Remarks and Perspectives}
 
+This work has provided a comprehensive journey through the pillars of modern theoretical computer science: the untyped and typed $\lambda$-calculus, intuitionistic logic, and category theory, building up to the profound  Curry--Howard--Lambek correspondence.
 
-\subsubsection{\centering Dependent Typing}
+\subsubsection{\centering Closing Remarks}
+
+We began with the untyped $\lambda$-calculus, a minimal yet powerful model of computation. We explored its syntax, reduction semantics, covering: $\alpha$, $\beta$, and $\eta$-equivalence. As well as key metatheoretic properties such as confluence, expressed through the Church--Rosser theorem and normalization. While the untyped calculus is Turing-complete, its lack of structure leads to undecidability of termination and the presence of non-normalizing terms like $\Omega$. This motivated the introduction of typing disciplines.
+
+In the typed $\lambda$-calculus, we examined both Church-style, explicitly annotated, and Curry-style , implicitly inferred systems. We extended the minimal simply typed calculus with product and sum types, enriching its expressive power while retaining desirable properties like strong normalization. The Church--Rosser property was revisited in this extended setting, noting that while $\beta$-reduction remains confluent, the addition of $\eta$-rules can break confluence with the presence of unit types. The proof of weak normalization via redex degrees illustrated how typing enforces structure and guarantees termination.
+
+The Curry--Howard isomorphism then revealed a deep connection between computation and logic: types correspond to propositions, terms to proofs, and $\beta$-reduction to proof normalization. This propositions-as-types paradigm not only provides a computational interpretation of intuitionistic logic but also grounds programming in a rigorous logical framework. Through natural deduction and the Brouwer--Heyting--Kolmogorov interpretation, we saw how constructive proofs align with functional programs.
+
+We then introduced category theory as a universal language for structure and composition. By abstracting away from internal details and focusing on morphisms and their interactions, category theory offers a unifying perspective across mathematics and computer science. We covered basic constructs---categories, functors, natural transformations---and key universal properties such as products, coproducts, exponentials, and the definition of cartesian closed categories. Examples drawn from programming made these abstract concepts tangible and illustrated their practical relevance.
+
+Finally, we arrived at the Curry--Howard--Lambek correspondence, which integrates these three domains into a cohesive whole:
+\[
+\text{Logic} \longleftrightarrow
+\text{Type Theory} \longleftrightarrow 
+\text{Category Theory}.
+\]
+We showed that the category of simply typed $\lambda$-terms is cartesian closed, thereby providing a categorical model of both logic and computation. This three-way correspondence not only estabishes similarities between these fields but also enables the transfer of techniques and insights across domains.
+
+\subsubsection{\centering Perspectives}
+
+This work lays the groundwork for several advanced topics, where logic, type theory, and category theory continue to develop:
+
+\begin{itemize}
+\item Polymorphic types extend the simply typed setting by allowing terms to be parameterized over types, so that a single definition can be used uniformly across many different instances. In System~F, also known as the polymorphic $\lambda$-calculus, this is expressed through universal quantification over type variables:
+  \[
+    T ::= \alpha \mid T \to T \mid \forall \alpha.\,T
+  \]
+  where $\alpha$ ranges over type variables. A familiar example is the polymorphic identity function,
+  \[
+    \Lambda \alpha.\,\lambda x:\alpha.\,x : \forall \alpha.\,\alpha \to \alpha
+  \]
+  which works for every type without modification. For any particular type $A$, applying this term yields the identity function $\lambda x:A.\,x : A \to A$, so every input is returned unchanged and its type remains unaltered. This makes it possible to define data structures and algorithms in a uniform way independently of their type. For example, to the map function has type:
+  \[
+    \texttt{map} : \forall \alpha \beta.\,(\alpha \to \beta) \to \texttt{List}(\alpha) \to \texttt{List}(\beta)
+  \]
+  that expresses the principle that functions between elements can be lifted to functions between lists. The key point is that these definitions do not depend on any particular type, but apply uniformly across all types, since we quantified $\alpha$ and $\beta$ such that \texttt{map} works on every type. 
+
+  From a logical perspective, System~F corresponds to second-order intuitionistic logic, where quantification ranges over types. This extension allows reasoning about entire families of types and proofs, making polymorphism a bridge between the simply typed world and more expressive systems such as dependent types.
+
+  From a categorical perspective, modeling polymorphism requires more than the cartesian closed categories that suffice for the simply typed $\lambda$-calculus. A type with type variables $\alpha$, say $T(\alpha)$, is interpreted as a functor in the parameter $\alpha$, meaning that $T$ can be instantiated by any concrete type, and functions between types induce corresponding functions between the instantiated versions. For example, $T(\alpha) = \texttt{List}(\alpha)$ yields $\texttt{List}(\mathbb{N})$ when $\alpha$ is the type of natural numbers and $\texttt{List}(\texttt{Bool})$ when $\alpha$ is the type of booleans. Moreover, a function $f : A \to B$ gives rise to a function $\texttt{map}(f) : \texttt{List}(A) \to \texttt{List}(B)$, showing how the functorial action respects both types and functions between them.
+  
+  Take
+  \(
+    \texttt{List} : \mathbf{Set} \to \mathbf{Set},
+  \)
+  sending a set $A$ to the set of lists of elements of $A$, and a function $f: A \to B$ to the induced function $\texttt{map}(f): \texttt{List}(A) \to \texttt{List}(B)$. This functorial perspective captures the way type constructors preserve structure across mappings. A polymorphic function
+  \[
+    \Lambda \alpha.\, t : \forall \alpha.\, F(\alpha) \to G(\alpha)
+  \]
+  is then interpreted as a natural transformation $\eta: F \Rightarrow G$ between two functors $F, G: \mathcal{C} \to \mathcal{C}$. The naturality condition requires that for every morphism $f: A \to B$ in $\mathcal{C}$, the following diagram commutes:
+  \[
+    \begin{tikzcd}
+      F(A) \arrow[r, "\eta_A"] \arrow[d, "F(f)"'] & G(A) \arrow[d, "G(f)"] \\
+      F(B) \arrow[r, "\eta_B"'] & G(B)
+    \end{tikzcd}
+  \]
+  This expresses the uniformity of polymorphism: the function cannot exploit the particular structure of any type $A$, but must behave consistently with respect to all structure-preserving maps between types. In practice, this explains why polymorphic definitions enjoy parametricity and why they give rise to \textit{``theorems for free.''}. See \cite{wadler1989theorems}.
+
+\item Dependent types take polymorphism one step further. While polymorphism allows terms to be parameterized by types, dependent types allow types themselves to be parameterized by terms. This extends the Curry--Howard correspondence from propositional logic, where types correspond to propositions, to predicate logic, where types can vary with values. The dependent product type
+  \[
+    \prod_{x:A} B(x)
+  \]
+  generalizes the ordinary function type $A \to B$: the codomain $B(x)$ may change depending on the particular argument $x:A$. For example, one can define the type of vectors of length $n$, written $\texttt{Vec}(n)$, where the type explicitly depends on the natural number $n$. A function like vector concatenation then has the precise type
+  \[
+    \forall m,n.\, \texttt{Vec}(m) \to \texttt{Vec}(n) \to \texttt{Vec}(m+n).
+  \]
+
+  Categorically, the simply typed $\lambda$-calculus is modeled by cartesian closed categories, which provide function spaces for interpreting ordinary function types $A \to B$. To model dependent types, we need a stronger setting: locally cartesian closed categories. The key step to develop an intuition is to understand slice categories:
+
+  \begin{definition}
+    Given a category $\mathcal{C}$ and an object $A \in \mathcal{C}$, the slice category $\mathcal{C}/A$ is defined as follows:
+    \begin{itemize}
+    \item Objects are morphisms $f : X \to A$ in $\mathcal{C}$.
+    \item Morphisms from $f : X \to A$ to $g : Y \to A$ are arrows $h : X \to Y$ in $\mathcal{C}$ such that $g \circ h = f$.
+    \end{itemize}
+  \end{definition}
+
+  \noindent
+  Intuitively, objects of $\mathcal{C}/A$ represent families of objects indexed by elements of $A$. For example, in $\mathbf{Set}$, an object of $\mathbf{Set}/A$ is a function $X \to A$, which can be understood as an $A$-indexed family of sets. This matches the intuition of a dependent type: a type that may vary depending on the term of type $A$ we are given.
+
+  \begin{definition}
+    A category $\mathcal{C}$ is called locally cartesian closed category if every slice category $\mathcal{C}/A$ is cartesian closed for all objects $A \in \mathcal{C}$.
+  \end{definition}
+  This extra structure means that not only do we have function spaces globally as in CCCs, but also relative function spaces within each context $A$. In type theory, this corresponds exactly to dependent function $\Pi$-types.
+
+\item Homotopy Type Theory builds on dependent type theory by adding ideas from homotopy and higher-dimensional mathematics. In this setting, identity types are understood as paths between points, and equalities between equalities correspond to homotopies, paths between paths. This way, types behave like spaces, with their structure reflecting not just elements but also the ways in which elements can be connected. The univalence principle says that equivalent types can be treated as identical, while higher inductive types let us define spaces directly inside type theory.
+
+  Categorically, Homotopy Type Theory is related to the mathematics of higher categories and higher toposes, which provide abstract settings where spaces and homotopies can be studied systematically. In this sense, HoTT can be seen as extending the Curry--Howard--Lambek correspondence: not only are programs proofs and types propositions, but now types also behave like spaces, and reasoning about them corresponds to reasoning in homotopy theory.
+\end{itemize}
+
+As covered in this work, Cartesian Closed Categories provide the semantics of the simply typed $\la$-calculus. What follows are: Locally Cartesian Closed Categories, that extend CCCs to interpret dependent type theory. And at the next level, Higher Categories, that support the semantics of Homotopy Type Theory. Essentially:
+
+\begin{center}
+\begin{tikzpicture}[node distance=2cm, every node/.style={draw, rounded corners=5pt, minimum width=3cm, minimum height=1cm, align=center}]
+    \node (ccc) {Cartesian Closed Categories \\ \footnotesize Simply typed $\lambda$-calculus};
+    \node (lccc) [below=of ccc] {Locally Cartesian Closed Categories \\ \footnotesize Dependent type theory};
+    \node (higher) [below=of lccc] {Higher Categories \\ \footnotesize Homotopy Type Theory};
+    \draw[->, thick] (ccc) -- (lccc);
+    \draw[->, thick] (lccc) -- (higher);
+\end{tikzpicture}
+\end{center}
+
+\paragraph{References and Resources. }{
+  For further study we relied on \cite{nederpelt2014:type-theory} for an introduction to polymorphic and dependent typing, on \cite{nordstrom1990programming} for Martin-Löf's type theory, and on \cite{Jacobs1999categorical} for categorical semantics, including fibrations and higher-order dependent type theory. These references were not explored in full detail, but served to identify natural next steps beyond the scope of this work. Languages such as Lean~4 and other theorem provers rely on dependent type theory as their theoretical foundation. An important modern development is Homotopy Type Theory with \cite{hottbook2013}, which extends dependent type theory with higher-dimensional and homotopical structure, and can be studied within proof assistants like Coq and Agda.
+}
 
 
-\subsubsection{\centering Dependent Types and Categories}
+\vfill
 
+\centering \Large{\textit{End.}}
 
-
-
-
-
+\vfill
 
 

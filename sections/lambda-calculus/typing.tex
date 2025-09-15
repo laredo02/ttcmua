@@ -19,7 +19,7 @@ This tells us about the nature of a given term, which may be of two kinds: a sim
 type or arrow type \(\to\). Introducing a typing system into the \(\lambda\)-calculus splits \(\Lambda\) into two categories:
 Typable and Non-typable terms. These sets are disjoint. This simple type system classifies expressions such as  
 \( x (\lambda y.y) \) or \( Y \) as untypable, while \( \lambda x.x \) has type  
-\(\alpha \to \alpha\). To summarize, non-normalizing terms and terms that lack meaning are not typable.
+\(\alpha \to \alpha\). Typing ensures that terms are meaningful: only normalizing terms receive a type, while non-normalizing or ill-defined terms do not.
 
 Out of the many type systems developed for the $\la$-calculus, we focus on a small but expressive core. We begin with minimal typing, which corresponds to the simply typed $\la$-calculus with only function types. This system captures the essence of typed functional computation: terms are either variables, abstractions, or applications, and their types are built solely from base types and arrows.
 
@@ -36,7 +36,7 @@ The untyped version of the \lcalc \ relies on abstraction and application. Minim
 where $\Bset$ \ is a countably infinite set of base types.
 In abstract syntax:
 \[
-\Tset ::= \Bset \mid (\Tset \to \Tset)
+\Tset ::= \Bset \mid \Tset \to \Tset
 \]
 \end{definition}
 \begin{note}
@@ -324,28 +324,19 @@ The Church–Rosser property holds for minimal typing.
 \begin{lemma}
 \label{lem:subject-reduction}
 If \(\Gamma \vdash L : \rho\) and \(L \to_\beta L'\), then
-\[
+\(
   \Gamma \vdash L' : \rho.
-\]
+\)
 \end{lemma}
 
 \begin{theorem}
 \label{thm:strong-normalisation}
-Every legal term \( M \) in minimally typed \lcalc is strongly normalising.
+Every well-types term \( M \) in minimally typed \lcalc \ is strongly normalising.
 \end{theorem}
 
 \begin{remark}
-  Proofs to these statements are common-ground among most of the \lcalc \ resources cited. A proof to the normalization theorem is given for the product extension.
+  Proofs to these statements are common-ground among most of the \lcalc \ resources cited, see \cite{nederpelt2014:type-theory}. A proof to the normalization theorem is given \ref{proof:weak-normalization} for the product extension.
 \end{remark}
-
-
-
-
-
-
-
-
-
 \section{\centering Extended Typing--Products}
 As discussed, minimal typing is the simplest form of typing. It follows from this statement that it can be extended. Here we introduce products that can be thought of as records or structs:
 
@@ -527,8 +518,8 @@ M \;\curly\; M_1 \;\curly\; M_2 \;\curly\; \dots
   
 The proofs are lengthy and well known. They are covered in full detail by \cite{girard1989:proofs-and-types} chapters $4$ and $6$. The strong normalization theorem is difficult to prove. In contrast, the proof of the weak normalization theorem is not as hard and provides measure of complexity based on the number of redexes of a given degree within a term.
 
-\subsubsection{\centering Proof Sketch of the Weak Normalization Theorem}
-
+\subsubsection{\centering Proof Sketch of the Weak Normalization Theorem for Product Extension}
+\label{proof:weak-normalization}
 To prove the weak normalization theorem, we assign a numerical measure of complexity to terms based on the degrees of their redexes. By carefully analyzing how these degrees behave under substitution and reduction, we construct an inductive argument showing that every term can be reduced, step by step, to a normal form
 \begin{definition}
 \begin{definition}
@@ -689,7 +680,7 @@ Thus, $\beta\eta$-conversion identifies terms up to computation and extensionali
   \item The term $\mathsf{\square}_A$ expresses the unique morphism $0 \to A$, capturing the fact that from an impossible value one may derive a term of any type.
   \end{itemize}
 \end{remark}
-\section{\centering Extended Typing--Sums and Products}
+\section{\centering Extended Typing--Products and Sums}
 The systems $\La^\times$ and $\La^+$ may be combined into a single calculus
 $\La^{\times+}$ with corresponding type system $\Tset^{\times+}$. In this setting
 the formation rules for types, raw terms, typing rules, and reduction rules are

@@ -41,6 +41,10 @@
   autogobble=true
 }
 
+\usepackage{pifont}
+
+\newcommand{\checkedbox}{\fbox{\ding{51}}}
+\newcommand{\crossedbox}{\fbox{\ding{55}}}
 
 \titlegraphic{%
   \begin{picture}(0,0)
@@ -59,13 +63,137 @@
 \author{Miguel Laredo Barbadillo}
 \institute{Master's in Formal Methods in Computer Science}
 
+
+
+\newcommand{\la}{\lambda}
+\newcommand{\La}{\mathbf{\Lambda}}
+\newcommand{\Ty}{\mathbf{T}}
+\newcommand{\Tb}{\mathbf{B}}
+\newcommand{\Bset}{\mathcal{B}}
+\newcommand{\Vset}{\mathcal{V}}
+\newcommand{\Tset}{\mathcal{T}}
+\newcommand{\NAT}{\mathbb{N}}
+\newcommand{\IF}{\texttt{IF}}
+\newcommand{\SUCC}{\texttt{SUCC}}
+\newcommand{\TRUE}{\texttt{TRUE}}
+\newcommand{\FALSE}{\texttt{FALSE}}
+\newcommand{\FST}{\texttt{FST}}
+\newcommand{\SND}{\texttt{SND}}
+\newcommand{\PAIR}{\texttt{PAIR}}
+\newcommand{\NIL}{\texttt{NIL}}
+\newcommand{\NOT}{\texttt{NOT}}
+\newcommand{\AND}{\texttt{AND}}
+\newcommand{\OR}{\texttt{OR}}
+\newcommand{\cat}[1]{\mathbf{#1}}
+\newcommand{\Hom}{\mathrm{Hom}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Ob}{\mathrm{Ob}}
+\newcommand{\Mor}{\mathrm{Mor}}
+\newcommand{\Set}{\cat{Set}}
+\newcommand{\Top}{\cat{Top}}
+\newcommand{\Grp}{\cat{Grp}}
+\newcommand{\Fun}{\mathrm{Fun}}
+\newcommand{\op}{^{\mathrm{op}}}
+\newcommand{\lCalc}{$\la$-Calculus}
+\newcommand{\lcalc}{$\la$-calculus}
+\newcommand{\bred}{$\beta$-reduction}
+\newcommand{\lterm}{$\la$-term}
+\newcommand{\lterms}{$\la$-terms}
+\newcommand{\lexpr}{$\la$-expression}
+\newcommand{\aequiv}{$\alpha$-equivalence}
+\newcommand{\aequivlt}{$\alpha$-equivalent}
+\newcommand{\bequiv}{$\beta$-equivalence}
+\newcommand{\functionfont}[1]{\mathbf{#1}}
+\newcommand{\curly}{\mathrel{\leadsto}_\beta}
+
+\newcommand{\betared}{\mathrel{\leadsto}_{\beta\eta}}
+\newcommand{\betareds}{\mathrel{\leadsto}^*_{\beta\eta}}
+\newcommand{\psred}{\mathrel{\rightrightarrows}}
+
+\newcommand{\Sub}[1]{\functionfont{Sub}(#1)}
+\newcommand{\Subb}{\functionfont{Sub}}
+\newcommand{\FV}[1]{\functionfont{FV}(#1)}
+\newcommand{\FVV}{\functionfont{FV}}
+\newcommand{\orange}[1]{\textcolor{orange}{#1}}
+\newcommand{\magenta}[1]{\textcolor{magenta}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\myref}[1]{\textcolor{refcolor}{\hyperref[#1]{\ref*{#1}}}}
+\newcommand{\subst}[2]{[#1 := #2]}
+\newcommand{\step}{\curly}
+\newcommand{\etaequiv}{$\eta$-equivalence}
+\newcommand{\lam}[2]{\lambda #1.\,#2}
+\newcommand{\app}[2]{#1.\,#2}
+\newcommand{\abs}[2]{\la #1.\,#2}
+\newcommand{\curlysym}{\mathrel{\leftrightarrow}_\beta}
+
 \begin{document}
 
 \maketitle
 
 \section{Introduction}
+
+\begin{frame}
+  Based Introduction
+\end{frame}
+
+\section{Typing}
+
+\begin{frame}{Minimal Typing}
+  \[
+    \Tset ::= \Bset \mid \Tset \to \Tset
+  \]
+  \pause
+  \[
+    \lambda x : \sigma . x
+    \vdash \lambda x : \sigma . x : \sigma \to \sigma
+  \]
+  \pause
+  \[
+    \lambda x . x
+    \vdash \lambda x . x : \sigma \to \sigma
+  \]
+  \pause
+  
+  \hfill Church--Rosser \checkedbox \hfill Strongly Normalizing \checkedbox \hfill Weakly Normalizing \checkedbox \hfill
+  
+
+\end{frame}
+
+\begin{frame}{Extended Typing -- Products}
+
+  \[
+    \Tset^\times ::= \Bset \mid \Tset^\times \to \Tset^\times \mid \Tset^\times \times \Tset^\times \mid 1
+  \]
+
+  \pause
+  
+  \[
+    \La^\times ::= x \mid \lambda x : \Tset.\ \La^\times \mid \La^\times \, \La^\times \mid \langle \La^\times, \La^\times \rangle \mid \pi_1 \La^\times \mid \pi_2 \La^\times \mid *
+  \]
+
+  \pause
+
+  \hfill Church--Rosser \checkedbox \hfill Strongly Normalizing \checkedbox \hfill Weakly Normalizing \crossedbox \hfill
+\end{frame}
+
+\begin{frame}{Extended Typing -- Sums}
+  
+  
+  \[
+    asd
+  \]
+
+  \hfill Church--Rosser \checkedbox \hfill Strongly Normalizing \checkedbox \hfill Weakly Normalizing \crossedbox \hfill
+
+  
+\end{frame}
+
+
+
+
 \begin{frame}[fragile]{Haskell Example}
-\begin{minted}{haskell}
+\begin{minted}{Haskell}
 fib :: Integer -> Integer
 fib 0 = 0
 fib 1 = 1

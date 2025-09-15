@@ -116,25 +116,26 @@ even in contexts where it makes no sense to speak about individual elements of o
 
 In the same way that injectivity can be reformulated in terms of morphisms, 
 constructions like pairs and disjoint unions are captured categorically 
-by the notions of product and coproduct, which embody the behavior of 
-tuples and sums purely through their universal properties of arrows. Beyond sums and products, categories also support exponentials, which capture the idea of 
-function spaces. Intuitively, an exponential $B^A$ represents ``the object of arrows'' from $A$ to $B$. 
+by the notions of product and coproduct, which embody the behavior of products and sums we
+covered in typing. Beyond sums and products, categories also support exponentials, which capture the idea of function spaces. Intuitively, an exponential $B^A$ represents ``the object of arrows'' from $A$ to $B$. 
 It comes equipped with an evaluation morphism
 \[
-   \mathsf{eval} : B^A \times A \to B,
+   \mathsf{eval} : B^A \times A \to B
 \]
 expressing the idea that a pair of a function and an argument produces a result. 
 This abstractly mirrors how function application works in the $\lambda$-calculus.
 
 Putting these ideas together, we arrive at the notion of a 
 Cartesian Closed Category: a category equipped with products, a terminal object, 
-and exponentials. Such categories provide the natural semantics of the simply typed 
-$\lambda$-calculus, where types correspond to objects, terms correspond to morphisms, 
+and exponentials. Such categories are themselves deduction systems and provide
+the natural semantics of the simply typed $\lambda$-calculus, where types
+correspond to objects, terms correspond to morphisms, 
 and function application is captured by the evaluation morphism.
 
+\medskip
+
 This ongoing interaction between type theory and category theory has inspired the design 
-of entirely new calculi and semantic frameworks. A notable example is the work of 
-Cockett and Gallagher (2019), who developed \emph{Categorical models of the differential 
+of entirely new calculi and semantic frameworks. A notable example is the work of \cite{Cockett2019Categorical}, who developed \emph{Categorical models of the differential 
 $\lambda$-calculus} within the setting of differential categories. Their results show how 
 categorical structure can guide the extension of the $\lambda$-calculus with new operations 
 such as differentiation, providing both a sound semantics and fresh perspectives on 

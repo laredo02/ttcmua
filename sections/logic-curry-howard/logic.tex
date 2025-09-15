@@ -184,7 +184,7 @@ The rules of natural deduction for intuitionistic propositional logic can be pre
 In the standard presentation of natural deduction, assumptions are introduced as 
 leaves of a proof tree and later discharged dynamically. This makes it somewhat 
 unclear when and where each assumption is canceled in the finished derivation. 
-An alternative approach is to present derivations in terms of judgments,
+Texts like \cite{selinger2008:lambdanotes} use an alternative approach to present derivations in terms of judgments,
 which are of the form
 \[
 x_1 : A_1, \dots, x_n : A_n \;\;\vdash\;\; B.
@@ -284,7 +284,7 @@ deduction can be reformulated as follows:
 \begin{note} Going over Example~\ref{ex:traditionalvsalternative}, we observe:
 \begin{itemize}
   \item In the traditional style, we assume $A \land B$ at the leaf, apply \textsc{ElimConj-L} to obtain $A$, and then discharge the assumption with \textsc{IntroImpl}.
-  \item In the explicit-context style, each judgment carries its assumptions. The axiom \textsc{Ax} gives $x:A \land B \vdash A \land B$, then \textsc{ElimConj-L} gives $x:A \land B \vdash A$, and finally \textsc{IntroImpl} discharges the labeled assumption $x:A \land B$.
+  \item In the explicit-context style, each judgment carries its assumptions. The axiom \textsc{Assume-X} gives $x:A \land B \vdash A \land B$, then \textsc{ElimConj-L} gives $x:A \land B \vdash A$, and finally \textsc{IntroImpl} discharges the labeled assumption $x:A \land B$.
 \end{itemize}
 \end{note}
   

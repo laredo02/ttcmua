@@ -282,7 +282,7 @@ This work lays the groundwork for several advanced topics, where logic, type the
   \]
   is then interpreted as a natural transformation $\eta: F \Rightarrow G$ between two functors $F, G: \mathcal{C} \to \mathcal{C}$. The naturality condition requires that for every morphism $f: A \to B$ in $\mathcal{C}$, the following diagram commutes:
   \[
-    \begin{tikzcd}
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       F(A) \arrow[r, "\eta_A"] \arrow[d, "F(f)"'] & G(A) \arrow[d, "G(f)"] \\
       F(B) \arrow[r, "\eta_B"'] & G(B)
     \end{tikzcd}

@@ -211,7 +211,7 @@ Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstra
   \[
     f \circ g_1 = f \circ g_2 \implies g_1 = g_2
     \qquad
-    \begin{tikzcd}[row sep=large, column sep=large]
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       X \arrow[r, shift left=0.5ex, "g_1"] 
       \arrow[r, shift right=0.5ex, swap, "g_2"] 
       & A \arrow[r, "f"] & B
@@ -228,7 +228,7 @@ Monomorphisms, epimorphisms, and isomorphisms arise in category theory as abstra
   \[
     h_1 \circ f = h_2 \circ f \implies h_1 = h_2
     \qquad
-      \begin{tikzcd}[row sep=large, column sep=large]
+      \begin{tikzcd}[row sep=huge, column sep=huge]
             A \arrow[r, "f"] & B \arrow[r, shift left=0.5ex, "h_1"] 
       \arrow[r, shift right=0.5ex, swap, "h_2"] & Y
     \end{tikzcd}
@@ -324,7 +324,7 @@ Category Theory takes itself very seriously. Hence, it is natural to consider fu
 
   The following diagram elegantly summarizes the latter definition:
   \[
-    \begin{tikzcd}[row sep=large, column sep=large]
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
       F(X) \arrow[r, "F(f)"'] & F(Y)
     \end{tikzcd}
@@ -402,7 +402,7 @@ We have so far used directed graphs to informally represent categories, now, we 
   \]
   The following diagram illustrates these morphisms:
   \[
-    \begin{tikzcd}[row sep=large, column sep=large]
+    \begin{tikzcd}[row sep=huge, column sep=huge]
       W \arrow[r, "f"] \arrow[d, "g"'] \arrow[dr, "m", dashed] & X \arrow[d, "h"] \\
       Y \arrow[r, "k"'] & Z
     \end{tikzcd}
@@ -449,7 +449,7 @@ Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A contravariant functor $F : 
 \end{itemize}
 such that identity and composition are preserved, same as \ref{def:functor}. The following diagram summarizes how a contravariant functor reverses arrows:
 \[
-  \begin{tikzcd}[row sep=large, column sep=large]
+  \begin{tikzcd}[row sep=huge, column sep=huge]
     X \arrow[r, "f"] \arrow[d, mapsto, "F"'] & Y \arrow[d, mapsto, "F"] \\
     F(X) & F(Y) \arrow[l, "F(f)"']
   \end{tikzcd}
@@ -1142,8 +1142,7 @@ chapter, we will build further on this connection.
 
 \section[(Optional) Adjunctions and The Yoneda Lemma]{\centering Adjunctions and The Yoneda Lemma}
 
-All the universal constructions we have seen --products, coproducts, exponentials-- are just different faces of the same idea: adjointness. You can think of an adjunction as a ``best possible solution'' to a certain problem: a product is the best way to combine things, a coproduct is the best way to branch, and exponentials are the best way to internalize functions. So instead of memorizing each universal property separately, you can see them all as special cases of this one guiding principle—one functor ``undoes'' or ``complements'' another in the most universal way possible.
-
+In this optional section we look at how how the universal constructions we have seen so far --products, coproducts, exponentials-- are just different faces of the same idea: adjointness. You can think of an adjunction as a ``best possible solution'' to a certain problem: a product is the best way to combine things, a coproduct is the best way to branch, and exponentials are the best way to internalize functions. So instead of memorizing each universal property separately, you can see them all as special cases of this one guiding principle—one functor ``undoes'' or ``complements'' another in the most universal way possible.
 
 \begin{remark}
   The following section is included to provide additional intuition and insight into category-theoretic concepts, such as adjunctions and universal constructions. It is not the main focus of this work, which is why it is kept short, formal, and does not contain detailed examples or extended explanations. It is meant to show the flexibility of categorical abstractions when it comes to defining new universal constructions. We also include the Yoneda lemma in an effort to show the tools that category theory brings to the table.
@@ -1152,6 +1151,7 @@ All the universal constructions we have seen --products, coproducts, exponential
 \subsubsection{\centering Adjunctions}
 
 Notice how this notion of ``best possible solution'', closely resembles the idea of universal arrow from \ref{def:universalarrow}. The universal constructions we covered all fall under the umbrella of adjoint functors.
+
 \begin{definition}
 An adjunction between two categories $\mathcal{C}$ and $\mathcal{D}$ consists of a pair of functors
 \(
@@ -1171,10 +1171,38 @@ C \arrow[u, "F"'] \arrow[rr, dashed, "g"'] & & G(D) \arrow[u, "G"']
 \end{tikzcd}
 \]
 
+
+The naturality condition means that these bijections assemble into natural isomorphisms of functors:
+\begin{itemize}
+  \item For a fixed $c \in \mathcal{C}$
+  \[
+  \mathcal{C}(F-,c) : \mathcal{D} \to \mathbf{Set}^{\mathrm{op}}
+  \quad \cong \quad
+  \mathcal{D}(-,Gc) : \mathcal{D} \to \mathbf{Set}^{\mathrm{op}}
+  \]
+  \item For a fixed $d \in \mathcal{D}$
+  \[
+  \mathcal{C}(Fd,-) : \mathcal{C} \to \mathbf{Set}
+  \quad \cong \quad
+  \mathcal{D}(d,G-) : \mathcal{C} \to \mathbf{Set}
+\]
+\begin{note} The symbol ``-'' is a placeholder for a variable argument: e.g.\ $D(-,Gc)$ denotes the functor $X \mapsto D(X,Gc)$, and $D_C(Fd,-)$ denotes $Y \mapsto D_C(Fd,Y)$. Parentheses are usually omitted for clarity.
+\end{note}
+\end{itemize}
+
+
+The functor $F$ is called the left adjoint to $G$, while $G$ is the right adjoint to $F$, and we write
+\[
+F \dashv G.
+\]
+Adjunctions can be viewed as a “weak form” of equivalence of categories: every equivalence induces an adjunction, although not every adjunction is an equivalence. In many cases, an adjunction can be upgraded to an equivalence by suitable natural modifications of the categories and functors involved.
 \end{definition}
+
 \begin{remark}
 Universal arrows and adjunctions are closely related: a universal arrow from an object $C \in \mathcal{C}$ to a functor $G : \mathcal{D} \to \mathcal{C}$ can be thought of as a “best possible” arrow from $C$ into the image of $G$. If $G$ admits a universal arrow for every object $C \in \mathcal{C}$, then these universal arrows assemble into a left adjoint $F$ to $G$, giving the adjunction $F \dashv G$. Conversely, given an adjunction $F \dashv G$, the components of its unit $\eta_C : C \to G(F(C))$ are precisely universal arrows. In this sense, universal arrows are the local building blocks of adjunctions.
 \end{remark}
+
+Using adjunctions we can formulate alternative definitions for the universal constructions we already covered. To illustrate, we give a concise definition for closed exponential:
 
 \begin{definition}
 Let $\mathcal{C}$ be a category. 
@@ -1207,103 +1235,39 @@ which satisfy the universal property of products.
 
 We will not redefine all of the already presented universal constructions, \cite{maclane1971categories} presents other constructions like limits and colimits by means of adjunctions.
 
-\begin{definition}
-The naturality condition means that these bijections assemble into natural isomorphisms of functors:
-\begin{itemize}
-  \item For fixed $c \in \mathcal{C}$,
-  \[
-  \mathcal{C}(F-,c) : \mathcal{D} \to \mathbf{Set}^{\mathrm{op}}
-  \quad \cong \quad
-  \mathcal{D}(-,Gc) : \mathcal{D} \to \mathbf{Set}^{\mathrm{op}}.
-  \]
-  \item For fixed $d \in \mathcal{D}$,
-  \[
-  \mathcal{C}(Fd,-) : \mathcal{C} \to \mathbf{Set}
-  \quad \cong \quad
-  \mathcal{D}(d,G-) : \mathcal{C} \to \mathbf{Set}.
-  \]
-\end{itemize}
-The functor $F$ is called the \emph{left adjoint} to $G$, while $G$ is the \emph{right adjoint} to $F$, and we write
-\[
-F \dashv G.
-\]
-Adjunctions can be viewed as a “weak form” of equivalence of categories: every equivalence induces an adjunction, although not every adjunction is an equivalence. In many cases, an adjunction can be upgraded to an equivalence by suitable natural modifications of the categories and functors involved.
-\end{definition}
-Using adjunctions we can formulate alternative definitions for the universal constructions we already covered. To illustrate, we give a concise definition for closed exponential:
-\begin{definition} Equivalently, the map $f\mapsto \lambda f$ yields a natural bijection
-\[
-  \operatorname{Hom}_{\mathcal{C}}(C\times A,\, B)
-  \cong
-  \operatorname{Hom}_{\mathcal{C}}(C,\, B^{A})
-\]
-natural in $C$ and $B$.
-Saying $\mathcal{C}$ is cartesian closed is equivalent to saying that for every object $A$ the functor $-\times A : \mathcal{C}\to\mathcal{C}$ has a right adjoint $(-)^{A} : \mathcal{C}\to\mathcal{C}$, i.e.
-\[
-  -\times A \ \dashv\ (-)^{A}.
-\]
-\end{definition}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \subsubsection{\centering The Yoneda Lemma}
 In the 1950s, Yoneda observed a striking fact: one never needs to ``touch'' an
 object of a category directly to know it. All the information about the object
 is already encoded in how other objects map into it. The essence of Yoneda is
 this: an object is its pattern of relationships.  
-
 The Yoneda lemma formalizes this intuition. To understand an object, one
 examines its interactions with all other objects via morphisms. Concretely,
 every object $X$ is associated with a functor of points
 \[
-  \mathrm{Hom}(-,X) \quad \text{or dually} \quad \mathrm{Hom}(X,-),
+  \mathrm{Hom}(-,X) \quad \text{or dually} \quad \mathrm{Hom}(X,-)
 \]
-which records how $X$ receives (or sends) morphisms. This functor fully
-characterizes $X$.  
-
+which records how $X$ receives or sends morphisms. This functor fully
+characterizes $X$.   
 The key technical insight is that natural transformations from a representable
 functor $\mathrm{Hom}(-,X)$ to any other functor $F$ correspond bijectively to
 elements of $F(X)$. Intuitively, a single ``universal element'' encodes the
 entire transformation. This is why the Yoneda lemma is so powerful: it turns
 abstract objects into concrete data about morphisms, and it reduces questions
 about naturality to the behavior of one element.  
-
 In short, the Yoneda lemma builds the bridge between structure
 and behavior. It shows that categories are not defined by what their
 objects ``are,'' but by how they relate.
 
-
-\begin{theorem} The Yoneda Lemma states the following: Let $\mathcal{C}$ be a locally small category, let $X \in \mathrm{Ob}(\mathcal{C})$, 
+\begin{theorem} The Yoneda Lemma: Let $\mathcal{C}$ be a locally small category, let $X \in \mathrm{Ob}(\mathcal{C})$, 
   and let $F : \mathcal{C} \to \mathbf{Set}$ be a functor. Then there is a natural bijection
   \[
     \mathrm{Nat}\!\big(\mathrm{Hom}_{\mathcal{C}}(-,X), \, F\big) 
-    \;\;\cong\;\; F(X),
+    \;\;\cong\;\; F(X)
   \]
   where $\mathrm{Hom}_{\mathcal{C}}(-,X) : \mathcal{C}^{op} \to \mathbf{Set}$ 
   is the representable functor sending $A \mapsto \mathrm{Hom}_{\mathcal{C}}(A,X)$.
+  This $\mathrm{Nat}$ in the Yoneda Lemma refers to natural transformations between functors.  
+  It denotes the set $\mathrm{Nat}(\mathrm{Hom}(C,-),F)$, of all natural transformations from the Hom-functor to $F$.
 \end{theorem}
 
 \begin{remark}
@@ -1326,38 +1290,27 @@ objects ``are,'' but by how they relate.
   \]
   Take another functor $F : \mathbf{Set}^{op} \to \mathbf{Set}$, for instance 
   $F(A) = \mathcal{P}(A)$ (the power set of $A$).  
-
   By Yoneda, natural transformations 
   $\mathrm{Hom}_{\mathbf{Set}}(-,X) \Rightarrow \mathcal{P}(-)$ 
   are in bijection with elements of $\mathcal{P}(X)$, i.e.\ subsets of $X$.  
   Indeed, given $S \subseteq X$, one defines a natural transformation 
   by sending each map $f : A \to X$ to the preimage $f^{-1}(S) \subseteq A$.  
   Different choices of $S$ give different natural transformations.  
-
   Hence, the Yoneda lemma tells us that the family of all such natural
   transformations is nothing more than the collection of subsets of $X$.
 \end{example}
 
 The Yoneda lemma tells us that an object in a category is completely determined by the morphisms coming into it. 
-Building on this idea, instead of studying a category $\mathcal{C}$ directly, we can study \emph{all functors} 
-from $\mathcal{C}$ into $\mathbf{Set}$, the category of sets. 
-
-This approach has several advantages:
-
+Building on this idea, instead of studying a category $\mathcal{C}$ directly, we can study all functors
+from $\mathcal{C}$ into $\mathbf{Set}$, the category of sets. This approach has several advantages:
 \begin{itemize}
     \item $\mathbf{Set}$ is a category we already understand very well.
     \item Each functor $\mathcal{C} \to \mathbf{Set}$ translates the abstract structure of $\mathcal{C}$ 
     into something concrete, providing a ``representation'' of $\mathcal{C}$ in terms of sets and functions.
     \item The original category $\mathcal{C}$ embeds into this functor category via representable functors, 
-    but the functor category also contains \emph{new objects} that did not exist in $\mathcal{C}$. 
-    Treating these new objects like ordinary objects often \emph{unifies and simplifies the theory}.
+    but the functor category also contains new objects that did not exist in $\mathcal{C}$. 
+    Treating these new objects like ordinary objects often unifies and simplifies the theory.
 \end{itemize}
-
-This perspective is analogous to studying a ring by examining its modules: 
-the ring corresponds to the category $\mathcal{C}$, and the category of modules corresponds 
-to the functor category. Each module (functor) encodes information about the original ring (category), 
-allowing us to study it indirectly via well-understood structures.
-
 In short, studying functors from $\mathcal{C}$ to $\mathbf{Set}$ lets us understand $\mathcal{C}$ 
 indirectly using concrete structures, often revealing hidden relationships and simplifying the theory.
 

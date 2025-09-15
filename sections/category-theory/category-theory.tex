@@ -16,7 +16,7 @@ For our purposes, categories arise as a tool to study compositionality, which is
   \item A collection of arrows or morphisims where each arrow $f$ has a domain object $\mathrm{dom}(f)$ and a codomain object $\mathrm{cod}(f)$. These can be defined using $f : A \to B $ to signify $\mathrm{dom}(f) = A$ and $\mathrm{cod}(f) = B$
   \item A composition operator assigning to each pair of arrows $f$ and $g$, with $cod(f) = dom(g)$, a composite arrow $g \circ f : \mathrm{dom}(f) \to \mathrm{cod} (g)$ satisfying the following associative law:
     \[
-      h \circ (g \circ f) = (h \circ g) \circ f
+g      h \circ (g \circ f) = (h \circ g) \circ f
     \]
     where $f : A \to B, g : B \to C, h : C \to D$ are arrows of a category
   \item For each object $A$, an identity arrow $id_A : A \to A$ satisfying the following identity law:
@@ -112,14 +112,14 @@ Take any category $\mathcal{C}$, note how from any given objects $a, b \in \math
 \end{example}
 
 \begin{example}
-  $\mathbf{Hask}$ is often described as a category where the objects are Haskell types such as 
-\small{\texttt{Int}, \texttt{Bool}, \texttt{String}}. 
+  $\mathbf{Hask}$ is often described as a category where the objects are Haskell types such as
+\texttt{Int}, \texttt{Bool}, \texttt{String}.
 The morphisms are Haskell functions between those types such as 
-\small{\(\texttt{f::Int->Bool}\)}. 
-For every type \small{\(\texttt{a}\)}, there is an identity morphism 
-\small{\(\texttt{id::a->a}\)} that maps each value to itself. 
+\(\texttt{f::Int->Bool}\). 
+For every type \(\texttt{a}\), there is an identity morphism 
+\(\texttt{id::a->a}\) that maps each value to itself. 
 Morphisms can be composed using 
-\small{\(\texttt{(.)::(b->c)->(a->b)->a->c}\)}, 
+\(\texttt{(.)::(b->c)->(a->b)->a->c}\), 
 meaning the output of one function becomes the input of another. 
 This composition is associative, and the identity morphisms act as neutral elements for composition.
 
@@ -432,7 +432,7 @@ Since this functor ``forgets'' the structure its domain category we refer to it 
 
 
 \subsubsection{\centering Contravariant Functors}
-In category theory, the notion of a functor is introduced as a structure-preserving map between categories. When first defined, a functor is understood to preserve both the direction of morphisms and the way in which they compose. Since functors preserve the the direction of arrows, they are usually called covariant functors. This terminology only becomes relevant once one contrasts them with 
+In category theory, the notion of a functor is introduced as a structure-preserving map between categories. When first defined, a functor is understood to preserve both the direction of morphisms and the way in which they compose. Since functors preserve the direction of arrows, they are usually called covariant functors. This terminology only becomes relevant once one contrasts them with 
 contravariant functors, which reverse the direction of arrows.
 \begin{definition}
 Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A contravariant functor $F : \mathcal{C} \to \mathcal{D}$ consists of:
@@ -1202,7 +1202,7 @@ Adjunctions can be viewed as a “weak form” of equivalence of categories: eve
 Universal arrows and adjunctions are closely related: a universal arrow from an object $C \in \mathcal{C}$ to a functor $G : \mathcal{D} \to \mathcal{C}$ can be thought of as a “best possible” arrow from $C$ into the image of $G$. If $G$ admits a universal arrow for every object $C \in \mathcal{C}$, then these universal arrows assemble into a left adjoint $F$ to $G$, giving the adjunction $F \dashv G$. Conversely, given an adjunction $F \dashv G$, the components of its unit $\eta_C : C \to G(F(C))$ are precisely universal arrows. In this sense, universal arrows are the local building blocks of adjunctions.
 \end{remark}
 
-Using adjunctions we can formulate alternative definitions for the universal constructions we already covered. To illustrate, we give a concise definition for closed exponential:
+Using adjunctions we can formulate alternative definitions for the universal constructions we already covered. To illustrate, we give a concise definition for product:
 
 \begin{definition}
 Let $\mathcal{C}$ be a category. 
@@ -1313,26 +1313,6 @@ from $\mathcal{C}$ into $\mathbf{Set}$, the category of sets. This approach has 
 \end{itemize}
 In short, studying functors from $\mathcal{C}$ to $\mathbf{Set}$ lets us understand $\mathcal{C}$ 
 indirectly using concrete structures, often revealing hidden relationships and simplifying the theory.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \paragraph{References \&  Resources}{The categorical content of this chapter is based on foundational works in category theory. Mac Lane \cite{maclane1971categories} provides the formal structure of categories, functors, and natural transformations; Pierce \cite{pierce1991basic} and Barr and Wells \cite{barr1998category} are used to connect Mac Lane's ideas with computer science. Content related to Lambek is also influenced by \cite{Jacobs1999categorical}.
 }
